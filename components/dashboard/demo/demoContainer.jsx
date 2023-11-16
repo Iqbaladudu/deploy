@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createTitle } from "@/app/utils";
 import { engineData } from "@/app/constant";
 import { useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 const menu = [
   { label: "Import Gambar", url: "select-dataset", doneTask: false },
@@ -21,6 +22,7 @@ const DemoContainer = ({ children }) => {
   const engine = searchParams.get("engine");
   const router = useRouter();
   const title = createTitle(engine);
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const description = engineData.find(
     (item) => item.title === title
   ).description;
@@ -49,7 +51,9 @@ const DemoContainer = ({ children }) => {
   return (
     <DashboardContentWrapper>
       <div className="container">
-        <div className="row gap-0 column-gap-3">
+        <div
+          className={`row gap-0 column-gap-3 ${isMobile ? "row-cols-1" : ""}`}
+        >
           <div className="col mb-5 col-lg-4 p-0">
             <div className="text-primary fs-title fw-bold mb-3">{title}</div>
             <div className="text-label mb-3">{description}</div>

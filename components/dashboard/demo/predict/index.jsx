@@ -12,13 +12,37 @@ const Predict = () => {
           <p>6 Total data gambar</p>
           <p className="text-primary">Lihat semua gambar</p>
         </div>
-        <div className="d-flex flex-row gap-0 column-gap-2 flex-wrap">
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
-          <Image src={predictImgExample} className="h-50 w-50" alt="" />
+        <div className="d-flex flex-column flex-lg-row gap-0 column-gap-2">
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
+          <Image
+            src={predictImgExample}
+            className="h-50 w-50 flex-shrink-1"
+            alt=""
+          />
         </div>
         <div className="row row-cols-auto">
           <div className="col-4 fw-bold">Preprocessing</div>

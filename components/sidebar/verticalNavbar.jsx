@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BsHouseDoor,
   BsPerson,
@@ -82,22 +82,31 @@ const projectList = [
 
 const VerticalNavbar = () => {
   const [menuList, setMenuList] = useState("Beranda");
-  const collapse = useCollapseStore((state) => state.collapse);
+  const [toggle, collapse] = useCollapseStore((state) => [
+    state.toggle,
+    state.collapse,
+  ]);
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [show, setShow] = useState(false);
   const router = useRouter();
 
+  function responsiveNavbar() {
+    if (isMobile) {
+      if (collapse) {
+        return "d-none";
+      } else return `${styles.absolute} w-75`;
+    } else {
+      if (collapse) {
+        return styles.collapse;
+      } else return styles.fullWidthSidebar;
+    }
+  }
+
   return (
     <>
       <div
-        className={`bg-light d-flex flex-column justify-content-start pt-3 gap-0 row-gap-3 ${
-          collapse
-            ? isMobile
-              ? "d-none"
-              : styles.collapse
-            : styles.fullWidthSidebar
-        }
-        } ${isMobile && styles.absolute} ${styles.transition} `}
+        className={`bg-light flex-column justify-content-start pt-3 gap-0 row-gap-1 ${responsiveNavbar()}
+         ${isMobile && styles.absolute} ${styles.transition} `}
       >
         <div
           className={`d-flex flex-column gap-0 row-gap-4 ${
@@ -171,7 +180,7 @@ const VerticalNavbar = () => {
           <div className="d-flex flex-column gap-0 row-gap-2 text-gray-dark">
             <p
               className={`m-0 fw-light px-4 fw-bold fs-label text-uppercase text-gray-dark ${
-                collapse || isMobile ? "d-none" : ""
+                collapse && "d-none"
               }`}
             >
               AI Engine
@@ -180,22 +189,19 @@ const VerticalNavbar = () => {
               {engine.map(({ nama, icon, url }, index) => (
                 <div key={index}>
                   <div
-                    className={`w-100 rounded-5 d-flex flex-row align-items-center gap-0 column-gap-2 ${
+                    className={`text-start w-100 rounded-5 d-flex flex-row align-items-center gap-0 column-gap-3 ${
                       menuList === nama && "bg-primary-light text-primary"
                     } ${collapse ? "p-2" : "px-4 py-2"}`}
                     key={index}
                     onClick={() => {
-                      router.push(`/dashboard/${url}`);
+                      toggle();
                       setMenuList(nama);
+                      router.push(`/dashboard/${url}`);
                     }}
                     style={{ cursor: "pointer" }}
                   >
                     {icon}{" "}
-                    <span
-                      className={`ms-1 fs-sub-normal ${
-                        collapse ? "d-none" : ""
-                      }`}
-                    >
+                    <span className={`${collapse ? "d-none" : ""} fs-normal`}>
                       {nama}
                     </span>
                   </div>
@@ -220,6 +226,7 @@ const VerticalNavbar = () => {
                     } ${collapse ? "p-2" : "px-4 py-2"}`}
                     key={index}
                     onClick={() => {
+                      toggle();
                       setMenuList(nama);
                       router.push(`/dashboard/${url}`);
                     }}
@@ -250,7 +257,11 @@ const VerticalNavbar = () => {
                       menuList === nama && "bg-primary-light text-primary"
                     } ${collapse ? "p-2" : "px-4 py-2"}`}
                     key={index}
-                    onClick={() => setMenuList(nama)}
+                    onClick={() => {
+                      toggle();
+                      setMenuList(nama);
+                      router.push(`/dashboard/${url}`);
+                    }}
                     style={{ cursor: "pointer" }}
                   >
                     {icon}{" "}
