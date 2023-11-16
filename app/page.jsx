@@ -128,6 +128,7 @@ function EmailForm(props) {
         <Form.Control
           autoFocus
           type="email"
+          id="eml"
           placeholder="Masukkan email"
           className={`bg-transparent border rounded-2 border-0 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
           onFocus={() => props.setInputEmail(true)}
@@ -155,6 +156,7 @@ function PasswordForm(props) {
           }`}
         >
           <Form.Control
+            id="passwd"
             type="password"
             placeholder="Masukkan password"
             className={`bg-transparent border border-0 rounded-2 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
@@ -180,6 +182,7 @@ function PasswordForm(props) {
           type="checkbox"
           controlId="remember-password"
           label="Ingat saya"
+          id="lbl"
         />
         <Link
           href="#"
