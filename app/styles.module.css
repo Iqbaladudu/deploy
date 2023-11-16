@@ -1,0 +1,51 @@
+.boxShadowPrimary {
+    box-shadow: 0px 0px 0px .95px var(--bs-primary);
+    -webkit-box-shadow: 0px 0px 0px .95px var(--bs-primary);
+    -moz-box-shadow: 0px 0px 0px .95px var(--bs-primary);
+}
+
+.swiperWidth {
+    width: 400px;
+    padding: 10px;
+}
+
+.sliderDots {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    position:static;
+}
+  
+.sliderDot {
+    background-color: white;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    margin: 0 2px;
+    position: relative;
+}
+
+.mobileWidth {
+    width: 90vw;
+}
+
+
+.mb40 {
+    margin-bottom: 40px;
+}
+
+.inputStyles {
+    transition: all 0.2s;
+    border-radius: 0.375rem;
+    font-size: 12px !important;
+    padding: .675rem 2.25rem .675rem .75rem !important;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }

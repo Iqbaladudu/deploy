@@ -1,0 +1,37 @@
+.modal {
+    position: absolute;
+    top: 8vh;
+    right: 10vh;
+}
+
+.notifModal {
+    position: absolute;
+    top: 8vh;
+}
+
+.notifModalMobilePos {
+    right: 10vw;
+    width: 30vh;
+}
+
+.notifModalRegPos {
+    right: 10vw;
+    width: 50vh;
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+.rotate180 {
+    transform: rotate(180deg);
+}
+
+.transition {
+    transition: all 500ms;
+}
+
+.h16w16 {
+    height: 16px;
+    width: 16px;
+}

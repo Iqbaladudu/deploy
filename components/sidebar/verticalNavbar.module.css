@@ -1,0 +1,27 @@
+.fullWidthSidebar {
+    width: calc(100vw - (100vw - 260px));
+}
+
+.collapse {
+    width: calc(100vw - (100vw - 78px));
+}
+
+.transition {
+    transition: all 500ms;
+}
+
+.modal {
+    position: absolute;
+    top: 19vh;
+    left: 10vh;
+}
+
+.absolute {
+    position: absolute;
+    z-index: 100;
+}
+
+.h16w16 {
+    height: 16px;
+    width: 16px;
+}

@@ -1,0 +1,93 @@
+input[type="checkbox"]:checked {
+    background-color: var(--bs-primary);
+    border: 1px solid var(--bs-primary);
+}
+
+input[type="checkbox"]:focus {
+    border: 1px solid var(--bs-primary);
+}
+
+input[type="checkbox"] {
+    border: 1px solid var(--bs-primary);
+}
+
+html, body {
+    background-color: var(--bs-gray) !important;
+}
+
+::selection{ 
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+
+/* BUTTON */
+.btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
+    color: #fff;
+    background-color: #dc3545;
+}
+/* END BUTTON */
+
+/* NEW CLASS */
+@media (min-width: 768px){
+    .w-md-75{ width: 75% !important; } 
+}
+/* END NEW CLASS */
+
+/* SLICK DOTS CUSTOM */
+li.slick-active .styles_sliderDot__nJbFV{
+    width: 100%;
+    border-radius: 5px;
+}
+
+li .styles_sliderDot__nJbFV{
+    transition: all 0.5s ease-in-out;
+}
+
+.slick-dots li {
+    display: flex !important;
+    justify-content: center !important;
+    width: 30px !important;
+    margin: 0px !important;
+}
+/* END SLICK DOTS CUSTOM */
+
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: var(--bs-primary-light) !important;
+    color: var(--bs-primary) !important;
+}
+
+.dropdown-item {
+    width: 100%;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.uppy-Dashboard-innerWrap {
+    background-color: white;
+    border: 2px dashed #dc3545;
+    width: 100% !important;
+    margin: 0px;
+}
+
+.uppy-Dashboard-AddFiles {
+    border: none;
+    margin: 0;
+    z-index: 50;
+}
+
+div.uppy-DashboardContent-bar {
+    z-index: 50;
+}
+
+button.uppy-u-reset.uppy-Dashboard-Item-action.uppy-Dashboard-Item-action--remove {
+    color: #dc3545;
+    z-index: 50;
+}
+
+.uppy-Dashboard-files > div > div > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
