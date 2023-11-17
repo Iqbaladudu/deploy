@@ -210,7 +210,7 @@ const LoginForm = () => {
           inputPassword={inputPassword}
           setInputPassword={setInputPassword}
         />
-        <Button onClick={router.push("/dashboard")}>Login</Button>
+        <Button onClick={router.push("/dashboard/")}>Login</Button>
       </Form.Group>
       <div className="d-flex justify-content-center">
         Belum punya akun?{" "}
