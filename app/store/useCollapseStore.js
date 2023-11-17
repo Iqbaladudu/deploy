@@ -2,7 +2,8 @@ import { create } from "zustand";
 
 const useCollapseStore = create((set) => ({
     collapse: false,
-    toggle: () => set((state) => ({ collapse: !state.collapse}))
+    collapseMobile: true,
+    toggle: (bool = null) => set((state) => ({ collapse: bool ? bool : !state.collapseMobile, collapseMobile: !state.collapseMobile}))
 }))
 
 export default useCollapseStore;

@@ -319,16 +319,19 @@ const NavbarRightIcons = () => {
 
 const HorizontalNavbar = () => {
   const [fixed, setFixed] = useState("");
-  useEffect(() => {
-    window.addEventListener("scroll", () => {
-      let windowHeight = window.scrollY;
-      windowHeight >= 50 ? setFixed("fixed-top") : setFixed("");
-    });
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("scroll", () => {
+  //     let windowHeight = window.scrollY;
+  //     windowHeight >= 10 ? setFixed("fixed-top") : setFixed("");
+  //   });
+  // }, []);
   return (
     <BaseNavbar
       expand="lg"
-      className={`bg-light h-auto py-2 shadow ${fixed} shadow-sm`}
+      className={`bg-light py-2 shadow shadow-sm position-fixed`}
+      style={{
+        height: "75px",
+      }}
     >
       <Container fluid>
         <div

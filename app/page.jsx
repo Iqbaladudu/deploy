@@ -11,6 +11,7 @@ import styles from "./styles.module.css";
 import { useMediaQuery } from "react-responsive";
 import Slider from "react-slick";
 import Loading from "./loading";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -59,9 +60,7 @@ const LoginPage = () => {
           </div>
         </Col>
         <Col
-          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 ${
-            isMobile && "d-none"
-          }`}
+          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 d-none d-lg-block`}
         >
           <div className="d-flex flex-column justify-contents-center align-items-center my-auto">
             <Image src={loginImage} alt="" className="w-75 h-auto mb-4" />
@@ -198,6 +197,7 @@ function PasswordForm(props) {
 const LoginForm = () => {
   const [inputEmail, setInputEmail] = useState(true);
   const [inputPassword, setInputPassword] = useState(false);
+  const router = useRouter();
 
   return (
     <Form>
@@ -210,7 +210,7 @@ const LoginForm = () => {
           inputPassword={inputPassword}
           setInputPassword={setInputPassword}
         />
-        <Button>Login</Button>
+        <Button onClick={router.push("/dashboard")}>Login</Button>
       </Form.Group>
       <div className="d-flex justify-content-center">
         Belum punya akun?{" "}

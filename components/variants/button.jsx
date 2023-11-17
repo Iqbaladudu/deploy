@@ -1,7 +1,7 @@
 import { Button as BaseButton } from "react-bootstrap";
 import styles from "./styles.module.css";
 
-function Button({ children, variants }) {
+function Button({ children, variants, onClick }) {
   return (
     <>
       <style type="text/css">
@@ -19,7 +19,11 @@ function Button({ children, variants }) {
                 }
             `}
       </style>
-      <BaseButton variants={variants} className={styles.primaryactv}>
+      <BaseButton
+        variants={variants}
+        className={styles.primaryactv}
+        onClick={onClick}
+      >
         {children}
       </BaseButton>
     </>

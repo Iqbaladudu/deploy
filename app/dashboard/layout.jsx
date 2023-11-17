@@ -26,7 +26,13 @@ export default function DashboardLayout({ children }) {
   return (
     <Container fluid className="bg-gray d-flex flex-column vh-100 p-0">
       <HorizontalNavbar />
-      <Container fluid className="p-0 flex-grow-1">
+      <Container
+        fluid
+        className="p-0 flex-grow-1"
+        style={{
+          marginTop: "75px",
+        }}
+      >
         <Row className="m-0 vh-100">
           <VerticalNavbar />
           {isDemo ? (

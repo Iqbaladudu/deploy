@@ -12,35 +12,59 @@ const Predict = () => {
           <p>6 Total data gambar</p>
           <p className="text-primary">Lihat semua gambar</p>
         </div>
-        <div className="d-flex flex-column flex-lg-row gap-0 column-gap-2">
+        <div className="d-flex flex-row flex-wrap justify-content-center flex-lg-row gap-0 column-gap-2 row-gap-3">
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
           <Image
             src={predictImgExample}
-            className="h-50 w-50 flex-shrink-1"
+            className="flex-shrink-1"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
             alt=""
           />
         </div>

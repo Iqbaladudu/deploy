@@ -6,58 +6,73 @@ import { ProgressBar, Table, Tooltip } from "react-bootstrap";
 import Image from "next/image";
 import imageTable from "@/public/imageTable.png";
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip as ToolTip,
+  Filler,
+  Legend,
+  elements,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+// import {
+//   Area,
+//   AreaChart,
+//   CartesianGrid,
+//   ResponsiveContainer,
+//   XAxis,
+//   YAxis,
+// } from "recharts";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  ToolTip,
+  Filler,
+  Legend
+);
+
+export const options = {
+  maintainAspectRatio: true,
+  aspectRation: 2 | 3,
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "bottom",
+    },
+    title: {
+      display: true,
+      text: "Perkembangan Data",
+    },
   },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
+  elements: {
+    line: {
+      tension: 0.4,
+    },
   },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+};
+
+const labels = ["January", "February", "March", "April", "May", "June"];
+
+const data = {
+  labels: labels,
+  datasets: [
+    {
+      label: "My First dataset",
+      backgroundColor: "#E84D4D",
+      borderColor: "#E84D4D",
+      data: [0, 10, 40, 34, 20, 30, 45],
+      fill: "start",
+      smooth: true,
+    },
+  ],
+};
 
 const Result = () => {
   const [windows, setWindows] = useState(false);
@@ -68,30 +83,7 @@ const Result = () => {
   return (
     <DemoContainer>
       <div className="d-flex">
-        {windows && (
-          <AreaChart
-            width={550}
-            height={300}
-            data={data}
-            margin={{
-              top: 0,
-              right: 0,
-              left: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Area
-              type="monotone"
-              dataKey="uv"
-              stroke="#E84D4D"
-              fill="#F5D9D9"
-            />
-          </AreaChart>
-        )}
+        {windows && <Line options={options} data={data} />}
       </div>
       <div className="row row-cols-1 row-cols-md-2">
         <div className="col-2 fw-bold">Laporan</div>
