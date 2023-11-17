@@ -331,6 +331,7 @@ const HorizontalNavbar = () => {
       className={`bg-light py-2 shadow shadow-sm position-fixed`}
       style={{
         height: "75px",
+        zIndex: "100",
       }}
     >
       <Container fluid>
