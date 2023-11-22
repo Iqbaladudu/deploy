@@ -59,9 +59,7 @@ const LoginPage = () => {
           </div>
         </Col>
         <Col
-          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 ${
-            isMobile && "d-none"
-          }`}
+          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 d-none d-sm-block d-sm-none d-md-block`}
         >
           <div className="d-flex flex-column justify-contents-center align-items-center my-auto">
             <Image src={loginImage} alt="" className="w-75 h-auto mb-4" />
