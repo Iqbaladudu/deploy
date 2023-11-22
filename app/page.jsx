@@ -11,7 +11,6 @@ import styles from "./styles.module.css";
 import { useMediaQuery } from "react-responsive";
 import Slider from "react-slick";
 import Loading from "./loading";
-import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -60,7 +59,9 @@ const LoginPage = () => {
           </div>
         </Col>
         <Col
-          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 d-none d-lg-block`}
+          className={`col-12 col-md-7 bg-primary d-flex flex-column justify-contents-center align-items-center min-vh-100 ${
+            isMobile && "d-none"
+          }`}
         >
           <div className="d-flex flex-column justify-contents-center align-items-center my-auto">
             <Image src={loginImage} alt="" className="w-75 h-auto mb-4" />
@@ -127,7 +128,6 @@ function EmailForm(props) {
         <Form.Control
           autoFocus
           type="email"
-          id="eml"
           placeholder="Masukkan email"
           className={`bg-transparent border rounded-2 border-0 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
           onFocus={() => props.setInputEmail(true)}
@@ -155,7 +155,6 @@ function PasswordForm(props) {
           }`}
         >
           <Form.Control
-            id="passwd"
             type="password"
             placeholder="Masukkan password"
             className={`bg-transparent border border-0 rounded-2 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
@@ -181,7 +180,6 @@ function PasswordForm(props) {
           type="checkbox"
           controlId="remember-password"
           label="Ingat saya"
-          id="lbl"
         />
         <Link
           href="#"
@@ -197,7 +195,6 @@ function PasswordForm(props) {
 const LoginForm = () => {
   const [inputEmail, setInputEmail] = useState(true);
   const [inputPassword, setInputPassword] = useState(false);
-  const router = useRouter();
 
   return (
     <Form>
