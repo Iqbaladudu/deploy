@@ -328,7 +328,7 @@ const HorizontalNavbar = () => {
   return (
     <BaseNavbar
       expand="lg"
-      className={`bg-light py-2 shadow shadow-sm position-fixed`}
+      className={`bg-light py-2 shadow shadow-sm position-fixed w-100`}
       style={{
         height: "75px",
         zIndex: "100",
