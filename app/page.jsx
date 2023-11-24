@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Col, Container, Form, Row } from "react-bootstrap";
+import { Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import Link from "next/link";
 import Button from "@/components/variants/button";
 import Image from "next/image";
@@ -11,6 +11,8 @@ import styles from "./styles.module.css";
 import { useMediaQuery } from "react-responsive";
 import Slider from "react-slick";
 import Loading from "./loading";
+import { useLoginDataStore } from "./store";
+import login from "./services/login";
 
 const LoginPage = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -131,8 +133,8 @@ function EmailForm(props) {
           onFocus={() => props.setInputEmail(true)}
           onBlur={() => props.setInputEmail(false)}
           aria-label="email"
-          controlId="email"
           ref={inputRef}
+          onChange={(e) => props.setEmailForm(e.currentTarget.value)}
         />
         <div className="d-flex align-items-center mx-3 fs-title fw-bold text-gray">
           <Image src="/email.svg" alt="Email" width={20} height={20} />
@@ -143,6 +145,13 @@ function EmailForm(props) {
 }
 
 function PasswordForm(props) {
+  const [passwordForm, setPasswordForm] = useState();
+  const setPassword = useLoginDataStore((state) => state.setPassword);
+
+  useEffect(() => {
+    setPassword(passwordForm);
+  }, [passwordForm, setPassword]);
+
   return (
     <div className="d-flex flex-column gap-0 row-gap-3 mb-3">
       <div>
@@ -159,7 +168,7 @@ function PasswordForm(props) {
             onFocus={() => props.setInputPassword(true)}
             onBlur={() => props.setInputPassword(false)}
             aria-label="password"
-            controlId="password"
+            onChange={(e) => setPasswordForm(e.currentTarget.value)}
           />
           <div className="mx-3 my-auto fs-title fw-bold text-gray d-flex">
             <Image
@@ -173,12 +182,7 @@ function PasswordForm(props) {
         </div>
       </div>
       <div className="d-flex justify-content-between">
-        <Form.Check
-          className="fs-label"
-          type="checkbox"
-          controlId="remember-password"
-          label="Ingat saya"
-        />
+        <Form.Check className="fs-label" type="checkbox" label="Ingat saya" />
         <Link
           href="#"
           className="text-primary link-underline link-underline-opacity-0 fs-label"
@@ -193,20 +197,111 @@ function PasswordForm(props) {
 const LoginForm = () => {
   const [inputEmail, setInputEmail] = useState(true);
   const [inputPassword, setInputPassword] = useState(false);
+  const [emailForm, setEmailForm] = useState();
+  const [passwordForm, setPasswordForm] = useState();
+  const inputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleClickLogin = () => {
+    setLoading(true);
+    login(emailForm, passwordForm);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   return (
-    <Form>
-      <Form.Group
-        className="mb-3 d-flex flex-column gap-0 row-gap-2"
-        controlId="formBasicEmail"
-      >
-        <EmailForm inputEmail={inputEmail} setInputEmail={setInputEmail} />
-        <PasswordForm
-          inputPassword={inputPassword}
-          setInputPassword={setInputPassword}
-        />
-        <Button>Login</Button>
-      </Form.Group>
+    <div>
+      <Form>
+        <Form.Group className="mb-2 d-flex flex-column gap-0 row-gap-2">
+          <div className="mb-2">
+            <Form.Label className="fs-label opacity-50">Email</Form.Label>
+            <div
+              className={` d-flex rounded-2 border overflow-hidden border-1 ${
+                inputEmail && styles.boxShadowPrimary
+              }`}
+            >
+              <Form.Control
+                autoFocus
+                type="email"
+                placeholder="Masukkan email"
+                className={`bg-transparent border rounded-2 border-0 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
+                onFocus={() => setInputEmail(true)}
+                onBlur={() => setInputEmail(false)}
+                aria-label="email"
+                ref={inputRef}
+                onChange={(e) => setEmailForm(e.currentTarget.value)}
+              />
+              <div className="d-flex align-items-center mx-3 fs-title fw-bold text-gray">
+                <Image src="/email.svg" alt="Email" width={20} height={20} />
+              </div>
+            </div>
+          </div>
+          <div className="d-flex flex-column gap-0 row-gap-3 mb-3">
+            <div>
+              <Form.Label className="fs-label opacity-50">Password</Form.Label>
+              <div
+                className={`d-flex rounded-3 border overflow-hidden border-1 ${
+                  inputPassword && styles.boxShadowPrimary
+                }`}
+              >
+                <Form.Control
+                  type="password"
+                  placeholder="Masukkan password"
+                  className={`bg-transparent border border-0 rounded-2 text-normal ${styles.inputStyles} form-control p-md-5 p-4 w-100`}
+                  onFocus={() => setInputPassword(true)}
+                  onBlur={() => setInputPassword(false)}
+                  aria-label="password"
+                  onChange={(e) => setPasswordForm(e.currentTarget.value)}
+                />
+                <div className="mx-3 my-auto fs-title fw-bold text-gray d-flex">
+                  <Image
+                    src="/lock.svg"
+                    alt="Lock"
+                    width={20}
+                    height={20}
+                    className=""
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="d-flex justify-content-between">
+              <Form.Check
+                className="fs-label"
+                type="checkbox"
+                label="Ingat saya"
+              />
+              <Link
+                href="#"
+                className="text-primary link-underline link-underline-opacity-0 fs-label"
+              >
+                Lupa password?
+              </Link>
+            </div>
+          </div>
+        </Form.Group>
+      </Form>
+      <div className="mb-3">
+        <button
+          className="btn btn-primary text-primary-light w-100"
+          onClick={() => handleClickLogin()}
+          disabled={loading}
+        >
+          {loading ? (
+            <Spinner
+              animation="border"
+              variant="primary-light"
+              as="p"
+              size="sm"
+              className="m-0"
+            />
+          ) : (
+            "Login"
+          )}
+        </button>
+      </div>
       <div className="d-flex justify-content-center">
         Belum punya akun?{" "}
         <Link
@@ -216,7 +311,7 @@ const LoginForm = () => {
           Daftar
         </Link>
       </div>
-    </Form>
+    </div>
   );
 };
 
