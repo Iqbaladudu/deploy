@@ -24,7 +24,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-bs-theme="light">
+      <head>
+        <title>Axioma</title>
+      </head>
       <body className={inter.className}>
         <Loading>{children}</Loading>
       </body>

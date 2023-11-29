@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Navbar as BaseNavbar,
-  Button,
   Container,
   Dropdown,
   DropdownHeader,
-  Modal,
 } from "react-bootstrap";
 import { BsList, BsBell, BsMoon, BsChevronDown } from "react-icons/bs";
 import axioma from "@/public/axioma.svg";
@@ -15,11 +13,10 @@ import Image from "next/image";
 import styles from "./horizontalNavbar.module.css";
 import { useCollapseStore } from "@/app/store";
 import profileImg from "@/public/avatar.png";
-// import warningImg from "@/public/warning.png";
 import { useMediaQuery } from "react-responsive";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-// import warningimg from "@/public/warning.png";
+import { destroyCookie } from "nookies";
 const MySwal = withReactContent(Swal);
 
 const LogoutAlert = () => {
@@ -33,6 +30,10 @@ const LogoutAlert = () => {
       confirmButton: "btn btn-primary btn-lg",
       cancelButton: "btn btn-secondary btn-lg",
     },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      destroyCookie(null, "iaiaccess");
+    }
   });
 };
 

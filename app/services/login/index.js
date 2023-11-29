@@ -11,7 +11,6 @@ async function login(emailForm, passwordForm) {
       password: passwordForm,
     };
 
-    try {
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -19,20 +18,9 @@ async function login(emailForm, passwordForm) {
         },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) {
-        throw new Error("Network error");
-      } else {
         const responseData = await response.json();
         cookieStore.set("iaiaccess", responseData.access, { secure: true })
         console.log(responseData.access)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-    finally {
-        console.log(cookieStore.get("iaiaccess"))
-    }
   }
 
   export default login;

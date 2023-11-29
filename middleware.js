@@ -18,4 +18,6 @@ export function middleware(request) {
     url.pathname = "/dashboard/demo"
     return NextResponse.redirect(url)
   }
+
+
 }
