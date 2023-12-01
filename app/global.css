@@ -157,6 +157,10 @@ body, html{
     background: #E84D4D !important;
 }
 
+.badge.bg-secondary {
+    background-color: gray !important;
+}
+
 /* SIDEBAR */
 nav{
     z-index: 99;

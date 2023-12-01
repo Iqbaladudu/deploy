@@ -2,8 +2,6 @@
 
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Loading from "./loading";
-import { useLoginDataStore } from "./store";
 import useAuth from "./hooks/useAuth";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
@@ -11,7 +9,6 @@ import bgImage from "@/public/bg-image-corporate.png";
 import whiteLogo from "@/public/logo-iai-white.png";
 import primaryLogo from "@/public/logo-iai-primary.png";
 import { AtSign, Lock } from "react-feather";
-import { Spinner } from "react-bootstrap";
 
 const mySwal = withReactContent(Swal);
 
@@ -48,7 +45,7 @@ const LoginPage = () => {
 
   return (
     <div
-      class="row vh-100 mx-0 justify-content-center align-items-center"
+      className="row vh-100 mx-0 justify-content-center align-items-center"
       style={{
         backgroundImage: `url(${bgImage.src})`,
         backgroundPPosition: "center",
@@ -57,7 +54,7 @@ const LoginPage = () => {
       }}
     >
       {errorMessage && <LoginErrorAlert msg={errorMessage} />}
-      <div class="col-12 col-md-4 col-xxl-3">
+      <div className="col-12 col-md-4 col-xxl-3">
         <center>
           <Image
             src={primaryLogo}
@@ -72,8 +69,8 @@ const LoginPage = () => {
             alt=""
           />
         </center>
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-4">
+        <div className="card border-0 shadow-sm">
+          <div className="card-body p-4">
             <p
               class="text-center mb-4 fw-bold fs-2 text-dark"
               style={{ fontSize: "32px" }}
@@ -81,8 +78,8 @@ const LoginPage = () => {
               Login
             </p>
             <form action="">
-              <div class="form-group mb-3">
-                <label class="mb-2" for="">
+              <div className="form-group mb-3">
+                <label className="mb-2" for="">
                   Email
                 </label>
                 <div class="input-icon position-relative">
@@ -96,17 +93,17 @@ const LoginPage = () => {
                     type="text"
                     name="email"
                     placeholder="email@gmail.com"
-                    class="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
+                    className="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
                     onChange={(e) => setEmail(e.currentTarget.value)}
                     ref={emailRef}
                   />
                 </div>
               </div>
-              <div class="form-group mb-3">
+              <div className="form-group mb-3">
                 <label class="mb-2" for="">
                   Password
                 </label>
-                <div class="input-icon position-relative">
+                <div className="input-icon position-relative">
                   <Lock
                     width={16}
                     height={16}
@@ -117,16 +114,16 @@ const LoginPage = () => {
                     type="password"
                     name="password"
                     placeholder="password"
-                    class="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
+                    className="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
                     onChange={(e) => setPassword(e.currentTarget.value)}
                   />
                 </div>
               </div>
-              <div class="form-group mb-4 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+              <div className="form-group mb-4 d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
                   <input
                     type="checkbox"
-                    class="form-check-input shadow-none outline-0 me-2"
+                    className="form-check-input shadow-none outline-0 me-2"
                     id="remember_me"
                   />
                   <label for="remember_me">Ingat saya</label>
@@ -134,19 +131,19 @@ const LoginPage = () => {
 
                 <a
                   href="#"
-                  class="text-primary text-decoration-none text-smaller"
+                  className="text-primary text-decoration-none text-smaller"
                 >
                   Lupa password
                 </a>
               </div>
               <button
                 onClick={handleSubmit}
-                class="btn btn-primary w-100 outline-0 border-0 shadow-none text-white"
+                className="btn btn-primary w-100 outline-0 border-0 shadow-none text-white"
                 disabled={loading}
               >
                 {loading ? (
                   <div
-                    class="spinner-border text-white spinner-border-sm"
+                    className="spinner-border text-white spinner-border-sm"
                     role="status"
                   ></div>
                 ) : (

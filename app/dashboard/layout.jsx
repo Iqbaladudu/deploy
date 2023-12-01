@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }) {
         fluid
         className="p-0 flex-grow-1"
         style={{
-          marginTop: "75px",
+          marginTop: "60px",
         }}
       >
         <Row className="m-0 vh-100">

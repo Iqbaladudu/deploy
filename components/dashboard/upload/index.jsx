@@ -14,6 +14,7 @@ import { createRoot } from "react-dom/client";
 import { ProgressBar, Spinner } from "react-bootstrap";
 import Loading from "@/app/loading";
 import DashboardContentWrapper from "../dashboardContentWrapper";
+import { convertToBase64 } from "@/app/utils";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -93,31 +94,6 @@ const Upload = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const dashboardButtonNode = document.createElement("div");
-  //   dashboardButtonNode.className = "w-25";
-  //   const dashboard = createRoot(dashboardButtonNode);
-  //   dashboard.render(<DashboardButton />);
-  //   // dashboard.render(<ProgressUploadDisplay />);
-  //   document
-  //     .querySelector(
-  //       "body > div > div > div > div.row.d-flex.flex-column.gap-0.row-gap-5.justify-content-start.m-0.bg-grayp-5.col > div > div:nth-child(5) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles"
-  //     )
-  //     .appendChild(dashboardButtonNode);
-  // }, []);
-
-  // useEffect(() => {
-  //   const imageUploadWithPreviewNode = document.createElement("div");
-  //   imageUploadWithPreviewNode.className = "";
-  //   const imgUpload = createRoot(imageUploadWithPreviewNode);
-  //   imgUpload.render(<ProgressUploadDisplay />);
-  //   document
-  //     .querySelector(
-  //       "body > div > div > div > div.row.d-flex.flex-column.gap-0.row-gap-5.justify-content-start.m-0.bg-grayp-5.col > div > div:nth-child(5) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-files > div"
-  //     )
-  //     ?.appendChild(imageUploadWithPreviewNode);
-  // }, []);
-
   const handleFileUploadDirChange = (files) => {
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
@@ -145,6 +121,13 @@ const Upload = () => {
         source: "Local",
         isRemote: false,
       });
+      convertToBase64(file)
+        .then((base64Image) => {
+          console.log("Base64 image:", base64Image);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
 

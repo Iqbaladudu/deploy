@@ -17,6 +17,17 @@ import { useMediaQuery } from "react-responsive";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { destroyCookie } from "nookies";
+import {
+  Bell,
+  ChevronDown,
+  Codepen,
+  Info,
+  Menu,
+  Moon,
+  Sun,
+} from "react-feather";
+import user from "@/public/user.png";
+import { useSignal, useSignalEffect } from "@preact/signals-react";
 const MySwal = withReactContent(Swal);
 
 const LogoutAlert = () => {
@@ -319,31 +330,97 @@ const NavbarRightIcons = () => {
 };
 
 const HorizontalNavbar = () => {
-  const [fixed, setFixed] = useState("");
-  // useEffect(() => {
-  //   window.addEventListener("scroll", () => {
-  //     let windowHeight = window.scrollY;
-  //     windowHeight >= 10 ? setFixed("fixed-top") : setFixed("");
-  //   });
-  // }, []);
   return (
-    <BaseNavbar
-      expand="lg"
-      className={`bg-light py-2 shadow shadow-sm position-fixed w-100`}
-      style={{
-        height: "75px",
-        zIndex: "100",
-      }}
-    >
-      <Container fluid>
-        <div
-          className={`d-flex px-2 flex-row vw-100 text-gray-dark justify-content-between`}
+    <nav class="navbar fixed-top shadow-sm px-0 py-2">
+      <div class="container-fluid">
+        <button
+          id="btn-collapse"
+          type="button"
+          className="btn border-0 outline-0 text-dark"
+          data-toggle="collapse"
+          data-target="#sidebar"
+          aria-controls="sidebar"
+          aria-expanded="false"
+          aria-label="Toggle sidebar"
         >
-          <NavbarBrand />
-          <NavbarRightIcons />
+          <Menu className="text-dark" />
+        </button>
+        <div
+          className="bg-primary p-0 rounded-2 d-flex align-items-center justify-content-center ms-3 me-2"
+          style={{ width: "30px", height: "30px" }}
+        >
+          <Codepen width="16" height="16" className="text-white" />
         </div>
-      </Container>
-    </BaseNavbar>
+        <p className="m-0 fs-6 fw-semibold me-auto text-dark">Axioma</p>
+        <div className="ms-auto d-flex align-items-center">
+          <div className="dropdown ms-4">
+            <Bell
+              className="text-dark mx-2 pointer"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              width="16"
+              height="16"
+            />
+            <ul
+              className="dropdown-menu border-0 p-2 shadow-sm"
+              style={{ width: "300px !important" }}
+            >
+              <li>
+                <div className="alert alert-info mb-0 text-smaller py-2 d-flex align-items-center">
+                  <Info className="me-2" width="14" height="14" />
+                  Belum ada notifikasi
+                </div>
+              </li>
+            </ul>
+          </div>
+          <Moon
+            className="text-dark mx-2 pointer"
+            onclick="toggleTheme('dark','toggle-dark-theme')"
+            id="toggle-dark-theme"
+            width="16"
+            height="16"
+          />
+          <Sun
+            className="text-dark mx-2 pointer"
+            onclick="toggleTheme('light','toggle-light-theme')"
+            id="toggle-light-theme"
+            width="16"
+            height="16"
+          />
+          <div className="dropdown ms-4">
+            <div
+              className="d-flex align-items-center"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <Image
+                src={user}
+                className="rounded-circle"
+                style={{ width: "30px", height: "30px" }}
+                alt=""
+              />
+              <p className="text-dark text-smaller ms-2 mb-0 d-none d-md-block">
+                admin
+              </p>
+              <ChevronDown width="16" className="mx-2" height="16" />
+            </div>
+            <ul className="dropdown-menu border-0 shadow-sm">
+              <li>
+                <a className="dropdown-item" href="/profile.html">
+                  Profile
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="/index.html">
+                  Keluar
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 };
 
