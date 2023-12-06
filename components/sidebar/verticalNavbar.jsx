@@ -19,7 +19,7 @@ import bananaImg from "@/public/banana.png";
 import roadImg from "@/public/road.png";
 import Image from "next/image";
 import { Dropdown, DropdownHeader } from "react-bootstrap";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaVectorSquare } from "react-icons/fa";
 import { FiUploadCloud } from "react-icons/fi";
 import { Airplay, User } from "react-feather";
@@ -93,43 +93,39 @@ function getWindowDimensions() {
 }
 
 const VerticalNavbar = () => {
-  const [menuList, setMenuList] = useState("Beranda");
-  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
-  const [toggle, collapse, collapseMobile] = useCollapseStore((state) => [
-    state.toggle,
-    state.collapse,
-    state.collapseMobile,
-  ]);
-
-  const [show, setShow] = useState(false);
   const router = useRouter();
-
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions()
-  );
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const pathname = usePathname();
+  const collapse = useCollapseStore((state) => state.collapse);
 
   return (
     <>
-      <div class="sidebar shadow-sm py-3">
+      <div className={`sidebar shadow-sm py-3 ${!collapse && "open"}`}>
         <ul class="list-group list-unstyled" style={{ paddingTop: "12px" }}>
-          <li class="text-smaller mb-2">
-            <a href="/demo.html" class="list-group-item border-0 active">
+          <li
+            class="text-smaller mb-2"
+            onClick={() => router.push("/dashboard/demo")}
+            style={{ cursor: "pointer" }}
+          >
+            <span
+              class={`list-group-item border-0 ${
+                pathname == "/dashboard/demo" && "active"
+              }`}
+            >
               <Airplay width="16" height="16" />
               <span class="ms-2">Demo</span>
-            </a>
+            </span>
           </li>
           <li class="text-smaller mb-2">
-            <a href="/profile.html" class="list-group-item border-0">
+            <span
+              class={`list-group-item border-0 ${
+                pathname == "/dashboard/profile" && "active"
+              }`}
+              onClick={() => router.push("/dashboard/profile")}
+              style={{ cursor: "pointer" }}
+            >
               <User data-feather="user" width="16" height="16" />
               <span class="ms-2">Akun</span>
-            </a>
+            </span>
           </li>
         </ul>
       </div>

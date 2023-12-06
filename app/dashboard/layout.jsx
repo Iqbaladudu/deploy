@@ -8,7 +8,6 @@ import { permanentRedirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function DashboardLayout({ children }) {
-  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [isDemo, setIsDemo] = useState();
   const pathname = usePathname();
   if (pathname === "/dashboard") {
@@ -24,7 +23,7 @@ export default function DashboardLayout({ children }) {
   }, [pathname]);
 
   return (
-    <Container fluid className="bg-gray d-flex flex-column vh-100 p-0">
+    <Container fluid className="d-flex flex-column vh-100 p-0">
       <HorizontalNavbar />
       <Container
         fluid
@@ -35,19 +34,11 @@ export default function DashboardLayout({ children }) {
       >
         <Row className="m-0 vh-100">
           <VerticalNavbar />
-          {isDemo ? (
-            <Col
-              className={`row d-flex flex-column gap-0 row-gap-5 justify-content-start m-0 bg-gray p-0`}
-            >
-              {children}
-            </Col>
-          ) : (
-            <Col
-              className={`row d-flex flex-column gap-0 row-gap-5 justify-content-start m-0 bg-gray`}
-            >
-              {children}
-            </Col>
-          )}
+          <Col
+            className={`row d-flex flex-column gap-0 row-gap-5 justify-content-start`}
+          >
+            {children}
+          </Col>
         </Row>
       </Container>
     </Container>

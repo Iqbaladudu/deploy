@@ -9,12 +9,14 @@ import bgImage from "@/public/bg-image-corporate.png";
 import whiteLogo from "@/public/logo-iai-white.png";
 import primaryLogo from "@/public/logo-iai-primary.png";
 import { AtSign, Lock } from "react-feather";
+import { useRouter } from "next/navigation";
 
 const mySwal = withReactContent(Swal);
 
 const LoginPage = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const router = useRouter();
   const { handleLogin, loading, success, errorMessage, setErrorMessage } =
     useAuth();
   const emailRef = useRef(null);
@@ -23,6 +25,12 @@ const LoginPage = () => {
     event.preventDefault();
     handleLogin(email, password);
   };
+
+  useEffect(() => {
+    if (success) {
+      router.push("/dashboard/demo");
+    }
+  }, [success, router]);
 
   console.log(loading, success, errorMessage);
 

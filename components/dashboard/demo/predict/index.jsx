@@ -7,94 +7,28 @@ import Image from "next/image";
 const Predict = () => {
   return (
     <DemoContainer>
-      <div className="d-flex flex-column gap-0 row-gap-3">
-        <div className="d-flex flex-row justify-content-between">
-          <p>6 Total data gambar</p>
-          <p className="text-primary">Lihat semua gambar</p>
+      <div class="row mb-4 justify-content-between">
+        <div class="col-12">
+          <p class="mb-0" id="total-image"></p>
         </div>
-        <div className="d-flex flex-row flex-wrap justify-content-center flex-lg-row gap-0 column-gap-2 row-gap-3">
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
-          <Image
-            src={predictImgExample}
-            className="flex-shrink-1"
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-            alt=""
-          />
+      </div>
+      <div class="row mb-4" id="previewImage"></div>
+      <hr class="opacity-25" />
+      <div class="row mb-4 justify-content-between">
+        <div class="col-4">
+          <p class="mb-0">Use Case</p>
         </div>
-        <div className="row row-cols-auto">
-          <div className="col-4 fw-bold">Preprocessing</div>
-          <div className="col">
-            <div className="w-75">Auto-Orient: Applied</div>
-            <div className="w-75">Resize: Stretch to 640x640</div>
-          </div>
+        <div class="col-8">
+          <p class="mb-0" id="usecase-name"></p>
         </div>
-        <div className="border border-gray mb-3"></div>
-        <div className="row row-cols-auto">
-          <div className="col-4 fw-bold">Augmentations</div>
-          <div className="col">
-            <div className="w-75">No augmentations were applied.</div>
-          </div>
+      </div>
+      <hr class="opacity-25" />
+      <div class="row justify-content-between">
+        <div class="col-4">
+          <p class="mb-0">Model</p>
         </div>
-        <div className="border border-gray mb-3"></div>
-        <div className="row row-cols-auto">
-          <div className="col-4 fw-bold">Use Case</div>
-          <div className="col">
-            <div className="w-75">Counting Vehicle Quantity</div>
-          </div>
-        </div>
-        <div className="border border-gray mb-3"></div>
-        <div className="row row-cols-auto">
-          <div className="col-4 fw-bold">Model</div>
-          <div className="col">
-            <div className="w-75">YOLOv8</div>
-          </div>
+        <div class="col-8">
+          <p class="mb-0">YOLOv8</p>
         </div>
       </div>
     </DemoContainer>

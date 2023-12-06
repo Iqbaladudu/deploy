@@ -6,7 +6,6 @@ const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
-  const router = useRouter();
 
   const handleLogin = async (emailForm, passwordForm) => {
     setLoading(true);
@@ -32,7 +31,6 @@ const useAuth = () => {
         console.log('Login successful:', responseData);
         setCookie(null, "iaiaccess", `${responseData.token}`)
         setSuccess(true);
-        router.push("/dashboard/demo")
 
       } else {
         const errorData = await response.json();

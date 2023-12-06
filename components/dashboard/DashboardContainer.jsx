@@ -6,7 +6,7 @@ import VerticalNavbar from "../sidebar/verticalNavbar";
 
 const DashboardContainer = ({ children }) => {
   return (
-    <Container fluid className="bg-gray vh-100 vw-100 p-0">
+    <Container fluid className="vh-100 vw-100 p-0">
       <HorizontalNavbar />
       <VerticalNavbar />
     </Container>

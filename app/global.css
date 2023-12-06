@@ -171,10 +171,9 @@ nav{
     right: 10px !important;
     left: auto;
 }
-.dropdown-item.active, .dropdown-item.active:hover, .dropdown-item.active:focus{
+.dropdown-item.active, .dropdown-item.active:hover, .dropdown-item.active:focus, .dropdown-li:hover {
     color: white;
     background-color: #E84D4D !important;
-    background: #E84D4D !important;
 }
 .dropdown-item:focus, .dropdown-item:hover{
     color: #E84D4D;
@@ -270,6 +269,21 @@ html[data-bs-theme="dark"] .sidebar .list-group-item.active {
     background-color: #e84d4d2a;
     border-color: transparent;
 }
-html[data-bs-theme="dark"] .sidebar, html[data-bs-theme="dark"] .dropdown .dropdown-menu {
+html[data-bs-theme="dark"] .sidebar {
     background-color: #1E1818;
+}
+
+html[data-bs-theme="dark"] .dropdown-li:hover {
+    color: #E84D4D !important;
+    background-color: #e84d4d2a !important;
+    border-color: transparent !important;
+}
+
+html[data-bs-theme="dark"] .dropdown-li {
+    background-color: #1E1818;
+}
+
+
+body > div.d-flex.flex-column.vh-100.p-0.container-fluid > nav > div > div.ms-auto.d-flex.align-items-center > div:nth-child(1) > ul {
+    width: 300px !important;
 }

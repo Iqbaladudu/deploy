@@ -12,7 +12,6 @@ import DropTarget from "@uppy/drop-target";
 import { useRouter } from "next/navigation";
 import { createRoot } from "react-dom/client";
 import { ProgressBar, Spinner } from "react-bootstrap";
-import Loading from "@/app/loading";
 import DashboardContentWrapper from "../dashboardContentWrapper";
 import { convertToBase64 } from "@/app/utils";
 

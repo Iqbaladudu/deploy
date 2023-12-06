@@ -82,108 +82,16 @@ const Result = () => {
 
   return (
     <DemoContainer>
-      <div className="d-flex">
-        {windows && <Line options={options} data={data} />}
-      </div>
-      <div className="row row-cols-1 row-cols-md-2">
-        <div className="col-2 fw-bold">Laporan</div>
-        <div className="col">
-          <Table borderless size="sm">
-            <tbody>
-              <tr>
-                <td className="w-25">Precision</td>
-                <td className="w-25">80%</td>
-                <td>
-                  <ProgressBar now={80} variant="primary" />
-                </td>
-              </tr>
-              <tr>
-                <td className="w-25">Recall</td>
-                <td className="w-25">80%</td>
-                <td>
-                  <ProgressBar now={80} variant="primary" />
-                </td>
-              </tr>
-              <tr>
-                <td className="w-25">Fi-score</td>
-                <td className="w-25">80%</td>
-                <td>
-                  <ProgressBar now={80} variant="primary" />
-                </td>
-              </tr>
-              <tr>
-                <td className="w-25">Accuracy</td>
-                <td className="w-25">80%</td>
-                <td>
-                  <ProgressBar now={80} variant="primary" />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </div>
-      </div>
-      <div className="row row-cols-auto">
-        <div className="col-2 fw-bold">Validasi Hasil</div>
-        <div className="col">
-          <Table responsive size="sm" striped>
-            <tbody>
-              <tr>
-                <th>image_n</th>
-                <th>predict</th>
-                <th>accuracy</th>
-                <th>image_n</th>
-                <th>predict</th>
-                <th>accuracy</th>
-              </tr>
-              <tr>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-              </tr>
-              <tr>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-              </tr>
-              <tr>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-                <td>
-                  <Image src={imageTable} alt="" />
-                </td>
-                <td>3 car</td>
-                <td>75%</td>
-              </tr>
-            </tbody>
-          </Table>
-        </div>
-      </div>
-      <div className="row row-cols-auto">
-        <div className="col-2 fw-bold">Kesimpulan</div>
-        <div className="col">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.
-        </div>
-      </div>
+      <div class="row mb-4 justify-content-between"></div>
+      <div class="row" id="previewImage"></div>
+      <hr class="opacity-25 d-none" id="hr-object-detection" />
+      <p class="mb-4 d-none" id="detail-title">
+        Detail Informasi
+      </p>
+      <div
+        class="row justify-content-between d-none"
+        id="detail-object-detection"
+      ></div>
     </DemoContainer>
   );
 };
