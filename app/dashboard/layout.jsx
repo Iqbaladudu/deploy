@@ -2,10 +2,11 @@
 
 import HorizontalNavbar from "@/components/navbar/horizontalNavbar";
 import VerticalNavbar from "@/components/sidebar/verticalNavbar";
-import { Col, Container, Row } from "react-bootstrap";
-import { useMediaQuery } from "react-responsive";
+import { useMutation } from "@tanstack/react-query";
 import { permanentRedirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getUser } from "../service";
+import { useUserStore } from "../store";
 
 export default function DashboardLayout({ children }) {
   const [isDemo, setIsDemo] = useState();
@@ -23,24 +24,19 @@ export default function DashboardLayout({ children }) {
   }, [pathname]);
 
   return (
-    <Container fluid className="d-flex flex-column vh-100 p-0">
+    <div className="container-fluid d-flex flex-column vh-100 p-0">
       <HorizontalNavbar />
-      <Container
-        fluid
-        className="p-0 flex-grow-1"
+      <div
+        className="container-fluid p-0 flex-grow-1"
         style={{
           marginTop: "60px",
         }}
       >
-        <Row className="m-0 vh-100">
+        <div className="row m-0 p-0 vh-100">
           <VerticalNavbar />
-          <Col
-            className={`row d-flex flex-column gap-0 row-gap-5 justify-content-start`}
-          >
-            {children}
-          </Col>
-        </Row>
-      </Container>
-    </Container>
+          <div className={``}>{children}</div>
+        </div>
+      </div>
+    </div>
   );
 }

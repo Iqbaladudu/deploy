@@ -1,5 +1,4 @@
-import { useRouter } from 'next/navigation';
-import { setCookie } from 'nookies';
+import { parseCookies, setCookie } from 'nookies';
 import { useState } from 'react';
 
 const useAuth = () => {
@@ -12,7 +11,7 @@ const useAuth = () => {
     setErrorMessage('');
 
     try {
-      const url = 'https://axioma.aiforindonesia.org/api/v1/auth/token/get/';
+      const url = `${process.env.url}/auth/token/get/`;
       const data = {
         username: emailForm,
         password: passwordForm,
@@ -28,8 +27,9 @@ const useAuth = () => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log('Login successful:', responseData);
-        setCookie(null, "iaiaccess", `${responseData.token}`)
+        setCookie(null, "iaiaccess", `${responseData.access}`, {
+          maxAge: 60 * 60
+        })
         setSuccess(true);
 
       } else {
@@ -37,7 +37,6 @@ const useAuth = () => {
         setErrorMessage(errorData.detail);
       }
     } catch (error) {
-      console.log('Login failed:', error);
       setErrorMessage('An unexpected error occurred.');
     } finally {
       setLoading(false);

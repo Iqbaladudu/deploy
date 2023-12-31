@@ -1,19 +1,12 @@
 "use client";
 
-import Button from "@/components/variants/button";
-import { usePathname } from "next/navigation";
-import { FiUploadCloud } from "react-icons/fi";
-
 import React, { useEffect, useRef, useState } from "react";
 import Uppy from "@uppy/core";
 import ImageEditor from "@uppy/image-editor";
 import { Dashboard } from "@uppy/react";
 import DropTarget from "@uppy/drop-target";
-import { useRouter } from "next/navigation";
-import { createRoot } from "react-dom/client";
-import { ProgressBar, Spinner } from "react-bootstrap";
-import DashboardContentWrapper from "../dashboardContentWrapper";
 import { convertToBase64 } from "@/app/utils";
+import Link from "next/link";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -31,48 +24,6 @@ if (typeof window === "object") {
 }
 
 const uppy = baseUppy.use(ImageEditor);
-console.log(uppy.getFiles());
-
-const DashboardButton = () => {
-  return (
-    <>
-      <FiUploadCloud
-        className="bg-primary-light text-primary rounded-circle p-3 mb-4"
-        style={{ fontSize: "100px" }}
-      />
-      <p className="fs-title text-primary fw-bold">
-        Seret dan lepas untuk upload gambar
-      </p>
-      <p className="fs-label">atau</p>
-      <div className="d-flex flex-row gap-0 column-gap-2 justify-content-center">
-        <label
-          htmlFor="fileInput"
-          className="fs-normal bg-primary-light text-primary py-2 rounded-2 px-4"
-          style={{ cursor: "pointer" }}
-        >
-          Pilih file
-        </label>
-        <label
-          htmlFor="fileInputDir"
-          className="fs-normal bg-primary-light text-primary py-2 rounded-2 px-4"
-          style={{ cursor: "pointer" }}
-        >
-          Pilih folder
-        </label>
-      </div>
-      <p className="fs-label pt-2">ekstensi file* : .jpg, .jpeg, .png</p>
-    </>
-  );
-};
-
-const ProgressUploadDisplay = () => {
-  return (
-    <div>
-      <p className="fs-title fw-bold text-primary mb-5">Upload gambar</p>
-      <ProgressBar now={60} variant="primary" />
-    </div>
-  );
-};
 
 const Upload = () => {
   const [fileNumber, setFileNumber] = useState(0);
@@ -92,23 +43,6 @@ const Upload = () => {
       directoryRef.current.setAttribute("webkitdirectory", "");
     }
   }, []);
-
-  const handleFileUploadDirChange = (files) => {
-    for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: file,
-        meta: {
-          // optional, store the directory path of a file so Uppy can tell identical files in different directories apart.
-          relativePath: window.FileSystemDirectoryEntry,
-        },
-        source: "Local",
-        isRemote: false,
-      });
-    }
-  };
 
   const handleFileUploadChange = (files) => {
     for (let i = 0; i < files.length; i++) {
@@ -130,93 +64,116 @@ const Upload = () => {
     }
   };
 
+  const handleFileUploadDirChange = (files) => {
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      uppy.addFile({
+        name: file.name,
+        type: file.type,
+        data: file,
+        meta: {
+          // optional, store the directory path of a file so Uppy can tell identical files in different directories apart.
+          relativePath: window.FileSystemDirectoryEntry,
+        },
+        source: "Local",
+        isRemote: false,
+      });
+    }
+  };
+
   return (
-    <DashboardContentWrapper>
-      <div className="d-flex flex-row justify-content-between align-items-center">
-        <div className="fs-title">
-          <FiUploadCloud /> <span>Upload</span>
+    <div class="content w-100">
+      <div class="container-fluid p-4">
+        <div class="d-flex align-items-center text-smaller">
+          <Link
+            class="text-decoration-none text-primary pointer"
+            href="/dashboard"
+          >
+            Beranda
+          </Link>
+          <span class="mx-2 opacity-75">/</span>
+          <p id="page-title" class="mb-0 opacity-75">
+            Upload
+          </p>
         </div>
-        <div>
-          <Button>Simpan & Lanjutkan</Button>
+        <div class="mt-4 row">
+          <div class="col-6">
+            <p class="fs-4 d-flex align-items-center">
+              <i
+                data-feather="upload-cloud"
+                width="20"
+                height="20"
+                class="me-2"
+              ></i>
+              Upload
+            </p>
+          </div>
+          <div class="col-6">
+            <button
+              onclick="submit()"
+              class="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+            >
+              <i data-feather="pocket" width="14" height="14" class="me-2"></i>
+              Simpan & Lanjutkan
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="fs-normal d-flex flex-row gap-0 column-gap-2 align-items-center">
-        <div>Nama Batch</div>
-        <div className="px-4 py-2 rounded-2 border border-primary bg-white">
-          <p className="m-0 p-0">Uploaded on 10/23/23 at 12:05 pm</p>
-        </div>
-      </div>
-      <div
-        id="dragImageHere"
-        className="p-3 bg-white rounded-3 d-flex flex-column flex-md-row gap-0 row-gap-3 row-gap-md-0 justify-content-between align-items-center border"
-      >
-        <div className="d-flex flex-row gap-0 column-gap-2">
-          <div>
-            <FiUploadCloud
-              className="bg-primary-light text-primary rounded-circle p-3"
-              style={{ fontSize: "49px" }}
+        <div class="row mb-3">
+          <div class="col-12 col-md-auto">
+            <label for="batch_name">Nama Batch</label>
+          </div>
+          <div class="col-12 col-md-4">
+            <input
+              type="text"
+              id="batch_name"
+              placeholder="nama batch"
+              value="Uploaded on 10/23/23 at 12:05 pm"
+              class="form-control outline-none shadow-none py-2 rounded-2"
+              autofocus
             />
           </div>
-          <div>
-            <div className="fw-medium text-primary">
-              Seret dan lepas untuk upload gambar
+        </div>
+        <div class="card border-0 outline-0 shadow-sm">
+          <div class="card-body">
+            <div>
+              <input
+                accept="image/jpeg"
+                multiple
+                type="file"
+                ref={directoryRef}
+                onChange={(e) => {
+                  handleFileUploadDirChange(e.currentTarget.files);
+                }}
+                id="fileInputDir"
+                hidden
+              />
+              <input
+                accept="image/jpeg"
+                multiple
+                type="file"
+                ref={imgFileRef}
+                onChange={(e) => {
+                  handleFileUploadChange(e.currentTarget.files);
+                }}
+                id="fileInput"
+                hidden
+              />
+              <Dashboard
+                uppy={uppy}
+                plugins={["ImageEditor"]}
+                hideUploadButton={true}
+                width={"100%"}
+                locale={{
+                  strings: {
+                    poweredBy: "Indonesia AI",
+                  },
+                }}
+              />
             </div>
-            <div>ekstensi file* : .jpg, .jpeg, .png</div>
           </div>
         </div>
-        <div className="d-flex flex-row gap-0 column-gap-2">
-          <label
-            htmlFor="fileInput"
-            className="fs-normal bg-primary-light text-primary py-2 rounded-2 px-2 py-md-4"
-            style={{ cursor: "pointer" }}
-          >
-            Pilih file
-          </label>
-          <label
-            htmlFor="fileInputDir"
-            className="fs-normal bg-primary-light text-primary py-2 rounded-2 px-2 py-md-4"
-            style={{ cursor: "pointer" }}
-          >
-            Pilih folder
-          </label>
-        </div>
       </div>
-      <div>
-        <input
-          accept="image/jpeg"
-          multiple
-          type="file"
-          ref={directoryRef}
-          onChange={(e) => {
-            handleFileUploadDirChange(e.currentTarget.files);
-          }}
-          id="fileInputDir"
-          hidden
-        />
-        <input
-          accept="image/jpeg"
-          multiple
-          type="file"
-          ref={imgFileRef}
-          onChange={(e) => {
-            handleFileUploadChange(e.currentTarget.files);
-          }}
-          id="fileInput"
-          hidden
-        />
-        <Dashboard
-          uppy={uppy}
-          plugins={["ImageEditor"]}
-          hideUploadButton={true}
-          width={"100%"}
-          locale={{
-            strings: {
-              poweredBy: "Indonesia AI",
-            },
-          }}
-        />
-      </div>
-    </DashboardContentWrapper>
+    </div>
   );
 };
 

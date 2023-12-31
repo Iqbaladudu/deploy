@@ -1,117 +1,221 @@
 "use client";
 
-import React from "react";
-import { ProgressBar } from "react-bootstrap";
-import DashboardContentWrapper from "../dashboardContentWrapper";
-import { FaVectorSquare, FaImage } from "react-icons/fa";
-import { BiRadioCircleMarked, BiRadioCircle } from "react-icons/bi";
-import { AiOutlineArrowRight } from "react-icons/ai";
-import { useRouter } from "next/navigation";
+import { computed, signal } from "@preact/signals-react";
+import Link from "next/link";
+import { Codepen, MoreVertical, Image as Img, ArrowRight } from "react-feather";
 
-const UnassignedSection = () => {
-  const router = useRouter();
+const labelData = signal([
+  {
+    id: 1,
+    status: "unassigned",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 2,
+    status: "unassigned",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 3,
+    status: "unassigned",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 4,
+    status: "labeling",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 5,
+    status: "labeling",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 6,
+    status: "done",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+  {
+    id: 7,
+    status: "done",
+    dateUpload: "10/10/2024",
+    timeUpload: "10:30",
+    imgTotal: "10",
+  },
+]);
+
+const unassigned = computed(() =>
+  labelData.value.filter((item) => item.status == "unassigned")
+);
+
+const labeling = computed(() =>
+  labelData.value.filter((item) => item.status == "labeling")
+);
+
+const done = computed(() =>
+  labelData.value.filter((item) => item.status == "done")
+);
+
+const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
+  const removeCard = (id) => {
+    const filteredData = labelData.value.filter((item) => item.id !== id);
+    labelData.value = filteredData;
+  };
+
   return (
-    <div className="border rounded-3 p-2 mb-3">
-      <div className="mb-2">
-        <div className="fw-bold text-black">Upload on 10/23/2023</div>
-        <div className="text-gray-dark">at 10:03 WIB</div>
-      </div>
-      <div className="d-flex flex-row align-items-center gap-0 column-gap-1 mb-2">
-        <FaImage />
-        <span className="text-gray-dark">22 unassigned images</span>
-      </div>
-      <div>
-        <div
-          className="text-primary text-end"
-          onClick={() => router.push("/dashboard/upload")}
-          style={{ cursor: "pointer" }}
-        >
-          <span className="mx-2">Upload</span>
-          <AiOutlineArrowRight />
+    <div
+      className={`card mt-3 ${
+        status == "labeling" && "bg-soft-primary border-primary"
+      }`}
+    >
+      <div class="card-body p-2">
+        <div class="row">
+          <div class="col-10">
+            <p class="text-smaller mb-0">Upload on {dateUpload}</p>
+            <p class="text-smaller opacity-50 mb-0">at {timeUpload}</p>
+          </div>
+          <div class="col-2">
+            <div class="dropdown ms-4">
+              <div
+                class="d-flex align-items-center justify-content-end"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <MoreVertical
+                  data-feather="more-vertical"
+                  class="pointer"
+                  width="16"
+                  height="16"
+                />
+              </div>
+              <ul class="dropdown-menu border-0 shadow-sm">
+                <li>
+                  <span
+                    class="dropdown-item pointer"
+                    onClick={() => removeCard(id)}
+                  >
+                    Hapus
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-12 mt-2">
+            <p class="opacity-50 text-smaller d-flex align-items-center mb-0">
+              <Img data-feather="image" width="13" height="13" />
+              <span class="ms-2">{imgTotal} unassigned images</span>
+            </p>
+          </div>
+          <div class="col-12 mt-1">
+            <a
+              href="/pages/upload/view.html"
+              class="text-decoration-none text-primary text-smaller float-end"
+            >
+              <span class="me-2">Upload Image</span>
+              <ArrowRight data-feather="arrow-right" width="13" height="13" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const LabelingSection = () => (
-  <div className="border border-primary rounded-3 p-2 mb-3 bg-primary-light">
-    <div className="mb-2">
-      <div className="fw-medium text-black">Upload on 10/23/2023</div>
-      <div className="text-gray-dark">at 10:03 WIB</div>
-    </div>
-    <div className="mb-2">
-      <ProgressBar variant="primary" now={60} />
-    </div>
-    <div className="mb-2">
-      <div className="text-black fw-bold">12 images</div>
-    </div>
-    <div className="d-flex flex-row justify-content-start mb-2 text-black">
-      <div>
-        <BiRadioCircleMarked className="text-primary" />
-        <span>5 Labeling</span>
-      </div>
-      <div className="mx-4">
-        <BiRadioCircle className="text-black" />
-        <span>7 Unlabeling</span>
-      </div>
-    </div>
-    <div>
-      <div className="text-primary text-end" style={{ cursor: "pointer" }}>
-        <span className="mx-2">Start labeling</span>
-        <AiOutlineArrowRight />
-      </div>
-    </div>
-  </div>
-);
-
-const DatasetSection = () => (
-  <div className="border rounded-3 p-2 mb-3">
-    <div className="mb-2">
-      <div className="fw-bold text-black">Upload on 10/23/2023</div>
-      <div className="text-gray-dark">at 10:03 WIB</div>
-    </div>
-    <div className="d-flex flex-row align-items-center gap-0 column-gap-1">
-      <FaImage />
-      <span className="text-gray-dark">22 unassigned images</span>
-    </div>
-  </div>
-);
-
-const Labeling = () => (
-  <DashboardContentWrapper>
-    <div className="d-flex flex-row d-flex gap-0 column-gap-2 fs-title align-items-center">
-      <FaVectorSquare style={{ fontSize: "22px" }} />
-      <span className="fw-bold">Labeling</span>
-    </div>
-    <div className="d-flex flex-column flex-sm-row justify-content-around gap-0 column-gap-3 row-gap-3">
-      <div className="flex-grow-1 bg-white p-3 rounded-3">
-        <div className="d-flex flex-column align-items-center my-4 justify-contents-center">
-          <div className="fw-bold text-black">Unassigned</div>
-          <div className="text-gray-light">3 batch 48 images</div>
+const Labeling = () => {
+  return (
+    <div class="content w-100">
+      <div class="container-fluid p-4">
+        <div class="d-flex align-items-center text-smaller">
+          <Link
+            class="text-decoration-none text-primary pointer"
+            href="/dashboard"
+          >
+            Beranda
+          </Link>
+          <span class="mx-2 opacity-75">/</span>
+          <p id="page-title" class="mb-0 opacity-75">
+            Labeling
+          </p>
         </div>
-        <UnassignedSection />
-        <UnassignedSection />
-        <UnassignedSection />
-      </div>
-      <div className="flex-grow-1 bg-white p-3 rounded-3">
-        <div className="d-flex flex-column align-items-center my-4 justify-contents-center">
-          <div className="fw-bold text-black">Labeling</div>
-          <div className="text-gray-light">3 batch 48 images</div>
+        <div class="mt-4 row">
+          <div class="col-12">
+            <p class="fs-4 d-flex align-items-center">
+              <Codepen
+                data-feather="codepen"
+                width="20"
+                height="20"
+                class="me-2"
+              />
+              Labeling
+            </p>
+          </div>
         </div>
-        <LabelingSection />
-      </div>
-      <div className="flex-grow-1 bg-white p-3 rounded-3">
-        <div className="d-flex flex-column align-items-center my-4 justify-contents-center">
-          <div className="fw-bold text-black">Dataset</div>
-          <div className="text-gray-light">3 batch 48 images</div>
+        <div class="row">
+          <div class="col-12 col-md-4 mb-3 order-2 order-md-0">
+            <div class="card border-0 outline-0 shadow-sm">
+              <div class="card-body">
+                <center>
+                  <p class="mb-0 fs-6 fw-semibold">Unassigned</p>
+                  <span class="opacity-50 text-smaller">
+                    3 batch • 48 images
+                  </span>
+                </center>
+                {/* Card here */}
+                {unassigned.value.map((props, index) => (
+                  <LabelingCard {...props} key={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4 mb-3 order-0 order-md-1">
+            <div class="card border-0 outline-0 shadow-sm">
+              <div class="card-body">
+                <center>
+                  <p class="mb-0 fs-6 fw-semibold">Labeling</p>
+                  <span class="opacity-50 text-smaller">
+                    1 batch • 12 images
+                  </span>
+                </center>
+                {/* Card here */}
+                {labeling.value.map((props, index) => (
+                  <LabelingCard {...props} key={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4 mb-3 order-1 order-md-2">
+            <div class="card border-0 outline-0 shadow-sm">
+              <div class="card-body">
+                <center>
+                  <p class="mb-0 fs-6 fw-semibold">Hasil</p>
+                  <span class="opacity-50 text-smaller">
+                    2 batch • 18 images
+                  </span>
+                </center>
+                {/* Card Here */}
+                {done.value.map((props, index) => (
+                  <LabelingCard {...props} key={index} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        <DatasetSection />
-        <DatasetSection />
-        <DatasetSection />
       </div>
     </div>
-  </DashboardContentWrapper>
-);
+  );
+};
 
 export default Labeling;

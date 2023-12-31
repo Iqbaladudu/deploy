@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, lazy } from "react";
-import Loading from "../loading";
 
 const components = {
   home: lazy(() => import("@/components/dashboard")),
@@ -19,7 +18,7 @@ const Page = ({ params }) => {
   const Component = components[params.slug] || (() => <div>Coming soon</div>);
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense>
       <Component />
     </Suspense>
   );

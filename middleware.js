@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-
  
 export function middleware(request) {
   if (request.nextUrl.pathname == "/dashboard") {
@@ -18,6 +17,5 @@ export function middleware(request) {
     url.pathname = "/dashboard/demo"
     return NextResponse.redirect(url)
   }
-
 
 }

@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ModalAlert from "@/components/modalAlert";
-import { FiUploadCloud } from "react-icons/fi";
 import DemoContainer from "../demoContainer";
 import Uppy from "@uppy/core";
 import ImageEditor from "@uppy/image-editor";
-import { Dashboard } from "@uppy/react";
 import DropTarget from "@uppy/drop-target";
 import { useRouter, useSearchParams } from "next/navigation";
+import { convertToBase64 } from "@/app/utils";
+import useImgArrStore from "@/app/store/useImgArrStore";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -38,6 +37,13 @@ const SelectDataset = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const engine = searchParams.get("engine");
+  const [fileArr, setFileArr] = useState([]);
+  const addImage = useImgArrStore((state) => state.addImage);
+  const images = useImgArrStore((state) => state.images);
+
+  useEffect(() => {
+    addImage(fileArr);
+  }, [fileArr, addImage]);
 
   const handleNextStep = () => {
     if (currentStep === "select-dataset") {
@@ -65,39 +71,26 @@ const SelectDataset = () => {
     }
   }, []);
 
-  const handleFileUploadDirChange = (files) => {
-    for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: file,
-        meta: {
-          // optional, store the directory path of a file so Uppy can tell identical files in different directories apart.
-          relativePath: window.FileSystemDirectoryEntry,
-        },
-        source: "Local",
-        isRemote: false,
-      });
-    }
-  };
+  const handleChange = (event) => {
+    const files = [...event.target.files];
 
-  const handleFileUploadChange = (files) => {
     for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: file,
-        source: "Local",
-        isRemote: false,
-      });
+      const file = files[i];
+      convertToBase64(file)
+        .then((base64Image) => {
+          const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
+          const dataImg = regex.exec(base64Image)[1];
+          setFileArr((prevItem) => [...prevItem, dataImg]);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
 
   return (
     <DemoContainer>
-      <input type="file" id="fileInput" multiple />
+      <input type="file" id="fileInput" multiple onChange={handleChange} />
     </DemoContainer>
   );
 };

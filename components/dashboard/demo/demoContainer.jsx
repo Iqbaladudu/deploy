@@ -2,27 +2,59 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createTitle } from "@/app/utils";
-import { engineData } from "@/app/constant";
-import { useState } from "react";
-import { useMediaQuery } from "react-responsive";
+import { useEffect, useState } from "react";
 import { Pocket } from "react-feather";
+import useImgArrStore from "@/app/store/useImgArrStore";
+import { createLog, getEngine, getUser, predict } from "@/app/service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEngineStore, useLogStore, useResultStore } from "@/app/store";
+import { v4 as uuidv4 } from "uuid";
 
 const menu = [
-  { label: "Import Gambar", url: "select-dataset", doneTask: true },
+  { label: "Pilih Engine", url: "select-engine", doneTask: false },
+  { label: "Import Gambar", url: "select-dataset", doneTask: false },
   { label: "Prediksi", url: "predict", doneTask: false },
-  { label: "Laporan Hasil", url: "result", doneTask: true },
+  { label: "Laporan Hasil", url: "result", doneTask: false },
 ];
+
+const titleArr = {
+  predict_corrosion: [
+    "Corrosion Classification",
+    "Manufacture: Corrosion Classification",
+  ],
+  predict_ppe: ["PPE Detection", "Manufacture: PPE Detection"],
+  predict_barcode_detection: ["Barcode Detection", "Retail: Barcode Detection"],
+  predict_banana_ripeness: [
+    "Banana Ripeness Classification",
+    "Retail: Banana Ripeness Classification",
+  ],
+  predict_garbage_detection: [
+    "Garbage Classification",
+    "Smart City: Garbage Classification",
+  ],
+  predict_vehicle_detection: [
+    "Counting Vehicle Quantity",
+    "Smart City: Counting Vehicle Quantity",
+  ],
+};
 
 const DemoContainer = ({ children }) => {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState("select-dataset");
+  const [currentEngineId, setCurrentEngineId] = useState();
+  const [logId, setLogId] = useState();
+  const [userId, setUserId] = useState();
   const option = searchParams.get("option");
   const engine = searchParams.get("engine");
   const router = useRouter();
   const title = createTitle(engine);
   const pathname = usePathname();
+  const images = useImgArrStore((state) => state.images);
+  const addResult = useResultStore((state) => state.addResult);
+  const addLog = useLogStore((state) => state.addLog);
+  const log = useLogStore((state) => state.log);
 
-  const navigateHome = () => router.push("/dashboard/home");
+  const navigateHome = () => router.push("/dashboard/demo");
 
   const generatePath = () => {
     if (option && engine) {
@@ -35,16 +67,69 @@ const DemoContainer = ({ children }) => {
     }
   };
 
-  const handleNextStep = () => {
-    if (currentStep === "select-dataset") {
+  const { isPending, data } = useQuery({
+    queryKey: "user",
+    queryFn: getUser,
+  });
+
+  useEffect(() => {
+    if (!isPending) {
+      setUserId(data.data.id);
+    }
+  }, [isPending, setUserId, data]);
+
+  const startCreateLog = useMutation({
+    mutationFn: createLog,
+    onSuccess: (data) => {
+      addLog(data.data);
+      console.log(data);
       router.push(`/dashboard/demo?engine=${engine}&option=predict`);
       setCurrentStep("predict");
-      menu[0].doneTask = true;
-    } else if (currentStep === "predict") {
+      menu[1].doneTask = true;
+    },
+  });
+
+  const startPredict = useMutation({
+    mutationFn: predict,
+    onSuccess: (data) => {
+      addResult(data);
       router.push(`/dashboard/demo?engine=${engine}&option=result`);
       setCurrentStep("result");
-      menu[1].doneTask = true;
+      menu[2].doneTask = true;
+    },
+  });
+
+  const engines = useEngineStore((state) => state.engines);
+
+  useEffect(() => {
+    if (engine) {
+      const currentEngine = engines.filter((arr) => arr.base_url_api == engine);
+      setCurrentEngineId(currentEngine[0].id);
     }
+  }, [engine, setCurrentEngineId, engines]);
+
+  const handleNextStep = () => {
+    if (option === "select-engine") {
+      router.push(`/dashboard/demo?engine=${engine}&option=select-dataset`);
+      setCurrentStep("predict");
+      menu[0].doneTask = true;
+    }
+    if (option === "select-dataset") {
+      startCreateLog.mutate({
+        key: uuidv4(),
+        last_step: "predict",
+        user: userId,
+        engine: currentEngineId,
+      });
+    }
+  };
+
+  const onPredict = () => {
+    startPredict.mutate({
+      engine_id: `${currentEngineId}`,
+      log_id: `${log.id}`,
+      images: images[0],
+    });
   };
 
   return (
@@ -58,16 +143,15 @@ const DemoContainer = ({ children }) => {
           >
             Daftar Engine
           </span>
-          <span class="mx-2 opacity-75"> {generatePath()}</span>
+          <span class="mx-2 opacity-75">
+            {" "}
+            / {titleArr[engine][1]} {console.log(titleArr[engine][1])}
+          </span>
           <p id="page-title" class="mb-0 opacity-75"></p>
         </div>
         <div class="mt-4">
-          <p
-            class="fw-bold text-primary"
-            style={{ fontSize: "calc(1.275rem + .3vw)!important" }}
-            id="engine-name"
-          >
-            {title}
+          <p class="fw-bold text-primary fs-2" id="engine-name">
+            {titleArr[engine][0]}
           </p>
         </div>
         <div class="row">
@@ -76,11 +160,6 @@ const DemoContainer = ({ children }) => {
               <div class="card-body px-0 pb-1">
                 <p class="fw-semibold px-3">Generate</p>
                 <ul class="list-unstyled">
-                  <li class="py-2 opacity-50 px-3">
-                    <span class="text-decoration-none text-dark">
-                      <i class="fa fa-check-circle me-2"></i>Pilih engine
-                    </span>
-                  </li>
                   {menu.map(({ label, url, doneTask }, index) => (
                     <li
                       key={index}
@@ -88,12 +167,22 @@ const DemoContainer = ({ children }) => {
                         option === url
                           ? "bg-soft-primary text-primary"
                           : "opacity-50"
-                      } px-3`}
+                      } px-3 ${menu[index].doneTask == true && "pointer"}`}
+                      onClick={() =>
+                        menu[index].doneTask == true &&
+                        router.push(
+                          `/dashboard/demo?engine=${engine}&option=${url}`
+                        )
+                      }
                     >
                       <span class={`${doneTask && ""}`}>
                         <i
                           className={`fa ${
-                            doneTask ? "fa fa-check-circle" : "fa-circle"
+                            doneTask
+                              ? "fa fa-check-circle text-success"
+                              : option == url
+                              ? "fa fa-check-circle"
+                              : "fa-circle"
                           } me-2`}
                         ></i>
                         {label}
@@ -108,19 +197,50 @@ const DemoContainer = ({ children }) => {
             <div class="card border-0 outline-0 shadow-sm">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                  <p class="fw-semibold">Upload Gambar (jpeg/jpg/png)</p>
-                  <button
-                    onClick={handleNextStep}
-                    class="btn btn-primary outline-0 border-0 shadow-none text-smaller"
-                  >
-                    <Pocket width="14" height="14" className="me-2" />
-                    {option == "select-dataset" && "Simpan & Lanjutkan"}
-                    {option == "predict" && "Mulai Prediksi"}
-                  </button>
+                  <p class="fw-semibold">
+                    {option == "select-dataset" &&
+                      "Upload Gambar (jpeg/jpg/png)"}
+                    {option == "predict" && "Prediksi"}
+                    {option == "result" && "Gambar Hasil Prediksi"}
+                    {option == "select-engine" && "Pilih Engine"}
+                  </p>
+                  {option !== "result" && (
+                    <button
+                      onClick={option == "predict" ? onPredict : handleNextStep}
+                      class="btn btn-primary outline-0 border-0 shadow-none text-smaller"
+                      disabled={
+                        option == "select-dataset" && images[0]?.length === 0
+                      }
+                    >
+                      <Pocket width="14" height="14" className="me-2" />
+                      {option == "select-dataset" && "Simpan & Lanjutkan"}
+                      {option == "predict" && "Mulai Prediksi"}
+                      {option == "select-engine" && "Pilih"}
+                    </button>
+                  )}
                 </div>
-                {children}
+                {startPredict.isPending || startCreateLog.isPending ? (
+                  <>
+                    <div className="d-flex justify-content-center">
+                      <div
+                        class="spinner-border spinner-border-sm text-white"
+                        role="status"
+                      ></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {option == "select-engine" || option == "result"
+                      ? children[0]
+                      : children}
+                  </>
+                )}
               </div>
             </div>
+            {option == "select-engine" && children[1]}
+            {option == "result" && children[1]}
+            {option == "result" && children[2]}
+            {option == "select-engine" && children[2]}
           </div>
         </div>
       </div>

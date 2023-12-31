@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import useAuth from "./hooks/useAuth";
 import withReactContent from "sweetalert2-react-content";
@@ -16,6 +16,7 @@ const mySwal = withReactContent(Swal);
 const LoginPage = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [blankForm, setBlankForm] = useState();
   const router = useRouter();
   const { handleLogin, loading, success, errorMessage, setErrorMessage } =
     useAuth();
@@ -23,7 +24,11 @@ const LoginPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    handleLogin(email, password);
+    if (email && password) {
+      handleLogin(email, password);
+    } else {
+      setBlankForm(true);
+    }
   };
 
   useEffect(() => {
@@ -31,8 +36,6 @@ const LoginPage = () => {
       router.push("/dashboard/demo");
     }
   }, [success, router]);
-
-  console.log(loading, success, errorMessage);
 
   useEffect(() => emailRef.current.focus(), []);
 
@@ -46,7 +49,11 @@ const LoginPage = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          setErrorMessage(null);
+          if (errorMessage) {
+            setErrorMessage(null);
+          } else if (blankForm) {
+            setBlankForm(null);
+          }
         }
       });
   };
@@ -62,6 +69,9 @@ const LoginPage = () => {
       }}
     >
       {errorMessage && <LoginErrorAlert msg={errorMessage} />}
+      {blankForm && (
+        <LoginErrorAlert msg={"Username atau password tidak boleh kosong"} />
+      )}
       <div className="col-12 col-md-4 col-xxl-3">
         <center>
           <Image
@@ -88,7 +98,7 @@ const LoginPage = () => {
             <form action="">
               <div className="form-group mb-3">
                 <label className="mb-2" for="">
-                  Email
+                  Username
                 </label>
                 <div class="input-icon position-relative">
                   <AtSign
@@ -99,8 +109,8 @@ const LoginPage = () => {
                   />
                   <input
                     type="text"
-                    name="email"
-                    placeholder="email@gmail.com"
+                    name="username"
+                    placeholder="iqbaladudu"
                     className="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
                     onChange={(e) => setEmail(e.currentTarget.value)}
                     ref={emailRef}
@@ -149,16 +159,17 @@ const LoginPage = () => {
                 className="btn btn-primary w-100 outline-0 border-0 shadow-none text-white"
                 disabled={loading}
               >
-                {loading ? (
-                  <div
-                    className="spinner-border text-white spinner-border-sm"
-                    role="status"
-                  ></div>
-                ) : (
-                  "Login"
-                )}
+                <div className="py-1">
+                  {loading ? (
+                    <div
+                      className="spinner-border text-white spinner-border-sm"
+                      role="status"
+                    ></div>
+                  ) : (
+                    "Login"
+                  )}
+                </div>
               </button>
-              {/* <!-- <button class="btn btn-primary w-100 outline-0 border-0 shadow-none">Login</button> --> */}
             </form>
           </div>
         </div>
