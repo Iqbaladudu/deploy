@@ -1,7 +1,6 @@
 "use client";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
 import "./global.css";
 import { Inter } from "next/font/google";
 import "slick-carousel/slick/slick.css";
@@ -25,6 +24,7 @@ import {
 } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { getUser } from "./service";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"], preload: true });
 
@@ -37,6 +37,10 @@ const queryClient = new QueryClient();
 
 export default function RootLayout({ children }) {
   const theme = useThemeStore((state) => state.theme);
+
+  useEffect(() => {
+    import("bootstrap/dist/js/bootstrap.js");
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

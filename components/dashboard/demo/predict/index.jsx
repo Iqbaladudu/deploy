@@ -94,14 +94,14 @@ const Predict = () => {
 
   return (
     <DemoContainer>
-      <div class="row mb-4 justify-content-between">
-        <div class="col-12">
-          <p class="mb-0" id="total-image">
+      <div className="row mb-4 justify-content-between">
+        <div className="col-12">
+          <p className="mb-0" id="total-image">
             {images[0].length} total gambar
           </p>
         </div>
       </div>
-      <div class="row mb-4" id="previewImage">
+      <div className="row mb-4" id="previewImage">
         {images[0].map((url, index) => (
           <div key={index} className="col-3 col-md-2 col-xxl-2 mb-2 mb-md-3">
             <Image
@@ -115,37 +115,37 @@ const Predict = () => {
           </div>
         ))}
       </div>
-      <hr class="opacity-25" />
-      <div class="row mb-4 justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Use Case</p>
+      <hr className="opacity-25" />
+      <div className="row mb-4 justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Use Case</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0" id="usecase-name">
+        <div className="col-8">
+          <p className="mb-0" id="usecase-name">
             {modelData[engine]?.usecase}
           </p>
         </div>
       </div>
-      <hr class="opacity-25" />
-      <div class="row mb-4 justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Deskripsi Use Case</p>
+      <hr className="opacity-25" />
+      <div className="row mb-4 justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Deskripsi Use Case</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0" id="desc-name">
+        <div className="col-8">
+          <p className="mb-0" id="desc-name">
             {modelData[engine].desc}
           </p>
         </div>
       </div>
-      <hr class="opacity-25" />
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Model</p>
+      <hr className="opacity-25" />
+      <div className="row justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Model</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0">
+        <div className="col-8">
+          <p className="mb-0">
             <span
-              class="badge bg-soft-primary text-primary fw-semibold"
+              className="badge bg-soft-primary text-primary fw-semibold"
               id="model-name"
             >
               {modelData[engine].modelName}
@@ -153,43 +153,43 @@ const Predict = () => {
           </p>
         </div>
       </div>
-      <hr class="opacity-25" />
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Performa</p>
+      <hr className="opacity-25" />
+      <div className="row justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Performa</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0">
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+        <div className="col-8">
+          <p className="mb-0">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               Accuracy :{" "}
               <span id="accuracy_val">{modelData[engine].accuracy}</span>
             </span>
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               Precission :{" "}
               <span id="preccission_val">{modelData[engine].preccission}</span>
             </span>
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               Recall : <span id="recall_val">{modelData[engine].recall}</span>
             </span>
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               F1-Score :<span id="f1-score">{modelData[engine].f1}</span>{" "}
             </span>
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               mAP : <span id="map">{modelData[engine].map}</span>
             </span>
-            <span class="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               MSE : <span id="mse">{modelData[engine].mse}</span>
             </span>
           </p>
         </div>
       </div>
-      <hr class="opacity-25" />
-      <div class="row mb-4 justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Deskripsi Model</p>
+      <hr className="opacity-25" />
+      <div className="row mb-4 justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Deskripsi Model</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0" id="model-desc">
+        <div className="col-8">
+          <p className="mb-0" id="model-desc">
             {modelData[engine].modelDesc}
           </p>
         </div>

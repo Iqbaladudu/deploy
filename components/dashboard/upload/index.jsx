@@ -82,59 +82,64 @@ const Upload = () => {
   };
 
   return (
-    <div class="content w-100">
-      <div class="container-fluid p-4">
-        <div class="d-flex align-items-center text-smaller">
+    <div className="content w-100">
+      <div className="container-fluid p-4">
+        <div className="d-flex align-items-center text-smaller">
           <Link
-            class="text-decoration-none text-primary pointer"
+            className="text-decoration-none text-primary pointer"
             href="/dashboard"
           >
             Beranda
           </Link>
-          <span class="mx-2 opacity-75">/</span>
-          <p id="page-title" class="mb-0 opacity-75">
+          <span className="mx-2 opacity-75">/</span>
+          <p id="page-title" className="mb-0 opacity-75">
             Upload
           </p>
         </div>
-        <div class="mt-4 row">
-          <div class="col-6">
-            <p class="fs-4 d-flex align-items-center">
+        <div className="mt-4 row">
+          <div className="col-6">
+            <p className="fs-4 d-flex align-items-center">
               <i
                 data-feather="upload-cloud"
                 width="20"
                 height="20"
-                class="me-2"
+                className="me-2"
               ></i>
               Upload
             </p>
           </div>
-          <div class="col-6">
+          <div className="col-6">
             <button
               onclick="submit()"
-              class="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+              className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
             >
-              <i data-feather="pocket" width="14" height="14" class="me-2"></i>
+              <i
+                data-feather="pocket"
+                width="14"
+                height="14"
+                className="me-2"
+              ></i>
               Simpan & Lanjutkan
             </button>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-12 col-md-auto">
+        <div className="row mb-3">
+          <div className="col-12 col-md-auto">
             <label for="batch_name">Nama Batch</label>
           </div>
-          <div class="col-12 col-md-4">
+          <div className="col-12 col-md-4">
             <input
               type="text"
               id="batch_name"
               placeholder="nama batch"
               value="Uploaded on 10/23/23 at 12:05 pm"
-              class="form-control outline-none shadow-none py-2 rounded-2"
+              className="form-control outline-none shadow-none py-2 rounded-2"
               autofocus
             />
           </div>
         </div>
-        <div class="card border-0 outline-0 shadow-sm">
-          <div class="card-body">
+        <div className="card border-0 outline-0 shadow-sm">
+          <div className="card-body">
             <div>
               <input
                 accept="image/jpeg"

@@ -80,31 +80,31 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
         status == "labeling" && "bg-soft-primary border-primary"
       }`}
     >
-      <div class="card-body p-2">
-        <div class="row">
-          <div class="col-10">
-            <p class="text-smaller mb-0">Upload on {dateUpload}</p>
-            <p class="text-smaller opacity-50 mb-0">at {timeUpload}</p>
+      <div className="card-body p-2">
+        <div className="row">
+          <div className="col-10">
+            <p className="text-smaller mb-0">Upload on {dateUpload}</p>
+            <p className="text-smaller opacity-50 mb-0">at {timeUpload}</p>
           </div>
-          <div class="col-2">
-            <div class="dropdown ms-4">
+          <div className="col-2">
+            <div className="dropdown ms-4">
               <div
-                class="d-flex align-items-center justify-content-end"
+                className="d-flex align-items-center justify-content-end"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
                 <MoreVertical
                   data-feather="more-vertical"
-                  class="pointer"
+                  className="pointer"
                   width="16"
                   height="16"
                 />
               </div>
-              <ul class="dropdown-menu border-0 shadow-sm">
+              <ul className="dropdown-menu border-0 shadow-sm">
                 <li>
                   <span
-                    class="dropdown-item pointer"
+                    className="dropdown-item pointer"
                     onClick={() => removeCard(id)}
                   >
                     Hapus
@@ -113,18 +113,18 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
               </ul>
             </div>
           </div>
-          <div class="col-12 mt-2">
-            <p class="opacity-50 text-smaller d-flex align-items-center mb-0">
+          <div className="col-12 mt-2">
+            <p className="opacity-50 text-smaller d-flex align-items-center mb-0">
               <Img data-feather="image" width="13" height="13" />
-              <span class="ms-2">{imgTotal} unassigned images</span>
+              <span className="ms-2">{imgTotal} unassigned images</span>
             </p>
           </div>
-          <div class="col-12 mt-1">
+          <div className="col-12 mt-1">
             <a
               href="/pages/upload/view.html"
-              class="text-decoration-none text-primary text-smaller float-end"
+              className="text-decoration-none text-primary text-smaller float-end"
             >
-              <span class="me-2">Upload Image</span>
+              <span className="me-2">Upload Image</span>
               <ArrowRight data-feather="arrow-right" width="13" height="13" />
             </a>
           </div>
@@ -136,40 +136,40 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
 
 const Labeling = () => {
   return (
-    <div class="content w-100">
-      <div class="container-fluid p-4">
-        <div class="d-flex align-items-center text-smaller">
+    <div className="content w-100">
+      <div className="container-fluid p-4">
+        <div className="d-flex align-items-center text-smaller">
           <Link
-            class="text-decoration-none text-primary pointer"
+            className="text-decoration-none text-primary pointer"
             href="/dashboard"
           >
             Beranda
           </Link>
-          <span class="mx-2 opacity-75">/</span>
-          <p id="page-title" class="mb-0 opacity-75">
+          <span className="mx-2 opacity-75">/</span>
+          <p id="page-title" className="mb-0 opacity-75">
             Labeling
           </p>
         </div>
-        <div class="mt-4 row">
-          <div class="col-12">
-            <p class="fs-4 d-flex align-items-center">
+        <div className="mt-4 row">
+          <div className="col-12">
+            <p className="fs-4 d-flex align-items-center">
               <Codepen
                 data-feather="codepen"
                 width="20"
                 height="20"
-                class="me-2"
+                className="me-2"
               />
               Labeling
             </p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12 col-md-4 mb-3 order-2 order-md-0">
-            <div class="card border-0 outline-0 shadow-sm">
-              <div class="card-body">
+        <div className="row">
+          <div className="col-12 col-md-4 mb-3 order-2 order-md-0">
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body">
                 <center>
-                  <p class="mb-0 fs-6 fw-semibold">Unassigned</p>
-                  <span class="opacity-50 text-smaller">
+                  <p className="mb-0 fs-6 fw-semibold">Unassigned</p>
+                  <span className="opacity-50 text-smaller">
                     3 batch • 48 images
                   </span>
                 </center>
@@ -180,12 +180,12 @@ const Labeling = () => {
               </div>
             </div>
           </div>
-          <div class="col-12 col-md-4 mb-3 order-0 order-md-1">
-            <div class="card border-0 outline-0 shadow-sm">
-              <div class="card-body">
+          <div className="col-12 col-md-4 mb-3 order-0 order-md-1">
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body">
                 <center>
-                  <p class="mb-0 fs-6 fw-semibold">Labeling</p>
-                  <span class="opacity-50 text-smaller">
+                  <p className="mb-0 fs-6 fw-semibold">Labeling</p>
+                  <span className="opacity-50 text-smaller">
                     1 batch • 12 images
                   </span>
                 </center>
@@ -196,12 +196,12 @@ const Labeling = () => {
               </div>
             </div>
           </div>
-          <div class="col-12 col-md-4 mb-3 order-1 order-md-2">
-            <div class="card border-0 outline-0 shadow-sm">
-              <div class="card-body">
+          <div className="col-12 col-md-4 mb-3 order-1 order-md-2">
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body">
                 <center>
-                  <p class="mb-0 fs-6 fw-semibold">Hasil</p>
-                  <span class="opacity-50 text-smaller">
+                  <p className="mb-0 fs-6 fw-semibold">Hasil</p>
+                  <span className="opacity-50 text-smaller">
                     2 batch • 18 images
                   </span>
                 </center>

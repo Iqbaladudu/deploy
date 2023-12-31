@@ -30,44 +30,49 @@ const LogCard = ({ date_updated, engine, user, id }) => {
   });
 
   return (
-    <div class="col-12 col-md-4 mb-3">
+    <div className="col-12 col-md-4 mb-3">
       <div
-        class="card border-0 outline-0 shadow-sm mb-3 pointer card-engine"
+        className="card border-0 outline-0 shadow-sm mb-3 pointer card-engine"
         // onClick={() => deleteLog.mutate(id)}
       >
-        <div class="card-body">
+        <div className="card-body">
           <a
-            class="d-none"
+            className="d-none"
             id="btn-01"
             href="/pages/demo/detail-info.html?log=2023-08-08-10-20"
           >
             Coba
           </a>
-          <p class="text-primary fw-bold">
+          <p className="text-primary fw-bold">
             {date} {month} {year} {time}
           </p>
           <table>
             <tbody>
               <tr>
-                <td class="text-smaller" style={{ width: "80px" }}>
+                <td className="text-smaller" style={{ width: "80px" }}>
                   Engine
                 </td>
-                <td class="text-smaller opacity-50">
+                <td className="text-smaller opacity-50">
                   : {engines.isLoading ? "Memuat engine" : thisEngine[0].title}
                 </td>
               </tr>
               <tr>
-                <td class="text-smaller">Domain</td>
-                <td class="text-smaller opacity-50">: Smart City</td>
+                <td className="text-smaller">Domain</td>
+                <td className="text-smaller opacity-50">: Smart City</td>
               </tr>
               <tr>
-                <td class="text-smaller">Kategori</td>
-                <td class="text-smaller opacity-50">: Object Detection</td>
+                <td className="text-smaller">Kategori</td>
+                <td className="text-smaller opacity-50">: Object Detection</td>
               </tr>
             </tbody>
           </table>
-          <div class="d-flex align-items-center text-smaller mt-4 opacity-50">
-            <Clock data-feather="clock" width="13" height="13" class="me-2" />
+          <div className="d-flex align-items-center text-smaller mt-4 opacity-50">
+            <Clock
+              data-feather="clock"
+              width="13"
+              height="13"
+              className="me-2"
+            />
             <span>2 hours ago</span>
           </div>
         </div>
@@ -102,38 +107,38 @@ const Info = () => {
       .sort((a, b) => new Date(a.date_updated) - new Date(b.date_updated));
 
   return (
-    <div class="content w-100">
-      <div class="container-fluid p-4">
-        <div class="d-flex align-items-center text-smaller">
+    <div className="content w-100">
+      <div className="container-fluid p-4">
+        <div className="d-flex align-items-center text-smaller">
           <Link
-            class="text-decoration-none text-primary pointer"
+            className="text-decoration-none text-primary pointer"
             href="/dashboard"
           >
             Beranda
           </Link>
-          <span class="mx-2 opacity-75">/</span>
-          <p id="page-title" class="mb-0 opacity-75">
+          <span className="mx-2 opacity-75">/</span>
+          <p id="page-title" className="mb-0 opacity-75">
             Log Demo
           </p>
         </div>
-        <div class="mt-4 row">
-          <div class="col-6">
-            <p class="fs-4 d-flex align-items-center">
+        <div className="mt-4 row">
+          <div className="col-6">
+            <p className="fs-4 d-flex align-items-center">
               <Bookmark
                 data-feather="bookmark"
                 width="20"
                 height="20"
-                class="me-2"
+                className="me-2"
               />
               Log Demo
             </p>
           </div>
-          <div class="col-6 d-flex justify-content-end">
-            <div class="form-group w-100" style={{ maxWidth: "140px" }}>
+          <div className="col-6 d-flex justify-content-end">
+            <div className="form-group w-100" style={{ maxWidth: "140px" }}>
               <select
                 value={selectedValue}
                 onChange={handleChange}
-                class="form-select outline-0 shadow-none p-2 text-smaller"
+                className="form-select outline-0 shadow-none p-2 text-smaller"
               >
                 <option value="10">10 data</option>
                 <option value="50">50 data</option>
@@ -141,9 +146,9 @@ const Info = () => {
                 <option value="500">500 data</option>
               </select>
             </div>
-            <div class="dropdown">
+            <div className="dropdown">
               <button
-                class="btn d-flex align-items-center justify-content-center outline-0 border-0 shadow-none text-smaller float-end ms-2"
+                className="btn d-flex align-items-center justify-content-center outline-0 border-0 shadow-none text-smaller float-end ms-2"
                 style={{
                   backgroundColor: "rgba(128, 128, 128, 0.123)",
                   width: "40px",
@@ -155,14 +160,20 @@ const Info = () => {
               >
                 <Filter data-feather="filter" width="14" height="14" />
               </button>
-              <ul class="dropdown-menu border-0 shadow-sm">
+              <ul className="dropdown-menu border-0 shadow-sm">
                 <li>
-                  <a class="dropdown-item" onClick={() => setAscending(true)}>
+                  <a
+                    className="dropdown-item"
+                    onClick={() => setAscending(true)}
+                  >
                     ASC
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" onClick={() => setAscending(false)}>
+                  <a
+                    className="dropdown-item"
+                    onClick={() => setAscending(false)}
+                  >
                     DESC
                   </a>
                 </li>
@@ -170,7 +181,7 @@ const Info = () => {
             </div>
           </div>
         </div>
-        <div class="row">
+        <div className="row">
           {isLoading ? (
             "loading"
           ) : (

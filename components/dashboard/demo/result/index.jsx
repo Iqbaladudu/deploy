@@ -78,7 +78,6 @@ const Result = () => {
   const engine = param.get("engine");
 
   const result = useResultStore((state) => state.result);
-  console.log(result);
 
   return (
     <DemoContainer>
@@ -101,9 +100,14 @@ const UploadAgainBtn = () => {
       onClick={() =>
         router.push(`/dashboard/demo?engine=${engine}&option=select-dataset`)
       }
-      class="btn btn-primary outline-0 border-0 shadow-none text-smaller my-4"
+      className="btn btn-primary outline-0 border-0 shadow-none text-smaller my-4"
     >
-      <Upload data-feather="upload" width="14" height="14" class="me-2 mb-1" />
+      <Upload
+        data-feather="upload"
+        width="14"
+        height="14"
+        className="me-2 mb-1"
+      />
       Upload Ulang Gambar
     </a>
   );
@@ -117,8 +121,8 @@ const ResultImg = ({ result }) => {
 
   return (
     <>
-      <div class="row mb-4 justify-content-between"></div>
-      <div class="row" id="previewImage">
+      <div className="row mb-4 justify-content-between"></div>
+      <div className="row" id="previewImage">
         {result.data?.map((arr, index) => (
           <div
             className="col-3 col-md-2 col-xxl-2 mb-2 mb-md-3 text-center"
@@ -136,40 +140,40 @@ const ResultImg = ({ result }) => {
           </div>
         ))}
       </div>
-      <hr class="opacity-25" />
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <p class="mb-0">Perhitungan Waktu</p>
+      <hr className="opacity-25" />
+      <div className="row justify-content-between">
+        <div className="col-4">
+          <p className="mb-0">Perhitungan Waktu</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0" id="time_estimation"></p>
+        <div className="col-8">
+          <p className="mb-0" id="time_estimation"></p>
         </div>
       </div>
-      <hr class="opacity-25" />
-      <div class="row justify-content-between" id="log_uji">
-        <div class="col-4">
-          <p class="mb-0">Model</p>
+      <hr className="opacity-25" />
+      <div className="row justify-content-between" id="log_uji">
+        <div className="col-4">
+          <p className="mb-0">Model</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0">{engineArr[engine][2]}</p>
+        <div className="col-8">
+          <p className="mb-0">{engineArr[engine][2]}</p>
         </div>
-        <div class="col-12">
-          <hr class="opacity-25" />
+        <div className="col-12">
+          <hr className="opacity-25" />
         </div>
-        <div class="col-4">
-          <p class="mb-0">Engine</p>
+        <div className="col-4">
+          <p className="mb-0">Engine</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0">{engineArr[engine][0]}</p>
+        <div className="col-8">
+          <p className="mb-0">{engineArr[engine][0]}</p>
         </div>
-        <div class="col-12">
-          <hr class="opacity-25" />
+        <div className="col-12">
+          <hr className="opacity-25" />
         </div>
-        <div class="col-4">
-          <p class="mb-0">Timestamp</p>
+        <div className="col-4">
+          <p className="mb-0">Timestamp</p>
         </div>
-        <div class="col-8">
-          <p class="mb-0">Time</p>
+        <div className="col-8">
+          <p className="mb-0">Time</p>
         </div>
       </div>
     </>
@@ -179,8 +183,6 @@ const ResultImg = ({ result }) => {
 const Detail = ({ result }) => {
   const params = useSearchParams();
   const engine = params.get("engine");
-
-  console.log(result);
 
   const data_count =
     engine == "predict_corrosion" || engine == "predict_banana_ripeness"
@@ -201,20 +203,19 @@ const Detail = ({ result }) => {
 
   return (
     <>
-      <p class="mb-4 mt-4 fw-semibold" id="detail-title">
+      <p className="mb-4 mt-4 fw-semibold" id="detail-title">
         Detail Informasi
       </p>
-      <div class="row align-items-strech" id="detail-object-detection">
+      <div className="row align-items-strech" id="detail-object-detection">
         {result.data.map((arr, index) => (
           <>
-            <div class="col-12 col-md-4 col -xxl-3 mb-3">
-              <div class="card border-0 outline-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="row">
-                    {console.log(arr, "jha")}
-                    <div class="col-12 col-md-12 mb-2">
+            <div className="col-12 col-md-4 col -xxl-3 mb-3">
+              <div className="card border-0 outline-0 shadow-sm h-100">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-12 col-md-12 mb-2">
                       <div
-                        class="w-100 h-100 rounded-2"
+                        className="w-100 h-100 rounded-2"
                         style={{
                           aspectRatio: "2/1",
                           backgroundImage: `url("data:image/<mime-type>;base64, ${arr.image}")`,
@@ -224,10 +225,9 @@ const Detail = ({ result }) => {
                         }}
                       ></div>
                     </div>
-                    <div class="col-12 col-md-12">
-                      <p class="text-smaller opacity-75 mb-0 mt-3">
+                    <div className="col-12 col-md-12">
+                      <p className="text-smaller opacity-75 mb-0 mt-3">
                         Grafik Batang
-                        {console.log(data_count)}
                       </p>
                       <Bar
                         options={options}
@@ -302,17 +302,21 @@ const Detail = ({ result }) => {
                           ],
                         }}
                       />
-                      <table class="table table-bordered text-smaller">
+                      <table className="table table-bordered text-smaller">
                         <thead>
                           <tr>
                             <th
                               style={{ width: "40px" }}
-                              class="opacity-75 text-center p-1 bg-transparent"
+                              className="opacity-75 text-center p-1 bg-transparent"
                             >
                               No
                             </th>
-                            <th class="opacity-75 bg-transparent p-1">Label</th>
-                            <th class="opacity-75 bg-transparent p-1">Total</th>
+                            <th className="opacity-75 bg-transparent p-1">
+                              Label
+                            </th>
+                            <th className="opacity-75 bg-transparent p-1">
+                              Total
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -320,13 +324,13 @@ const Detail = ({ result }) => {
                           engine == "predict_banana_ripeness" ? (
                             <>
                               <tr>
-                                <td class="text-center p-1 bg-transparent">
+                                <td className="text-center p-1 bg-transparent">
                                   1
                                 </td>
-                                <td class="p-1 bg-transparent">
+                                <td className="p-1 bg-transparent">
                                   {probability_data.class_name}
                                 </td>
-                                <td class="p-1 bg-transparent">
+                                <td className="p-1 bg-transparent">
                                   {probability_data.probabilities.toFixed(2)}
                                 </td>
                               </tr>
@@ -341,11 +345,11 @@ const Detail = ({ result }) => {
                                 )
                               ).map((val, index) => (
                                 <tr key={index}>
-                                  <td class="text-center p-1 bg-transparent">
+                                  <td className="text-center p-1 bg-transparent">
                                     {index + 1}
                                   </td>
-                                  <td class="p-1 bg-transparent">{val}</td>
-                                  <td class="p-1 bg-transparent">
+                                  <td className="p-1 bg-transparent">{val}</td>
+                                  <td className="p-1 bg-transparent">
                                     {
                                       Object.fromEntries(
                                         arr.bounding_boxes.map((value) => [

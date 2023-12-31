@@ -76,13 +76,13 @@ const LoginPage = () => {
         <center>
           <Image
             src={primaryLogo}
-            class="logo-iai-light mb-5"
+            className="logo-iai-light mb-5"
             width="200"
             alt=""
           />
           <Image
             src={whiteLogo}
-            class="logo-iai-dark mb-5"
+            className="logo-iai-dark mb-5"
             width="200"
             alt=""
           />
@@ -90,7 +90,7 @@ const LoginPage = () => {
         <div className="card border-0 shadow-sm">
           <div className="card-body p-4">
             <p
-              class="text-center mb-4 fw-bold fs-2 text-dark"
+              className="text-center mb-4 fw-bold fs-2 text-dark"
               style={{ fontSize: "32px" }}
             >
               Login
@@ -100,7 +100,7 @@ const LoginPage = () => {
                 <label className="mb-2" for="">
                   Username
                 </label>
-                <div class="input-icon position-relative">
+                <div className="input-icon position-relative">
                   <AtSign
                     width={16}
                     height={16}
@@ -118,7 +118,7 @@ const LoginPage = () => {
                 </div>
               </div>
               <div className="form-group mb-3">
-                <label class="mb-2" for="">
+                <label className="mb-2" for="">
                   Password
                 </label>
                 <div className="input-icon position-relative">
@@ -174,9 +174,12 @@ const LoginPage = () => {
           </div>
         </div>
         <center>
-          <div class="mt-4">
-            <span class="text-dark">Belum punya akun? </span>
-            <a href="#" class="text-primary text-decoration-none fw-semibold">
+          <div className="mt-4">
+            <span className="text-dark">Belum punya akun? </span>
+            <a
+              href="#"
+              className="text-primary text-decoration-none fw-semibold"
+            >
               Daftar
             </a>
           </div>

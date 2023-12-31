@@ -173,17 +173,17 @@ export default EngineDetail;
 
 const Application = ({ application_desc, img, url }) => {
   return (
-    <div class="row">
-      <div class="col-12">
-        <div class="card border-0 outline-0 shadow-sm">
-          <div class="card-body">
-            <p class="text-smaller">Application</p>
+    <div className="row">
+      <div className="col-12">
+        <div className="card border-0 outline-0 shadow-sm">
+          <div className="card-body">
+            <p className="text-smaller">Application</p>
             <p id="application_desc">{application_desc}</p>
-            <div class="row p-2" id="application">
+            <div className="row p-2" id="application">
               {img[url]?.map((arr, index) => (
-                <div class="col-3 p-1" key={index}>
+                <div className="col-3 p-1" key={index}>
                   <div
-                    class="rounded-3"
+                    className="rounded-3"
                     style={{
                       backgroundImage: `url(${arr.src})`,
                       width: "100%",
@@ -205,12 +205,12 @@ const Application = ({ application_desc, img, url }) => {
 
 const OverviewCard = ({ category, type, title, description, image }) => {
   return (
-    <div class="row">
-      <div class="col-12 col-md-2 mb-2 mb-md-0">
-        <div class="w-100 h-100">
+    <div className="row">
+      <div className="col-12 col-md-2 mb-2 mb-md-0">
+        <div className="w-100 h-100">
           <div
             id="image"
-            class="w-100 h-100 rounded-2"
+            className="w-100 h-100 rounded-2"
             style={{
               backgroundImage: `url("https://annotation.aiforindonesia.com${image}")`,
               aspectRatio: "1/1",
@@ -221,24 +221,24 @@ const OverviewCard = ({ category, type, title, description, image }) => {
           ></div>
         </div>
       </div>
-      <div class="col-12 col-md-10 d-flex align-items-center">
+      <div className="col-12 col-md-10 d-flex align-items-center">
         <div>
-          <p class="text-smaller">Overview</p>
-          <div class="d-flex mb-2">
+          <p className="text-smaller">Overview</p>
+          <div className="d-flex mb-2">
             <span
-              class="badge bg-soft-primary text-primary rounded-1 me-2"
+              className="badge bg-soft-primary text-primary rounded-1 me-2"
               id="category-name"
             >
               {category}
             </span>
             <span
-              class="badge bg-soft-primary text-primary rounded-1"
+              className="badge bg-soft-primary text-primary rounded-1"
               id="type-name"
             >
               {type}
             </span>
           </div>
-          <p class="fw-semibold fs-5 mb-1 text-primary" id="title-name">
+          <p className="fw-semibold fs-5 mb-1 text-primary" id="title-name">
             {title}
           </p>
           <p id="desc-name">{description}</p>
@@ -250,23 +250,23 @@ const OverviewCard = ({ category, type, title, description, image }) => {
 
 const Detail = ({ background, technology_desc, tools }) => {
   return (
-    <div class="row align-content-stretch mt-3 mb-md-3">
-      <div class="col-12 col-md-12 mb-3">
-        <div class="card border-0 outline-0 shadow-sm h-100">
-          <div class="card-body">
-            <p class="text-smaller">Background</p>
+    <div className="row align-content-stretch mt-3 mb-md-3">
+      <div className="col-12 col-md-12 mb-3">
+        <div className="card border-0 outline-0 shadow-sm h-100">
+          <div className="card-body">
+            <p className="text-smaller">Background</p>
             <p id="background">{background}</p>
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-12 mb-3">
-        <div class="card border-0 outline-0 shadow-sm h-100">
-          <div class="card-body">
-            <p class="text-smaller">Technology</p>
+      <div className="col-12 col-md-12 mb-3">
+        <div className="card border-0 outline-0 shadow-sm h-100">
+          <div className="card-body">
+            <p className="text-smaller">Technology</p>
             <p id="technology_desc">{technology_desc}</p>
-            <div class="row" id="technology">
+            <div className="row" id="technology">
               {tools.map((arr, index) => (
-                <div class="col-1 p-2" key={index}>
+                <div className="col-1 p-2" key={index}>
                   <Image
                     style={{ width: "100%", height: "100%" }}
                     src={arr}

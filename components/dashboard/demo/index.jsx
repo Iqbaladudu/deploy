@@ -94,7 +94,7 @@ const SelectEngine = () => {
             }}
           >
             <div className="card-body px-4">
-              <p class="fs-3 fw-bold text-primary mb-0">Axioma API Demo</p>
+              <p className="fs-3 fw-bold text-primary mb-0">Axioma API Demo</p>
               <p>
                 A user-friendly and specialized AI Engine designed for your AI
                 solution in various industries, developed by Indonesia AI (PT.
@@ -184,8 +184,8 @@ const SelectEngine = () => {
               </div>
             </div>
           </div>
-          <div class="col-12">
-            <p class="text-smaller fw-semibold opacity-50">Daftar engine</p>
+          <div className="col-12">
+            <p className="text-smaller fw-semibold opacity-50">Daftar engine</p>
           </div>
           {!isPending && (
             <>

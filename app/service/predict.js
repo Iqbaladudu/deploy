@@ -2,7 +2,7 @@ import { getToken } from "../utils";
 
 export async function predict(data) {
     const token = getToken();
-    const response = await fetch('https://annotation.aiforindonesia.com/api/v1/demo/predict/', {
+    const response = await fetch(`${process.env.url}/demo/predict/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json', 
@@ -16,6 +16,5 @@ export async function predict(data) {
     }
 
     const resdata = response.json();
-    console.log(resdata)
     return resdata
   }

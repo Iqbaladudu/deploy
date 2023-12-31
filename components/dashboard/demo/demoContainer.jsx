@@ -82,7 +82,6 @@ const DemoContainer = ({ children }) => {
     mutationFn: createLog,
     onSuccess: (data) => {
       addLog(data.data);
-      console.log(data);
       router.push(`/dashboard/demo?engine=${engine}&option=predict`);
       setCurrentStep("predict");
       menu[1].doneTask = true;
@@ -133,33 +132,30 @@ const DemoContainer = ({ children }) => {
   };
 
   return (
-    <div class="content w-100">
-      <div class="container-fluid p-4">
-        <div class="d-flex align-items-center text-smaller">
+    <div className="content w-100">
+      <div className="container-fluid p-4">
+        <div className="d-flex align-items-center text-smaller">
           <span
-            class="text-decoration-none text-primary"
+            className="text-decoration-none text-primary"
             onClick={navigateHome}
             style={{ cursor: "pointer" }}
           >
             Daftar Engine
           </span>
-          <span class="mx-2 opacity-75">
-            {" "}
-            / {titleArr[engine][1]} {console.log(titleArr[engine][1])}
-          </span>
-          <p id="page-title" class="mb-0 opacity-75"></p>
+          <span className="mx-2 opacity-75"> / {titleArr[engine][1]}</span>
+          <p id="page-title" className="mb-0 opacity-75"></p>
         </div>
-        <div class="mt-4">
-          <p class="fw-bold text-primary fs-2" id="engine-name">
+        <div className="mt-4">
+          <p className="fw-bold text-primary fs-2" id="engine-name">
             {titleArr[engine][0]}
           </p>
         </div>
-        <div class="row">
-          <div class="col-12 col-md-3 mb-4 mb-md-0">
-            <div class="card border-0 outline-0 shadow-sm">
-              <div class="card-body px-0 pb-1">
-                <p class="fw-semibold px-3">Generate</p>
-                <ul class="list-unstyled">
+        <div className="row">
+          <div className="col-12 col-md-3 mb-4 mb-md-0">
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body px-0 pb-1">
+                <p className="fw-semibold px-3">Generate</p>
+                <ul className="list-unstyled">
                   {menu.map(({ label, url, doneTask }, index) => (
                     <li
                       key={index}
@@ -175,7 +171,7 @@ const DemoContainer = ({ children }) => {
                         )
                       }
                     >
-                      <span class={`${doneTask && ""}`}>
+                      <span className={`${doneTask && ""}`}>
                         <i
                           className={`fa ${
                             doneTask
@@ -193,11 +189,11 @@ const DemoContainer = ({ children }) => {
               </div>
             </div>
           </div>
-          <div class="col-12 col-md-9">
-            <div class="card border-0 outline-0 shadow-sm">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <p class="fw-semibold">
+          <div className="col-12 col-md-9">
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <p className="fw-semibold">
                     {option == "select-dataset" &&
                       "Upload Gambar (jpeg/jpg/png)"}
                     {option == "predict" && "Prediksi"}
@@ -207,7 +203,7 @@ const DemoContainer = ({ children }) => {
                   {option !== "result" && (
                     <button
                       onClick={option == "predict" ? onPredict : handleNextStep}
-                      class="btn btn-primary outline-0 border-0 shadow-none text-smaller"
+                      className="btn btn-primary outline-0 border-0 shadow-none text-smaller"
                       disabled={
                         option == "select-dataset" && images[0]?.length === 0
                       }
@@ -223,7 +219,7 @@ const DemoContainer = ({ children }) => {
                   <>
                     <div className="d-flex justify-content-center">
                       <div
-                        class="spinner-border spinner-border-sm text-white"
+                        className="spinner-border spinner-border-sm text-white"
                         role="status"
                       ></div>
                     </div>

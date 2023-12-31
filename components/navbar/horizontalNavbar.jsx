@@ -51,8 +51,8 @@ const HorizontalNavbar = () => {
   }, []);
 
   return (
-    <nav class="navbar fixed-top shadow-sm px-0 py-2">
-      <div class="container-fluid">
+    <nav className="navbar fixed-top shadow-sm px-0 py-2">
+      <div className="container-fluid">
         <button
           id="btn-collapse"
           type="button"
@@ -74,9 +74,9 @@ const HorizontalNavbar = () => {
         </div>
         <p className="m-0 fs-6 fw-semibold me-auto text-dark">Axioma</p>
         <div className="ms-auto d-flex align-items-center">
-          <div class="dropdown ms-4">
+          <div className="dropdown ms-4">
             <Bell
-              class="text-dark mx-2 pointer"
+              className="text-dark mx-2 pointer"
               data-feather="bell"
               data-bs-toggle="dropdown"
               aria-expanded="false"
@@ -84,14 +84,14 @@ const HorizontalNavbar = () => {
               height="16"
             />
             <ul
-              class="dropdown-menu border-0 p-2 shadow-sm"
+              className="dropdown-menu border-0 p-2 shadow-sm"
               style={{ width: "300px" }}
             >
               <li>
-                <div class="alert alert-info mb-0 text-smaller py-2 d-flex align-items-center">
+                <div className="alert alert-info mb-0 text-smaller py-2 d-flex align-items-center">
                   <Info
                     data-feather="info"
-                    class="me-2"
+                    className="me-2"
                     width="14"
                     height="14"
                   />
@@ -117,38 +117,41 @@ const HorizontalNavbar = () => {
               height="16"
             />
           )}
-          <div class="dropdown ms-4">
+          <div className="dropdown ms-4">
             <div
-              class="d-flex align-items-center"
+              className="d-flex align-items-center"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               <Image
                 src={usrImg}
-                class="rounded-circle"
+                className="rounded-circle"
                 style={{
                   height: "30px",
                   width: "30px",
                 }}
                 alt=""
               />
-              <p class="text-dark text-smaller ms-2 mb-0 d-none d-md-block">
+              <p className="text-dark text-smaller ms-2 mb-0 d-none d-md-block">
                 {user?.username}
               </p>
               <ChevronDown
                 data-feather="chevron-down"
                 width="16"
-                class="mx-2"
+                className="mx-2"
                 height="16"
               />
             </div>
-            <ul class="dropdown-menu border-0 shadow-sm">
+            <ul className="dropdown-menu border-0 shadow-sm">
               <li>
-                <span class="dropdown-item pointer">Akun</span>
+                <span className="dropdown-item pointer">Akun</span>
               </li>
               <li>
-                <span class="dropdown-item pointer" onClick={() => logoutNow()}>
+                <span
+                  className="dropdown-item pointer"
+                  onClick={() => logoutNow()}
+                >
                   Keluar
                 </span>
               </li>
