@@ -15,6 +15,8 @@ import "@uppy/drop-target/dist/style.min.css";
 import "@uppy/informer/dist/style.min.css";
 import "@uppy/image-editor/dist/style.min.css";
 
+import "react-medium-image-zoom/dist/styles.css";
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useThemeStore } from "./store";
 import {

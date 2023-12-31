@@ -12,10 +12,13 @@ import {
   Legend,
   BarElement,
 } from "chart.js";
-import { useResultStore } from "@/app/store";
+import { useResultStore, useTimeStore } from "@/app/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bar } from "react-chartjs-2";
 import { Upload } from "react-feather";
+import Zoom from "react-medium-image-zoom";
+
+import "react-medium-image-zoom/dist/styles.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tltp, Legend);
 
@@ -116,8 +119,15 @@ const UploadAgainBtn = () => {
 const ResultImg = ({ result }) => {
   const param = useSearchParams();
   const engine = param.get("engine");
+  const start = useTimeStore((state) => state.start);
+  const end = useTimeStore((state) => state.end);
 
-  const [labels, setLabels] = useState([]);
+  const diffMilliseconds = Math.abs(new Date(start) - new Date(end));
+  // const diffHours = Math.floor(diffMilliseconds / (1000 * 60 * 60));
+  // const diffMinutes = Math.floor(
+  //   (diffMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+  // );
+  const diffSeconds = Math.floor((diffMilliseconds % (1000 * 60)) / 1000);
 
   return (
     <>
@@ -129,13 +139,15 @@ const ResultImg = ({ result }) => {
             key={index}
           >
             <div className="image-container" key={index}>
-              <Image
-                src={`data:image/<mime-type>;base64, ${arr.image}`}
-                alt=""
-                className="w-100 rounded-1"
-                height={100}
-                width={100}
-              />
+              <Zoom>
+                <Image
+                  src={`data:image/<mime-type>;base64, ${arr.image}`}
+                  alt=""
+                  className="w-100 rounded-1"
+                  height={100}
+                  width={100}
+                />
+              </Zoom>
             </div>
           </div>
         ))}
@@ -146,7 +158,9 @@ const ResultImg = ({ result }) => {
           <p className="mb-0">Perhitungan Waktu</p>
         </div>
         <div className="col-8">
-          <p className="mb-0" id="time_estimation"></p>
+          <p className="mb-0" id="time_estimation">
+            {start.split(",")[1]} s/d {end.split(",")[1]} ({diffSeconds} detik)
+          </p>
         </div>
       </div>
       <hr className="opacity-25" />

@@ -7,7 +7,12 @@ import { Pocket } from "react-feather";
 import useImgArrStore from "@/app/store/useImgArrStore";
 import { createLog, getEngine, getUser, predict } from "@/app/service";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEngineStore, useLogStore, useResultStore } from "@/app/store";
+import {
+  useEngineStore,
+  useLogStore,
+  useResultStore,
+  useTimeStore,
+} from "@/app/store";
 import { v4 as uuidv4 } from "uuid";
 
 const menu = [
@@ -53,6 +58,20 @@ const DemoContainer = ({ children }) => {
   const addResult = useResultStore((state) => state.addResult);
   const addLog = useLogStore((state) => state.addLog);
   const log = useLogStore((state) => state.log);
+  const addStart = useTimeStore((state) => state.addStart);
+  const addEnd = useTimeStore((state) => state.addEnd);
+
+  const currentDateTime = new Date();
+  const formattedDateTime = currentDateTime.toLocaleString("en-US", {
+    // weekday: 'long',
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    millisecond: "numeric",
+  });
 
   const navigateHome = () => router.push("/dashboard/demo");
 
@@ -91,6 +110,7 @@ const DemoContainer = ({ children }) => {
   const startPredict = useMutation({
     mutationFn: predict,
     onSuccess: (data) => {
+      addEnd(formattedDateTime);
       addResult(data);
       router.push(`/dashboard/demo?engine=${engine}&option=result`);
       setCurrentStep("result");
@@ -114,6 +134,7 @@ const DemoContainer = ({ children }) => {
       menu[0].doneTask = true;
     }
     if (option === "select-dataset") {
+      addStart(formattedDateTime);
       startCreateLog.mutate({
         key: uuidv4(),
         last_step: "predict",
@@ -130,6 +151,8 @@ const DemoContainer = ({ children }) => {
       images: images[0],
     });
   };
+
+  console;
 
   return (
     <div className="content w-100">
