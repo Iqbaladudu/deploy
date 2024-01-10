@@ -247,3 +247,8 @@ body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-ac
     background-color: #E84D4D;
     color: white;
 }
+
+[data-rmiz-modal-overlay="visible"] {
+    background-color: black !important;
+    opacity: 0.8 !important;
+  }

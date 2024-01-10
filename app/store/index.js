@@ -5,5 +5,15 @@ import useResultStore from "./useResultStore";
 import useUserStore from "./useUserStore";
 import useLogStore from "./useLogStore";
 import useTimeStore from "./useTimeStore";
+import useMenuStore from "./useMenuStore";
 
-export { useCollapseStore, useThemeStore, useEngineStore, useResultStore, useUserStore, useLogStore, useTimeStore };
+export {
+  useCollapseStore,
+  useThemeStore,
+  useEngineStore,
+  useResultStore,
+  useUserStore,
+  useLogStore,
+  useTimeStore,
+  useMenuStore,
+};

@@ -12,7 +12,14 @@ import { useEffect } from "react";
 import { useEngineStore } from "@/app/store";
 import EngineDetail from "./engine-detail";
 
-const Card = ({ title, image, base_url_api, desc }) => {
+const Card = ({
+  title,
+  image,
+  base_url_api,
+  desc,
+  category_data,
+  type_data,
+}) => {
   const router = useRouter();
   return (
     <div className="col-12 col-md-6 col-xxl-4 mb-2">
@@ -43,10 +50,10 @@ const Card = ({ title, image, base_url_api, desc }) => {
             <div className="col-12 col-md-9">
               <div className="d-flex mb-2">
                 <span className="badge bg-secondary rounded-1 me-2">
-                  Smart City
+                  {category_data.name}
                 </span>
                 <span className="badge bg-secondary rounded-1">
-                  Object Detection
+                  {type_data.name}
                 </span>
               </div>
               <p className="fw-semibold fs-5 mb-1 card-engine-title">{title}</p>

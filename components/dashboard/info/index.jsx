@@ -1,26 +1,40 @@
 import { getEngine } from "@/app/service";
 import { getLog } from "@/app/service/getLog";
 import { removeLog } from "@/app/service/removeLog";
+import { useEngineStore } from "@/app/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 import { Bookmark, Clock, Filter } from "react-feather";
 
 const LogCard = ({ date_updated, engine, user, id }) => {
+  function addZero(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+
   const timestamp = date_updated;
   const dates = new Date(timestamp);
   const date = dates.getDate();
-  const month = dates.toLocaleDateString("default", { month: "long" });
+  const month = dates.toLocaleDateString("id-ID", { month: "long" });
   const year = dates.getFullYear();
-  const time = `${dates.getHours()}:${dates.getMinutes()}`;
+  const time = `Terakhir diperbarui pada ${date} ${month} ${year} pukul ${addZero(
+    dates.getHours()
+  )}:${addZero(dates.getMinutes())}`;
 
-  const engines = useQuery({
+  const enginesQuery = useQuery({
     queryKey: "get-engines",
     queryFn: getEngine,
   });
 
+  const engines = useEngineStore((state) => state.engines);
+
   const thisEngine =
-    !engines.isLoading && engines.data.data.filter((arr) => arr.id == engine);
+    engines.length == 0
+      ? enginesQuery.data.data.filter((arr) => arr.id == engine)
+      : engines.filter((arr) => arr.id == engine);
 
   const deleteLog = useMutation({
     mutationFn: removeLog,
@@ -44,7 +58,7 @@ const LogCard = ({ date_updated, engine, user, id }) => {
             Coba
           </a>
           <p className="text-primary fw-bold">
-            {date} {month} {year} {time}
+            {date} {month} {year}
           </p>
           <table>
             <tbody>
@@ -53,16 +67,21 @@ const LogCard = ({ date_updated, engine, user, id }) => {
                   Engine
                 </td>
                 <td className="text-smaller opacity-50">
-                  : {engines.isLoading ? "Memuat engine" : thisEngine[0].title}
+                  {/* : {engines.isLoading ? "Memuat engine" : thisEngine[0].title} */}
+                  : {thisEngine[0].title}
                 </td>
               </tr>
               <tr>
                 <td className="text-smaller">Domain</td>
-                <td className="text-smaller opacity-50">: Smart City</td>
+                <td className="text-smaller opacity-50">
+                  : {thisEngine[0].category_data.name}
+                </td>
               </tr>
               <tr>
                 <td className="text-smaller">Kategori</td>
-                <td className="text-smaller opacity-50">: Object Detection</td>
+                <td className="text-smaller opacity-50">
+                  : {thisEngine[0].type_data.name}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -73,7 +92,7 @@ const LogCard = ({ date_updated, engine, user, id }) => {
               height="13"
               className="me-2"
             />
-            <span>2 hours ago</span>
+            <span>{time}</span>
           </div>
         </div>
       </div>

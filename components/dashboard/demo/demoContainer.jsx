@@ -10,17 +10,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   useEngineStore,
   useLogStore,
+  useMenuStore,
   useResultStore,
   useTimeStore,
 } from "@/app/store";
 import { v4 as uuidv4 } from "uuid";
-
-const menu = [
-  { label: "Pilih Engine", url: "select-engine", doneTask: false },
-  { label: "Import Gambar", url: "select-dataset", doneTask: false },
-  { label: "Prediksi", url: "predict", doneTask: false },
-  { label: "Laporan Hasil", url: "result", doneTask: false },
-];
 
 const titleArr = {
   predict_corrosion: [
@@ -43,12 +37,20 @@ const titleArr = {
   ],
 };
 
+const initialMenuData = [
+  { label: "Pilih Engine", url: "select-engine", doneTask: false },
+  { label: "Import Gambar", url: "select-dataset", doneTask: false },
+  { label: "Prediksi", url: "predict", doneTask: false },
+  { label: "Laporan Hasil", url: "result", doneTask: false },
+];
+
 const DemoContainer = ({ children }) => {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState("select-dataset");
   const [currentEngineId, setCurrentEngineId] = useState();
   const [logId, setLogId] = useState();
   const [userId, setUserId] = useState();
+
   const option = searchParams.get("option");
   const engine = searchParams.get("engine");
   const router = useRouter();
@@ -60,6 +62,12 @@ const DemoContainer = ({ children }) => {
   const log = useLogStore((state) => state.log);
   const addStart = useTimeStore((state) => state.addStart);
   const addEnd = useTimeStore((state) => state.addEnd);
+  const menu = useMenuStore((state) => state.menu);
+  const setMenuData = useMenuStore((state) => state.setMenuData);
+
+  // useEffect(() => {
+  //   setMenuData(menu);
+  // }, [menu, setMenuData]);
 
   const currentDateTime = new Date();
   const formattedDateTime = currentDateTime.toLocaleString("en-US", {
@@ -103,11 +111,9 @@ const DemoContainer = ({ children }) => {
       addLog(data.data);
       router.push(`/dashboard/demo?engine=${engine}&option=predict`);
       setCurrentStep("predict");
-      menu[1].doneTask = true;
+      // Update select dataset position bellow
     },
   });
-
-  console.log(startCreateLog);
 
   const startPredict = useMutation({
     mutationFn: predict,
@@ -133,7 +139,6 @@ const DemoContainer = ({ children }) => {
     if (option === "select-engine") {
       router.push(`/dashboard/demo?engine=${engine}&option=select-dataset`);
       setCurrentStep("predict");
-      menu[0].doneTask = true;
     }
     if (option === "select-dataset") {
       addStart(formattedDateTime);
@@ -142,9 +147,69 @@ const DemoContainer = ({ children }) => {
         last_step: "predict",
         user: userId,
         engine: currentEngineId,
+        input: [],
       });
     }
   };
+
+  useEffect(() => {
+    if (option === "select-dataset") {
+      const donePos = menu.map((arr) => {
+        if (arr.url !== "select-engine") {
+          return {
+            ...arr,
+            doneTask: false,
+          };
+        } else {
+          return {
+            ...arr,
+            doneTask: true,
+          };
+        }
+      });
+      setMenuData(donePos);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (option === "select-engine") {
+      const donePos = menu.map((arr) => {
+        if (arr.url !== "select-dataset") {
+          return {
+            ...arr,
+            doneTask: false,
+          };
+        } else {
+          return {
+            ...arr,
+            doneTask: false,
+          };
+        }
+      });
+      setMenuData(donePos);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (option === "predict") {
+      const donePos = menu.map((arr) => {
+        if (arr.url === "predict") {
+          return {
+            ...arr,
+            doneTask: false,
+          };
+        } else if (arr.url !== "select-dataset") {
+          return arr;
+        } else {
+          return {
+            ...arr,
+            doneTask: true,
+          };
+        }
+      });
+      setMenuData(donePos);
+    }
+  }, []);
 
   const onPredict = () => {
     startPredict.mutate({
@@ -153,8 +218,6 @@ const DemoContainer = ({ children }) => {
       images: images[0],
     });
   };
-
-  console;
 
   return (
     <div className="content w-100">
