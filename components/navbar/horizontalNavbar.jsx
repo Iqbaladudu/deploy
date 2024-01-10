@@ -72,7 +72,7 @@ const HorizontalNavbar = () => {
         >
           <Codepen width="16" height="16" className="text-white" />
         </div>
-        <p className="m-0 fs-6 fw-semibold me-auto text-dark">Axioma</p>
+        <p className="m-0 fs-6 fw-semibold me-auto text-dark">Axioma AI</p>
         <div className="ms-auto d-flex align-items-center">
           <div className="dropdown ms-4">
             <Bell

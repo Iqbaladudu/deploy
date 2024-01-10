@@ -129,6 +129,18 @@ const ResultImg = ({ result }) => {
   // );
   const diffSeconds = Math.floor((diffMilliseconds % (1000 * 60)) / 1000);
 
+  const currentDateTime = new Date();
+  const formattedDateTime = currentDateTime.toLocaleString("en-US", {
+    // weekday: 'long',
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    millisecond: "numeric",
+  });
+
   return (
     <>
       <div className="row mb-4 justify-content-between"></div>
@@ -187,7 +199,7 @@ const ResultImg = ({ result }) => {
           <p className="mb-0">Timestamp</p>
         </div>
         <div className="col-8">
-          <p className="mb-0">Time</p>
+          <p className="mb-0">{formattedDateTime}</p>
         </div>
       </div>
     </>

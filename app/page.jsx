@@ -10,6 +10,9 @@ import whiteLogo from "@/public/logo-iai-white.png";
 import primaryLogo from "@/public/logo-iai-primary.png";
 import { AtSign, Lock } from "react-feather";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { getToken } from "./service";
+import { setCookie } from "nookies";
 
 const mySwal = withReactContent(Swal);
 
@@ -17,25 +20,34 @@ const LoginPage = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [blankForm, setBlankForm] = useState();
+  const [error, setError] = useState(false);
   const router = useRouter();
-  const { handleLogin, loading, success, errorMessage, setErrorMessage } =
-    useAuth();
   const emailRef = useRef(null);
+
+  const login = useMutation({
+    mutationFn: getToken,
+    onSuccess: (data) => {
+      setCookie(null, "iaiaccess", `${data.access}`, {
+        maxAge: 60 * 60,
+      });
+      router.push("/dashboard/demo");
+    },
+    onError: () => {
+      setError(true);
+    },
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (email && password) {
-      handleLogin(email, password);
+      login.mutate({
+        email: email,
+        password: password,
+      });
     } else {
       setBlankForm(true);
     }
   };
-
-  useEffect(() => {
-    if (success) {
-      router.push("/dashboard/demo");
-    }
-  }, [success, router]);
 
   useEffect(() => emailRef.current.focus(), []);
 
@@ -49,10 +61,11 @@ const LoginPage = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          if (errorMessage) {
-            setErrorMessage(null);
-          } else if (blankForm) {
+          if (blankForm) {
             setBlankForm(null);
+          }
+          if (error) {
+            setError(false);
           }
         }
       });
@@ -68,7 +81,7 @@ const LoginPage = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {errorMessage && <LoginErrorAlert msg={errorMessage} />}
+      {error && <LoginErrorAlert msg={"Terjadi kesalahan"} />}
       {blankForm && (
         <LoginErrorAlert msg={"Username atau password tidak boleh kosong"} />
       )}
@@ -110,7 +123,7 @@ const LoginPage = () => {
                   <input
                     type="text"
                     name="username"
-                    placeholder="iqbaladudu"
+                    placeholder="username"
                     className="form-control outline-none shadow-none py-2 ps-3 rounded-2 pe-5"
                     onChange={(e) => setEmail(e.currentTarget.value)}
                     ref={emailRef}
@@ -138,29 +151,29 @@ const LoginPage = () => {
                 </div>
               </div>
               <div className="form-group mb-4 d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
+                {/* <div className="d-flex align-items-center">
                   <input
                     type="checkbox"
                     className="form-check-input shadow-none outline-0 me-2"
                     id="remember_me"
                   />
                   <label for="remember_me">Ingat saya</label>
-                </div>
+                </div> */}
 
-                <a
+                {/* <a
                   href="#"
                   className="text-primary text-decoration-none text-smaller"
                 >
                   Lupa password
-                </a>
+                </a> */}
               </div>
               <button
                 onClick={handleSubmit}
-                className="btn btn-primary w-100 outline-0 border-0 shadow-none text-white"
-                disabled={loading}
+                className="btn btn-primary w-100 outline-0 border-0 shadow-none text-white mt-4"
+                disabled={login.isPending}
               >
                 <div className="py-1">
-                  {loading ? (
+                  {login.isPending ? (
                     <div
                       className="spinner-border text-white spinner-border-sm"
                       role="status"
@@ -173,7 +186,7 @@ const LoginPage = () => {
             </form>
           </div>
         </div>
-        <center>
+        {/* <center>
           <div className="mt-4">
             <span className="text-dark">Belum punya akun? </span>
             <a
@@ -183,7 +196,7 @@ const LoginPage = () => {
               Daftar
             </a>
           </div>
-        </center>
+        </center> */}
       </div>
     </div>
   );

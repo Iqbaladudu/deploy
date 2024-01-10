@@ -221,3 +221,29 @@ nav{
     display: block;
     visibility: visible !important;
 }
+
+
+/* Sweet Alert */
+
+html[data-bs-theme="dark"] body > div.swal2-container.swal2-center.swal2-backdrop-show > div {
+    background-color: #161111;
+    color: white;
+    width: 20em;
+}
+
+body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.swal2-styled:focus {
+    box-shadow: none;
+}
+
+button:where(.swal2-styled).swal2-confirm:focus {
+    box-shadow: none;
+}
+
+body > div.swal2-container.swal2-center.swal2-backdrop-show > div {
+    width: 20em;
+}
+
+body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.swal2-styled {
+    background-color: #E84D4D;
+    color: white;
+}

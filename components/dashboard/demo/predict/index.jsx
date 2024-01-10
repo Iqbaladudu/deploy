@@ -162,23 +162,23 @@ const Predict = () => {
           <p className="mb-0">
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               Accuracy :{" "}
-              <span id="accuracy_val">{modelData[engine].accuracy}</span>
+              <span id="accuracy_val">{modelData[engine].accuracy}%</span>
             </span>
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
               Precission :{" "}
-              <span id="preccission_val">{modelData[engine].preccission}</span>
+              <span id="preccission_val">{modelData[engine].preccission}%</span>
             </span>
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
-              Recall : <span id="recall_val">{modelData[engine].recall}</span>
+              Recall : <span id="recall_val">{modelData[engine].recall}%</span>
             </span>
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
-              F1-Score :<span id="f1-score">{modelData[engine].f1}</span>{" "}
+              F1-Score :<span id="f1-score">{modelData[engine].f1}%</span>{" "}
             </span>
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
-              mAP : <span id="map">{modelData[engine].map}</span>
+              mAP : <span id="map">{modelData[engine].map}%</span>
             </span>
             <span className="badge bg-soft-primary text-primary fw-semibold me-2">
-              MSE : <span id="mse">{modelData[engine].mse}</span>
+              MSE : <span id="mse">{modelData[engine].mse}%</span>
             </span>
           </p>
         </div>

@@ -23,10 +23,11 @@ import ppeTwo from "@/public/app/ppe/2.jpg";
 import vehicleOne from "@/public/app/counting-vehicle-quantity/1.jpg";
 import vehicleTwo from "@/public/app/counting-vehicle-quantity/2.jpg";
 import bananaOne from "@/public/app/banana-ripeness-classification/1.png";
-import countingVehicleOne from "@/public/app/counting-vehicle-quantity/1.jpg";
-import countingVehicleTwo from "@/public/app/counting-vehicle-quantity/2.jpg";
+import corrosionOne from "@/public/app/corrosion-classification/1.png";
 import garbageOne from "@/public/app/garbage-classification/1.jpg";
 import garbageTwo from "@/public/app/garbage-classification/2.jpg";
+
+import parse from "html-react-parser";
 
 import Image from "next/image";
 
@@ -128,7 +129,7 @@ const applicationImg = {
   predict_ppe: [ppeOne, ppeTwo],
   counting_vehicle_quantity: [vehicleOne, vehicleTwo],
   predict_banana_ripeness: [bananaOne],
-  predict_vehicle_detection: [countingVehicleOne, countingVehicleTwo],
+  predict_corrosion: [corrosionOne],
   predict_garbage_detection: [garbageOne, garbageTwo],
 };
 
@@ -137,14 +138,14 @@ const tools = [
   Two,
   Three,
   Four,
-  Five,
-  Six,
-  Seven,
-  Eight,
-  Nine,
-  Ten,
-  Eleven,
-  Tweleve,
+  // Five,
+  // Six,
+  // Seven,
+  // Eight,
+  // Nine,
+  // Ten,
+  // Eleven,
+  // Tweleve,
 ];
 
 const EngineDetail = () => {
@@ -152,16 +153,19 @@ const EngineDetail = () => {
   const engines = useEngineStore((state) => state.engines);
   const url = searchParams.get("engine");
   const image = engines.filter((arr) => arr.base_url_api == url)[0].image;
+  console.log(image, "haha");
   const trueEngineData = engineData.filter((arr) => arr.url == url);
-
-  useEffect(() => {
-    trueEngineData[0].image = image;
-  }, [image, trueEngineData]);
 
   return (
     <>
       <DemoContainer>
-        <OverviewCard {...trueEngineData[0]} />
+        <OverviewCard
+          category={trueEngineData[0].category}
+          type={trueEngineData[0].type}
+          title={trueEngineData[0].title}
+          description={trueEngineData[0].description}
+          image={image}
+        />
         <Detail {...trueEngineData[0]} tools={tools} />
         <Application {...trueEngineData[0]} img={applicationImg} />
       </DemoContainer>
@@ -255,7 +259,7 @@ const Detail = ({ background, technology_desc, tools }) => {
         <div className="card border-0 outline-0 shadow-sm h-100">
           <div className="card-body">
             <p className="text-smaller">Background</p>
-            <p id="background">{background}</p>
+            <p id="background">{parse(background)}</p>
           </div>
         </div>
       </div>

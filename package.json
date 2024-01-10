@@ -28,6 +28,7 @@
     "bootstrap-icons": "^1.11.1",
     "chart.js": "^4.4.1",
     "faker": "^6.6.6",
+    "html-react-parser": "^5.0.11",
     "iron-session": "^8.0.1",
     "next": "^14.0.3",
     "nookies": "^2.5.2",
@@ -44,7 +45,8 @@
     "sweetalert2": "^11.9.0",
     "sweetalert2-react-content": "^5.0.7",
     "uuid": "^9.0.1",
-    "zustand": "^4.4.3"
+    "zustand": "^4.4.3",
+    "zustand-persist": "^0.4.0"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",

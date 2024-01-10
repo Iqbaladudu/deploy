@@ -17,7 +17,6 @@ export async function createLog(data) {
     }
   
     const responseData = await response.json();
-    console.log(responseData)
     return responseData;
   }
   

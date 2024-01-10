@@ -107,6 +107,8 @@ const DemoContainer = ({ children }) => {
     },
   });
 
+  console.log(startCreateLog);
+
   const startPredict = useMutation({
     mutationFn: predict,
     onSuccess: (data) => {
