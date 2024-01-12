@@ -57,7 +57,7 @@ const LoginPage = () => {
         icon: "error",
         title: "Oops...",
         text: `${msg}`,
-        confirmButtonText: "Coba lagi",
+        confirmButtonText: "Oke",
       })
       .then((result) => {
         if (result.isConfirmed) {
@@ -169,7 +169,7 @@ const LoginPage = () => {
               </div>
               <button
                 onClick={handleSubmit}
-                className="btn btn-primary w-100 outline-0 border-0 shadow-none text-white mt-4"
+                className={`btn btn-primary w-100 outline-0 border-0 shadow-none text-white mt-4`}
                 disabled={login.isPending}
               >
                 <div className="py-1">

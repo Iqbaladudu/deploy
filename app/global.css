@@ -43,7 +43,7 @@ html[data-bs-theme="dark"] .text-success {
     color: rgb(155, 232, 12) !important;
 }
 
-.btn-primary, ::selection, .btn:disabled {
+.btn-primary, ::selection{
     background-color: #E84D4D;
     color: white;
 }
@@ -93,6 +93,10 @@ label,.text-smaller{
 }
 .bg-soft-primary{
     background-color: #e84d4d2a !important;
+}
+
+.bg-soft-success {
+    background-color: rgba(110, 197, 52, 0.1) !important;
 }
 .text-primary{
     color: #E84D4D !important;
@@ -252,3 +256,53 @@ body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-ac
     background-color: black !important;
     opacity: 0.8 !important;
   }
+
+html[data-bs-theme="dark"] .btn:disabled {
+    background-color: #140B0B !important;
+}
+
+.btn:disabled {
+    background-color: #0e0707 !important;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles {
+    background-color:  #140B0B !important;
+    border: none !important;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div {
+    background-color:  #140B0B !important;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner {
+    background-color: #140B0B;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title {
+    color: white;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title > button {
+    color: #E84D4D;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
+    background-color: #3f2121 !important;
+    border: none;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > div {
+    color: #E84D4D;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-back {
+    color: #E84D4D;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-addMore {
+    color: #E84D4D;
+}

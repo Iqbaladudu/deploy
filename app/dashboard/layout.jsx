@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }) {
       >
         <div className="row m-0 p-0 vh-100">
           <VerticalNavbar />
-          <div className={``}>{children}</div>
+          {children}
         </div>
       </div>
     </div>

@@ -56,10 +56,10 @@ const Upload = () => {
       });
       convertToBase64(file)
         .then((base64Image) => {
-          console.log("Base64 image:", base64Image);
+          // console.log("Base64 image:", base64Image);
         })
         .catch((error) => {
-          console.error(error);
+          // console.error(error);
         });
     }
   };

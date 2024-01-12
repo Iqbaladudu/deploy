@@ -24,6 +24,7 @@ import {
   Image as ImgIcn,
   Info,
   Headphones,
+  ChevronDown,
 } from "react-feather";
 import Image from "next/image";
 import imgDummy from "@/public/image-dummy.png";
@@ -105,7 +106,7 @@ const VerticalNavbar = () => {
     <>
       <div className={`sidebar shadow-sm py-3 ${!collapse && "open"}`}>
         <ul className="list-group list-unstyled" style={{ paddingTop: "12px" }}>
-          <li className="mb-4">
+          <li className="mb-2">
             <div
               className="card border-0 outline-0"
               style={{ backgroundColor: "#c4c4c42a" }}
@@ -131,12 +132,12 @@ const VerticalNavbar = () => {
                       </p>
                       <small className="opacity-50">Workspace</small>
                     </div>
-                    <i
+                    <ChevronDown
                       className="ms-auto"
                       data-feather="chevron-down"
                       width="16"
                       height="16"
-                    ></i>
+                    />
                   </div>
                   <ul
                     className="dropdown-menu border-0 shadow-sm"

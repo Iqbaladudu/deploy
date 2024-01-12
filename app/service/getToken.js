@@ -1,7 +1,5 @@
 export async function getToken({ email, password }) {
   const url = `${process.env.url}/auth/token/get/`;
-
-  console.log(email, password);
   const data = {
     username: email,
     password: password,

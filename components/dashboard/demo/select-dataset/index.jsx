@@ -8,6 +8,8 @@ import DropTarget from "@uppy/drop-target";
 import { useRouter, useSearchParams } from "next/navigation";
 import { convertToBase64 } from "@/app/utils";
 import useImgArrStore from "@/app/store/useImgArrStore";
+import DragDrop from "@uppy/drag-drop";
+import { Dashboard } from "@uppy/react";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -15,17 +17,16 @@ const baseUppy = new Uppy({
   },
 });
 
-if (typeof window === "object") {
-  const dragDrop = baseUppy.use(DropTarget, {
-    target: "#dragImageHere",
-    onDragLeave: (event) => {
-      event.stopPropagation();
-    },
-  });
-}
+// if (typeof window === "object") {
+//   const dragDrop = baseUppy.use(DropTarget, {
+//     target: "#dragImageHere",
+//     onDragLeave: (event) => {
+//       event.stopPropagation();
+//     },
+//   });
+// }
 
 const uppy = baseUppy.use(ImageEditor);
-console.log(uppy.getFiles());
 
 const SelectDataset = () => {
   const [selectedPosition, setSelectedPosition] = useState(true);
@@ -39,6 +40,8 @@ const SelectDataset = () => {
   const engine = searchParams.get("engine");
   const [fileArr, setFileArr] = useState([]);
   const addImage = useImgArrStore((state) => state.addImage);
+  const removeImage = useImgArrStore((state) => state.removeImage);
+  const removeAll = useImgArrStore((state) => state.removeAll);
   const images = useImgArrStore((state) => state.images);
 
   useEffect(() => {
@@ -71,26 +74,50 @@ const SelectDataset = () => {
     }
   }, []);
 
-  const handleChange = (event) => {
-    const files = [...event.target.files];
+  uppy.on("file-added", (file) => {
+    setFileArr((prevItem) => Array.from(new Set([...prevItem, file])));
+  });
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      convertToBase64(file)
-        .then((base64Image) => {
-          const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
-          const dataImg = regex.exec(base64Image)[1];
-          setFileArr((prevItem) => [...prevItem, dataImg]);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+  uppy.on("file-removed", (file, reason) => {
+    if (reason === "removed-by-user") {
+      removeImage(file.id);
+    } else if (reason === "cancel-all") {
+      removeAll();
     }
-  };
+  });
+
+  uppy.on("files-added", (files) => {
+    // for (let i = 0; i < files.length; i++) {
+    //   const file = files[i];
+    //   convertToBase64(file.data)
+    //     .then((base64Image) => {
+    //       const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
+    //       const dataImg = regex.exec(base64Image)[1];
+    //       setFileArr((prevItem) => Array.from(new Set([...prevItem, dataImg])));
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // }
+    setFileArr((prevItem) => Array.from(new Set([...prevItem, ...files])));
+  });
 
   return (
     <DemoContainer>
-      <input type="file" id="fileInput" multiple onChange={handleChange} />
+      {/* <input type="file" id="dragImageHere" multiple onChange={handleChange} /> */}
+      <div>
+        <Dashboard
+          uppy={uppy}
+          plugins={["ImageEditor"]}
+          hideUploadButton={true}
+          width={"100%"}
+          locale={{
+            strings: {
+              poweredBy: "Indonesia AI",
+            },
+          }}
+        />
+      </div>
     </DemoContainer>
   );
 };

@@ -126,7 +126,7 @@ const Info = () => {
       .sort((a, b) => new Date(a.date_updated) - new Date(b.date_updated));
 
   return (
-    <div className="content w-100">
+    <div className="content w-100 p-0">
       <div className="container-fluid p-4">
         <div className="d-flex align-items-center text-smaller">
           <Link
@@ -200,7 +200,7 @@ const Info = () => {
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className="row p-0">
           {isLoading ? (
             "loading"
           ) : (

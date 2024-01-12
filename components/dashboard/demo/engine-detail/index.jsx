@@ -127,7 +127,7 @@ const engineData = [
 const applicationImg = {
   predict_barcode_detection: [barcodeOne, barcodeTwo],
   predict_ppe: [ppeOne, ppeTwo],
-  counting_vehicle_quantity: [vehicleOne, vehicleTwo],
+  predict_vehicle_detection: [vehicleOne, vehicleTwo],
   predict_banana_ripeness: [bananaOne],
   predict_corrosion: [corrosionOne],
   predict_garbage_detection: [garbageOne, garbageTwo],
@@ -153,21 +153,21 @@ const EngineDetail = () => {
   const engines = useEngineStore((state) => state.engines);
   const url = searchParams.get("engine");
   const image = engines.filter((arr) => arr.base_url_api == url)[0].image;
-  console.log(image, "haha");
-  const trueEngineData = engineData.filter((arr) => arr.url == url);
+  const trueEngineData = engines.filter((arr) => arr.base_url_api == url);
 
   return (
     <>
       <DemoContainer>
         <OverviewCard
-          category={trueEngineData[0].category}
-          type={trueEngineData[0].type}
+          category={trueEngineData[0].category_data.name}
+          type={trueEngineData[0].type_data.name}
           title={trueEngineData[0].title}
-          description={trueEngineData[0].description}
+          description={trueEngineData[0].desc}
           image={image}
+          url={url}
         />
         <Detail {...trueEngineData[0]} tools={tools} />
-        <Application {...trueEngineData[0]} img={applicationImg} />
+        <Application {...trueEngineData[0]} img={applicationImg} url={url} />
       </DemoContainer>
     </>
   );
@@ -175,28 +175,37 @@ const EngineDetail = () => {
 
 export default EngineDetail;
 
-const Application = ({ application_desc, img, url }) => {
+const Application = ({ application, img, url }) => {
   return (
     <div className="row">
       <div className="col-12">
         <div className="card border-0 outline-0 shadow-sm">
           <div className="card-body">
             <p className="text-smaller">Application</p>
-            <p id="application_desc">{application_desc}</p>
+            <p id="application_desc">{application}</p>
             <div className="row p-2" id="application">
               {img[url]?.map((arr, index) => (
-                <div className="col-3 p-1" key={index}>
-                  <div
+                <div className="col-3 d-flex" key={index}>
+                  {/* <div
                     className="rounded-3"
                     style={{
                       backgroundImage: `url(${arr.src})`,
-                      width: "100%",
-                      aspectRatio: "1/1",
                       backgroundPosition: "center",
                       backgroundSize: "cover",
                       backgroundRepeat: "no-repeat",
                     }}
-                  ></div>
+                  ></div> */}
+                  <Image
+                    src={arr}
+                    alt=""
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -207,7 +216,15 @@ const Application = ({ application_desc, img, url }) => {
   );
 };
 
-const OverviewCard = ({ category, type, title, description, image }) => {
+const OverviewCard = ({ category, type, title, description, image, url }) => {
+  const peforma = {
+    predict_barcode_detection: "71.7%",
+    predict_ppe: "79.2%",
+    predict_vehicle_detection: " 86.2%",
+    predict_banana_ripeness: "92.4%",
+    predict_corrosion: "98%",
+    predict_garbage_detection: "71%",
+  };
   return (
     <div className="row">
       <div className="col-12 col-md-2 mb-2 mb-md-0">
@@ -246,13 +263,19 @@ const OverviewCard = ({ category, type, title, description, image }) => {
             {title}
           </p>
           <p id="desc-name">{description}</p>
+          <p class="mb-3">
+            <span class="text-warning fw-semibold me-2 mb-2 rounded-3 ">
+              Performa (F1-score):{" "}
+              <span id="performa-engine">{peforma[url]}</span>
+            </span>
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-const Detail = ({ background, technology_desc, tools }) => {
+const Detail = ({ background, technology, tools }) => {
   return (
     <div className="row align-content-stretch mt-3 mb-md-3">
       <div className="col-12 col-md-12 mb-3">
@@ -267,7 +290,7 @@ const Detail = ({ background, technology_desc, tools }) => {
         <div className="card border-0 outline-0 shadow-sm h-100">
           <div className="card-body">
             <p className="text-smaller">Technology</p>
-            <p id="technology_desc">{technology_desc}</p>
+            <p id="technology_desc">{technology}</p>
             <div className="row" id="technology">
               {tools.map((arr, index) => (
                 <div className="col-1 p-2" key={index}>

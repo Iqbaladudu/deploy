@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { createTitle } from "@/app/utils";
+import { convertToBase64, createTitle } from "@/app/utils";
 import { useEffect, useState } from "react";
 import { Pocket } from "react-feather";
 import useImgArrStore from "@/app/store/useImgArrStore";
 import { createLog, getEngine, getUser, predict } from "@/app/service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  useBase64ArrStore,
   useEngineStore,
   useLogStore,
   useMenuStore,
@@ -50,6 +51,7 @@ const DemoContainer = ({ children }) => {
   const [currentEngineId, setCurrentEngineId] = useState();
   const [logId, setLogId] = useState();
   const [userId, setUserId] = useState();
+  const [convertedImg, setConvertedImg] = useState([]);
 
   const option = searchParams.get("option");
   const engine = searchParams.get("engine");
@@ -64,10 +66,33 @@ const DemoContainer = ({ children }) => {
   const addEnd = useTimeStore((state) => state.addEnd);
   const menu = useMenuStore((state) => state.menu);
   const setMenuData = useMenuStore((state) => state.setMenuData);
+  const addBase64Img = useBase64ArrStore((state) => state.addBase64Img);
+  const base64Img = useBase64ArrStore((state) => state.base64Img);
 
-  // useEffect(() => {
-  //   setMenuData(menu);
-  // }, [menu, setMenuData]);
+  useEffect(() => {
+    if (images[0]?.length > 0 && option == "select-dataset") {
+      for (let i = 0; i < images[0].length; i++) {
+        const file = images[0][i];
+        convertToBase64(file.data)
+          .then((base64Image) => {
+            const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
+            const dataImg = regex.exec(base64Image)[1];
+            setConvertedImg((prevItem) =>
+              Array.from(new Set([...prevItem, dataImg]))
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    }
+  }, [images, addBase64Img, convertedImg, option]);
+
+  useEffect(() => {
+    if (images[0]?.length && option == "select-dataset") {
+      addBase64Img(convertedImg);
+    }
+  }, [addBase64Img, images, convertedImg, option]);
 
   const currentDateTime = new Date();
   const formattedDateTime = currentDateTime.toLocaleString("en-US", {
@@ -215,7 +240,7 @@ const DemoContainer = ({ children }) => {
     startPredict.mutate({
       engine_id: `${currentEngineId}`,
       log_id: `${log.id}`,
-      images: images[0],
+      images: base64Img[0],
     });
   };
 
@@ -234,7 +259,7 @@ const DemoContainer = ({ children }) => {
           <p id="page-title" className="mb-0 opacity-75"></p>
         </div>
         <div className="mt-4">
-          <p className="fw-bold text-primary fs-2" id="engine-name">
+          <p className="fw-bold fs-4 text-primary" id="engine-name">
             {titleArr[engine][0]}
           </p>
         </div>

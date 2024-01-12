@@ -88,109 +88,109 @@ const SelectEngine = () => {
   }, [addData, data, isPending]);
 
   return (
-    <div className="content w-100">
+    <div className="content w-100 p-0">
       <div className="container-fluid p-4">
-        <div className="row mt-4">
-          <div
-            className="card border-0 outline-0 shadow-sm mb-3"
-            style={{
-              backgroundImage: `url(${bgImageCorporate.src})`,
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-            <div className="card-body px-4">
-              <p className="fs-3 fw-bold text-primary mb-0">Axioma API Demo</p>
-              <p>
-                A user-friendly and specialized AI Engine designed for your AI
-                solution in various industries, developed by Indonesia AI (PT.
-                Teknologi Artifisial Indonesia).
-              </p>
+        <div
+          className="card border-0 outline-0 shadow-sm mb-3"
+          style={{
+            backgroundImage: `url(${bgImageCorporate.src})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="card-body px-4">
+            <p className="fs-3 fw-bold text-primary mb-0">Axioma API Demo</p>
+            <p>
+              A user-friendly and specialized AI Engine designed for your AI
+              solution in various industries, developed by Indonesia AI (PT.
+              Teknologi Artifisial Indonesia).
+            </p>
 
-              <div className="d-none d-md-flex align-items-center">
-                <p className="mb-0 me-2">Domain Option: </p>
-                <div
-                  style={{ width: "30px", height: "30px" }}
-                  className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                >
-                  <i
-                    className="fa fa-building text-white"
-                    style={{ fontSize: "x-small" }}
-                  ></i>
-                </div>
-                <p className="mb-0 me-3">Smart City</p>
-                <div
-                  style={{ width: "30px", height: "30px" }}
-                  className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                >
-                  <i
-                    className="fa fa-archive text-white"
-                    style={{ fontSize: "x-small" }}
-                  ></i>
-                </div>
-                <p className="mb-0 me-3">Retail</p>
-                <div
-                  style={{ width: "30px", height: "30px" }}
-                  className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                >
-                  <i
-                    className="fa fa-industry text-white"
-                    style={{ fontSize: "x-small" }}
-                  ></i>
-                </div>
-                <p className="mb-0 me-3">Manufacture</p>
+            <div className="d-none d-md-flex align-items-center">
+              <p className="mb-0 me-2">Domain Option: </p>
+              <div
+                style={{ width: "30px", height: "30px" }}
+                className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
+              >
+                <i
+                  className="fa fa-building text-white"
+                  style={{ fontSize: "x-small" }}
+                ></i>
               </div>
+              <p className="mb-0 me-3">Smart City</p>
+              <div
+                style={{ width: "30px", height: "30px" }}
+                className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
+              >
+                <i
+                  className="fa fa-archive text-white"
+                  style={{ fontSize: "x-small" }}
+                ></i>
+              </div>
+              <p className="mb-0 me-3">Retail</p>
+              <div
+                style={{ width: "30px", height: "30px" }}
+                className="mx-2 d-flex align-items-center justify-content-center rounded-circle bg-dark"
+              >
+                <i
+                  className="fa fa-industry text-white"
+                  style={{ fontSize: "x-small" }}
+                ></i>
+              </div>
+              <p className="mb-0 me-3">Manufacture</p>
+            </div>
 
-              <div className="d-md-none d-block">
-                <p className="me-2 mb-2">Project Type: </p>
-                <div className="row">
-                  <div className="col-auto">
-                    <center>
-                      <div
-                        style={{ width: "30px", height: "30px" }}
-                        className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                      >
-                        <i
-                          className="fa fa-building text-white"
-                          style={{ fontSize: "x-small" }}
-                        ></i>
-                      </div>
-                      <p className="mb-0">Smart City</p>
-                    </center>
-                  </div>
-                  <div className="col-auto">
-                    <center>
-                      <div
-                        style={{ width: "30px", height: "30px" }}
-                        className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                      >
-                        <i
-                          className="fa fa-archive text-white"
-                          style={{ fontSize: "x-small" }}
-                        ></i>
-                      </div>
-                      <p className="mb-0">Retail</p>
-                    </center>
-                  </div>
-                  <div className="col-auto">
-                    <center>
-                      <div
-                        style={{ width: "30px", height: "30px" }}
-                        className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
-                      >
-                        <i
-                          className="fa fa-industry text-white"
-                          style={{ fontSize: "x-small" }}
-                        ></i>
-                      </div>
-                      <p className="mb-0">Manufacture</p>
-                    </center>
-                  </div>
+            <div className="d-md-none d-block">
+              <p className="me-2 mb-2">Project Type: </p>
+              <div className="row">
+                <div className="col-auto">
+                  <center>
+                    <div
+                      style={{ width: "30px", height: "30px" }}
+                      className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
+                    >
+                      <i
+                        className="fa fa-building text-white"
+                        style={{ fontSize: "x-small" }}
+                      ></i>
+                    </div>
+                    <p className="mb-0">Smart City</p>
+                  </center>
+                </div>
+                <div className="col-auto">
+                  <center>
+                    <div
+                      style={{ width: "30px", height: "30px" }}
+                      className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
+                    >
+                      <i
+                        className="fa fa-archive text-white"
+                        style={{ fontSize: "x-small" }}
+                      ></i>
+                    </div>
+                    <p className="mb-0">Retail</p>
+                  </center>
+                </div>
+                <div className="col-auto">
+                  <center>
+                    <div
+                      style={{ width: "30px", height: "30px" }}
+                      className="d-flex align-items-center justify-content-center rounded-circle bg-dark"
+                    >
+                      <i
+                        className="fa fa-industry text-white"
+                        style={{ fontSize: "x-small" }}
+                      ></i>
+                    </div>
+                    <p className="mb-0">Manufacture</p>
+                  </center>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="row mt-4">
           <div className="col-12">
             <p className="text-smaller fw-semibold opacity-50">Daftar engine</p>
           </div>
@@ -201,7 +201,8 @@ const SelectEngine = () => {
               ))}
             </>
           )}
-          {isPending && "Loading"}
+
+          {isPending && <p>Loading</p>}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import DemoContainer from "../demoContainer";
 import Image from "next/image";
 import { convertToImage } from "@/app/utils";
 import { useSearchParams } from "next/navigation";
+import { useBase64ArrStore } from "@/app/store";
 
 const modelData = {
   predict_corrosion: {
@@ -88,7 +89,8 @@ const modelData = {
 };
 
 const Predict = () => {
-  const images = useImgArrStore((state) => state.images);
+  // const images = useImgArrStore((state) => state.images);
+  const base64Img = useBase64ArrStore((state) => state.base64Img);
   const params = useSearchParams();
   const engine = params.get("engine");
 
@@ -97,12 +99,12 @@ const Predict = () => {
       <div className="row mb-4 justify-content-between">
         <div className="col-12">
           <p className="mb-0" id="total-image">
-            {images[0].length} total gambar
+            {base64Img[0].length} total gambar
           </p>
         </div>
       </div>
       <div className="row mb-4" id="previewImage">
-        {images[0].map((url, index) => (
+        {base64Img[0].map((url, index) => (
           <div key={index} className="col-3 col-md-2 col-xxl-2 mb-2 mb-md-3">
             <Image
               src={convertToImage(url)}
@@ -160,24 +162,24 @@ const Predict = () => {
         </div>
         <div className="col-8">
           <p className="mb-0">
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               Accuracy :{" "}
               <span id="accuracy_val">{modelData[engine].accuracy}%</span>
             </span>
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               Precission :{" "}
               <span id="preccission_val">{modelData[engine].preccission}%</span>
             </span>
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               Recall : <span id="recall_val">{modelData[engine].recall}%</span>
             </span>
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               F1-Score :<span id="f1-score">{modelData[engine].f1}%</span>{" "}
             </span>
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               mAP : <span id="map">{modelData[engine].map}%</span>
             </span>
-            <span className="badge bg-soft-primary text-primary fw-semibold me-2">
+            <span className="badge bg-soft-success text-success fw-semibold me-2">
               MSE : <span id="mse">{modelData[engine].mse}%</span>
             </span>
           </p>
