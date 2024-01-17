@@ -89,7 +89,7 @@ const DemoContainer = ({ children }) => {
   }, [images, addBase64Img, convertedImg, option]);
 
   useEffect(() => {
-    if (images[0]?.length && option == "select-dataset") {
+    if (images[0]?.length > 0 && option == "select-dataset") {
       addBase64Img(convertedImg);
     }
   }, [addBase64Img, images, convertedImg, option]);
@@ -318,7 +318,7 @@ const DemoContainer = ({ children }) => {
                       onClick={option == "predict" ? onPredict : handleNextStep}
                       className="btn btn-primary outline-0 border-0 shadow-none text-smaller"
                       disabled={
-                        option == "select-dataset" && images[0]?.length === 0
+                        option == "select-dataset" && base64Img[0]?.length === 0
                       }
                     >
                       <Pocket width="14" height="14" className="me-2" />

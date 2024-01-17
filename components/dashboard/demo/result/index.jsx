@@ -155,9 +155,12 @@ const ResultImg = ({ result }) => {
                 <Image
                   src={`data:image/<mime-type>;base64, ${arr.image}`}
                   alt=""
-                  className="w-100 rounded-1"
-                  height={100}
+                  className="rounded-1"
+                  style={{
+                    width: "100%",
+                  }}
                   width={100}
+                  height={100}
                 />
               </Zoom>
             </div>

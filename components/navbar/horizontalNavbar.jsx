@@ -24,17 +24,17 @@ const HorizontalNavbar = () => {
   const theme = useThemeStore((state) => state.theme);
   const router = useRouter();
 
-  function logoutNow() {
-    destroyCookie(null, "iaiaccess");
-    router.push("/");
-  }
-
   const user = useUserStore((state) => state.user);
   const addUser = useUserStore((state) => state.addUser);
   const pathname = usePathname();
   if (pathname === "/dashboard") {
     permanentRedirect("/dashboard/home/");
   }
+
+  function logoutNow() {
+    router.push("/api/auth/logout");
+  }
+
   const userData = useMutation({
     mutationFn: getUser,
     onSuccess: (data) => {
