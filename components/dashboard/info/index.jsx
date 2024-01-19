@@ -282,7 +282,12 @@ const Info = () => {
           ) : (
             <>
               {isLoading ? (
-                <p>Loading</p>
+                <div className="d-flex justify-content-center">
+                  <div
+                    className="spinner-border text-white spinner-border-sm"
+                    role="status"
+                  ></div>
+                </div>
               ) : (
                 <>
                   {ascending &&

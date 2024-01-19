@@ -6,9 +6,17 @@ const useBase64ArrStore = create(
     (set) => ({
       base64Img: [],
       addBase64Img: (image) =>
-        set((state) => ({ base64Img: [Array.from(new Set(image))] })),
-      // removeBase64: () => set((state) => {base64Img: []}),
-      // removeBase64All: () => set((state) => {base64Img: []}),
+        set((state) => ({
+          base64Img: Array.from(new Set(image)).map((arr) => JSON.parse(arr)),
+        })),
+      removeBase64Img: (id) =>
+        set((state) => ({
+          base64Img: state.base64Img.filter((obj) => obj.id !== id),
+        })),
+      removeBase64ImgAll: () =>
+        set((state) => ({
+          base64Img: [],
+        })),
     }),
     {
       name: "datasets-base64",

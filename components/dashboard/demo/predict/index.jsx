@@ -94,20 +94,22 @@ const Predict = () => {
   const params = useSearchParams();
   const engine = params.get("engine");
 
+  console.log(base64Img);
+
   return (
     <DemoContainer>
       <div className="row mb-4 justify-content-between">
         <div className="col-12">
           <p className="mb-0" id="total-image">
-            {base64Img[0].length} total gambar
+            {base64Img.length} total gambar
           </p>
         </div>
       </div>
       <div className="row mb-4" id="previewImage">
-        {base64Img[0].map((url, index) => (
+        {base64Img.map((url, index) => (
           <div key={index} className="col-3 col-md-2 col-xxl-2 mb-2 mb-md-3">
             <Image
-              src={convertToImage(url)}
+              src={convertToImage(url.img)}
               className="w-100 rounded-1"
               style={{ aspectRatio: "1/1" }}
               width={100}

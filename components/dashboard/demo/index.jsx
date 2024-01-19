@@ -74,7 +74,7 @@ const Card = ({
 };
 
 const SelectEngine = () => {
-  const { isPending, data } = useQuery({
+  const { isPending, isSuccess, data } = useQuery({
     queryKey: ["engine"],
     queryFn: getEngine,
   });
@@ -194,15 +194,21 @@ const SelectEngine = () => {
           <div className="col-12">
             <p className="text-smaller fw-semibold opacity-50">Daftar engine</p>
           </div>
-          {!isPending && (
+          {!isPending && isSuccess && (
             <>
               {data?.data.map((props) => (
                 <Card key={props.id} {...props} />
               ))}
             </>
           )}
-
-          {isPending && <p>Loading</p>}
+          <div className="d-flex justify-content-center">
+            {isPending && (
+              <div
+                className="spinner-border text-white spinner-border-sm"
+                role="status"
+              ></div>
+            )}
+          </div>
         </div>
       </div>
     </div>

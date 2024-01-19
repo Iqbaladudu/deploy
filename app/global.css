@@ -291,11 +291,16 @@ body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.conte
     overflow: hidden !important;
 }
 
+
 html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title {
     color: white;
 }
 
 html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title > button {
+    color: #E84D4D;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title > button {
     color: #E84D4D;
 }
 

@@ -173,7 +173,7 @@ const LoginPage = () => {
                 disabled={login.isPending}
               >
                 <div className="py-1">
-                  {login.isPending ? (
+                  {login.isPending || login.status === "success" ? (
                     <div
                       className="spinner-border text-white spinner-border-sm"
                       role="status"

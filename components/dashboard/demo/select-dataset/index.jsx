@@ -10,6 +10,7 @@ import { convertToBase64 } from "@/app/utils";
 import useImgArrStore from "@/app/store/useImgArrStore";
 import DragDrop from "@uppy/drag-drop";
 import { Dashboard } from "@uppy/react";
+import { useBase64ArrStore } from "@/app/store";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -43,6 +44,17 @@ const SelectDataset = () => {
   const removeImage = useImgArrStore((state) => state.removeImage);
   const removeAll = useImgArrStore((state) => state.removeAll);
   const images = useImgArrStore((state) => state.images);
+  const base64Img = useBase64ArrStore((state) => state.base64Img);
+  const removeBase64Img = useBase64ArrStore((state) => state.removeBase64Img);
+  const removeBase64ImgAll = useBase64ArrStore(
+    (state) => state.removeBase64ImgAll
+  );
+
+  useEffect(() => {
+    if (base64Img.length === 0) {
+      uppy.cancelAll();
+    }
+  }, []);
 
   useEffect(() => {
     addImage(fileArr);
@@ -80,9 +92,11 @@ const SelectDataset = () => {
 
   uppy.on("file-removed", (file, reason) => {
     if (reason === "removed-by-user") {
+      removeBase64Img(file.id);
       removeImage(file.id);
     } else if (reason === "cancel-all") {
       removeAll();
+      // removeBase64ImgAll();
     }
   });
 
@@ -105,7 +119,11 @@ const SelectDataset = () => {
   return (
     <DemoContainer>
       {/* <input type="file" id="dragImageHere" multiple onChange={handleChange} /> */}
-      <div>
+      <div
+        style={{
+          border: "1px dashed #E84D4D",
+        }}
+      >
         <Dashboard
           uppy={uppy}
           plugins={["ImageEditor"]}
