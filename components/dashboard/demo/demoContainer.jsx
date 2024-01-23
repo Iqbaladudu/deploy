@@ -165,8 +165,10 @@ const DemoContainer = ({ children }) => {
       addEnd(formattedDateTime);
       addResult(data);
       startUpdateLog.mutate({
-        results: `${JSON.stringify(data)}`,
+        result: `${JSON.stringify(data)}`,
         id: `${log.id}`,
+        last_step: "result",
+        key: `${log.key}`,
       });
       router.push(`/dashboard/demo?engine=${engine}&option=result`);
       setCurrentStep("result");
@@ -259,6 +261,22 @@ const DemoContainer = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (option === "result") {
+      const donePos = menu.map((arr) => {
+        if (arr.url === "predict") {
+          return {
+            ...arr,
+            doneTask: true,
+          };
+        } else {
+          return arr;
+        }
+      });
+      setMenuData(donePos);
+    }
+  }, []);
+
   const onPredict = () => {
     startPredict.mutate({
       engine_id: `${currentEngineId}`,
@@ -266,8 +284,10 @@ const DemoContainer = ({ children }) => {
       images: base64Img.map((arr) => arr.img),
     });
     startUpdateLog.mutate({
-      input: `${JSON.stringify(base64Img)}`,
+      input: `dsfdsfhdjgh`,
       id: `${log.id}`,
+      last_step: "predict",
+      key: `${log.key}`,
     });
   };
 
@@ -361,7 +381,10 @@ const DemoContainer = ({ children }) => {
                     </button>
                   )}
                 </div>
-                {startPredict.isPending || startCreateLog.isPending ? (
+                {startPredict.isPending ||
+                startCreateLog.isPending ||
+                startCreateLog.status === "success" ||
+                startPredict.status === "success" ? (
                   <>
                     <div className="d-flex justify-content-center">
                       <div

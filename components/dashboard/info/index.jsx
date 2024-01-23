@@ -1,14 +1,16 @@
-import { getEngine } from "@/app/service";
+import { getEngine, getResJson } from "@/app/service";
 import { getLog } from "@/app/service/getLog";
 import { removeLog } from "@/app/service/removeLog";
-import { useEngineStore } from "@/app/store";
+import { useEngineStore, useUserStore } from "@/app/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bookmark, Clock, Filter, Grid, List } from "react-feather";
+import Zoom from "react-medium-image-zoom";
 
-const LogCard = ({ date_updated, engine, user, id }) => {
+const LogCard = ({ date_updated, engine, user, id, identifier }) => {
   function addZero(i) {
     if (i < 10) {
       i = "0" + i;
@@ -49,7 +51,7 @@ const LogCard = ({ date_updated, engine, user, id }) => {
   return (
     <div
       className="col-12 col-md-4 mb-3"
-      onClick={() => router.push(`/dashboard/info?id=${id}`)}
+      onClick={() => router.push(`/dashboard/info?key=${identifier}`)}
     >
       <div
         className="card border-0 outline-0 shadow-sm mb-3 pointer card-engine"
@@ -107,16 +109,25 @@ const LogCard = ({ date_updated, engine, user, id }) => {
 };
 
 const Info = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: "get-log",
+  const [count, setCount] = useState(10);
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
+  const user = useUserStore((state) => state.user);
+  const id = user.id;
+  const { data, isLoading, refetch, isRefetching } = useQuery({
+    queryKey: ["get-log", id, count, 1 || page],
     queryFn: getLog,
   });
+  const router = useRouter();
 
   const [detail, setDetail] = useState(false);
-  const searchParams = useSearchParams();
-  const log = searchParams.get("id");
+  const log = searchParams.get("key");
 
-  const router = useRouter();
+  useEffect(() => {
+    if (!page) {
+      router.push("?page=1");
+    }
+  }, []);
 
   const [selectedValue, setSelectedValue] = useState("10");
   const [detailView, setDetailView] = useState("GRID");
@@ -137,6 +148,8 @@ const Info = () => {
     data.data
       .slice(0, parseInt(selectedValue))
       .sort((a, b) => new Date(a.date_updated) - new Date(b.date_updated));
+
+  console.log(asc, desc);
 
   return (
     <div className="content w-100 p-0">
@@ -276,125 +289,206 @@ const Info = () => {
             </div>
           )}
         </div>
-        <div className="row p-0">
-          {log ? (
-            <InfoDetail view={detailView} />
-          ) : (
-            <>
-              {isLoading ? (
-                <div className="d-flex justify-content-center">
-                  <div
-                    className="spinner-border text-white spinner-border-sm"
-                    role="status"
-                  ></div>
-                </div>
+        {data?.data?.length < 1 ? (
+          <p
+            style={{
+              textAlign: "center",
+            }}
+          >
+            Belum ada data
+          </p>
+        ) : (
+          <>
+            <div className="row p-0">
+              {log ? (
+                <InfoDetail view={detailView} />
               ) : (
                 <>
-                  {ascending &&
-                    asc.map((props, index) => (
-                      <LogCard {...props} key={index} />
-                    ))}
-                  {!ascending &&
-                    desc.map((props, index) => (
-                      <LogCard {...props} key={index} />
-                    ))}
+                  {isLoading ? (
+                    <div className="d-flex justify-content-center my-5">
+                      <div
+                        className="spinner-border text-white spinner-border-sm"
+                        role="status"
+                      ></div>
+                    </div>
+                  ) : (
+                    <>
+                      {ascending &&
+                        asc.map((props, index) => (
+                          <>
+                            {console.log(props)}
+                            <LogCard {...props} identifier={props.key} />
+                          </>
+                        ))}
+                      {!ascending &&
+                        desc.map((props, index) => (
+                          <>
+                            {console.log(props)}
+                            <LogCard {...props} identifier={props.key} />
+                          </>
+                        ))}
+                    </>
+                  )}
                 </>
               )}
-            </>
-          )}
-        </div>
+            </div>
+            {!log && (
+              <>
+                {data && (
+                  <div className="d-flex justify-content-center">
+                    <ul class="pagination">
+                      <li class={`page-item ${page == 1 && "disabled"}`}>
+                        <Link
+                          class="page-link"
+                          href={`?page=${parseInt(page) - 1}`}
+                          aria-label="Previous"
+                        >
+                          <span aria-hidden="true">&laquo;</span>
+                        </Link>
+                      </li>
+                      {data &&
+                        Array.from(
+                          { length: data.total_pages },
+                          (_, i) => i + 1
+                        ).map((arr, index) => (
+                          <li
+                            key={index}
+                            class={`page-item ${
+                              page == arr && "active disabled"
+                            }`}
+                            onClick={refetch}
+                          >
+                            <Link class="page-link" href={`?page=${arr}`}>
+                              {arr}
+                            </Link>
+                          </li>
+                        ))}
+                      <li
+                        class={`page-item ${
+                          page == data.total_pages && "disabled"
+                        }`}
+                      >
+                        <Link
+                          class="page-link"
+                          href={`?page=${parseInt(page) + 1}`}
+                          aria-label="Next"
+                        >
+                          <span aria-hidden="true">&raquo;</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 const InfoDetail = ({ view }) => {
+  const searchParams = useSearchParams();
+  const key = searchParams.get("key");
+
+  const getJSON = useQuery({
+    queryKey: ["get-res-json", key],
+    queryFn: getResJson,
+  });
+
+  const resData = getJSON.isSuccess && JSON.parse(getJSON.data?.result);
+  console.log(resData);
+
   return (
-    <div className="card border-0 outline-0 shadow-sm mt-4">
-      <div className="card-body p-2">
-        <div className="row mt-3" id="content">
-          {view === "GRID" ? (
-            <>
-              <div class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3">
-                <div class="p-2 rounded-2 img-result">
-                  <center>
-                    <img
-                      src="https://th.bing.com/th/id/OIP.YYZJNNin-9pT6aKNmpqVtQHaGl?rs=1&pid=ImgDetMain"
-                      class="w-75 mb-2 rounded-2"
-                      alt=""
-                    />
-                    <p class="text-smaller opacity-50 mb-0">filename.jpg</p>
-                  </center>
-                </div>
-              </div>
-              <div class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3">
-                <div class="p-2 rounded-2 img-result">
-                  <center>
-                    <img
-                      src="https://th.bing.com/th/id/OIP.YYZJNNin-9pT6aKNmpqVtQHaGl?rs=1&pid=ImgDetMain"
-                      class="w-75 mb-2 rounded-2"
-                      alt=""
-                    />
-                    <p class="text-smaller opacity-50 mb-0">filename.jpg</p>
-                  </center>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div class="col-12 col-md-4 col-xxl-3 mb-2 mb-md-3">
-                <div class="p-2 rounded-2 img-result">
-                  <div class="row">
-                    <div class="col-3">
-                      <img
-                        src="https://th.bing.com/th/id/OIP.YYZJNNin-9pT6aKNmpqVtQHaGl?rs=1&pid=ImgDetMain"
-                        class="w-100 rounded-2"
-                        alt=""
-                      />
-                    </div>
-                    <div class="col-9 d-flex align-items-center">
-                      <div>
-                        <p class="text-smaller opacity-100 mb-0">
-                          filename:{" "}
-                          <span class="opacity-50">filename.jpg </span>
-                        </p>
-                        <p class="text-smaller opacity-100 mb-0">
-                          split: <span class="opacity-50">valid</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-md-4 col-xxl-3 mb-2 mb-md-3">
-                <div class="p-2 rounded-2 img-result">
-                  <div class="row">
-                    <div class="col-3">
-                      <img
-                        src="https://th.bing.com/th/id/OIP.YYZJNNin-9pT6aKNmpqVtQHaGl?rs=1&pid=ImgDetMain"
-                        class="w-100 rounded-2"
-                        alt=""
-                      />
-                    </div>
-                    <div class="col-9 d-flex align-items-center">
-                      <div>
-                        <p class="text-smaller opacity-100 mb-0">
-                          filename:{" "}
-                          <span class="opacity-50">filename.jpg </span>
-                        </p>
-                        <p class="text-smaller opacity-100 mb-0">
-                          split: <span class="opacity-50">valid</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+    <>
+      {getJSON.isLoading ? (
+        <div className="d-flex justify-content-center my-5">
+          <div
+            className="spinner-border text-white spinner-border-sm"
+            role="status"
+          ></div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="card border-0 outline-0 shadow-sm mt-4">
+          <div className="card-body p-2">
+            <div className="row mt-3" id="content">
+              <p class="fw-semibold">Gambar Hasil Prediksi</p>
+              {view === "GRID" ? (
+                <>
+                  {resData.data.map((arr, index) => (
+                    <>
+                      <div class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3">
+                        <div class="p-2 rounded-2 img-result">
+                          <center>
+                            <div className="image-container" key={index}>
+                              <Zoom>
+                                <Image
+                                  src={`data:image/<mime-type>;base64, ${arr.image}`}
+                                  alt=""
+                                  className="rounded-1"
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                  width={100}
+                                  height={100}
+                                />
+                              </Zoom>
+                            </div>
+                            <p class="text-smaller opacity-50 mb-0">
+                              filename.jpg
+                            </p>
+                          </center>
+                        </div>
+                      </div>
+                    </>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {resData.data.map((arr, index) => (
+                    <div
+                      class="col-12 col-md-4 col-xxl-3 mb-2 mb-md-3"
+                      key={index}
+                    >
+                      <div class="p-2 rounded-2 img-result">
+                        <div class="row">
+                          <div class="col-3">
+                            <Zoom>
+                              <Image
+                                src={`data:image/<mime-type>;base64, ${arr.image}`}
+                                alt=""
+                                className="rounded-1"
+                                style={{
+                                  width: "100%",
+                                }}
+                                width={100}
+                                height={100}
+                              />
+                            </Zoom>
+                          </div>
+                          <div class="col-9 d-flex align-items-center">
+                            <div>
+                              <p class="text-smaller opacity-100 mb-0">
+                                filename:{" "}
+                                <span class="opacity-50">filename.jpg </span>
+                              </p>
+                              <p class="text-smaller opacity-100 mb-0">
+                                split: <span class="opacity-50">valid</span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 export default Info;

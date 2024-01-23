@@ -54,7 +54,11 @@ const engineArr = {
     "Manufacture: PPE Detection",
     "YOLOv8 Detection",
   ],
-  predict_barcode_detection: ["Barcode Detection", "Retail: Barcode Detection"],
+  predict_barcode_detection: [
+    "Barcode Detection",
+    "Retail: Barcode Detection",
+    "YOLOv8 Detection",
+  ],
   predict_banana_ripeness: [
     "Banana Ripeness Classification",
     "Retail: Banana Ripeness Classification",

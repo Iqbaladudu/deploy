@@ -170,7 +170,7 @@ const LoginPage = () => {
               <button
                 onClick={handleSubmit}
                 className={`btn btn-primary w-100 outline-0 border-0 shadow-none text-white mt-4`}
-                disabled={login.isPending}
+                disabled={login.isPending || login.status === "success"}
               >
                 <div className="py-1">
                   {login.isPending || login.status === "success" ? (

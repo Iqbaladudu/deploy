@@ -94,7 +94,7 @@ const Predict = () => {
   const params = useSearchParams();
   const engine = params.get("engine");
 
-  console.log(base64Img);
+  // console.log(base64Img);
 
   return (
     <DemoContainer>

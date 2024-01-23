@@ -341,3 +341,36 @@ html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.
 body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-addMore {
     color: #E84D4D;
 }
+
+
+/* Pagination */
+
+html[data-bs-theme="dark"] .page-link, .page-item {
+    color: white !important;
+    border: none;
+    overflow: hidden;
+    background-color: #1e1818;
+}
+
+.page-link, .page-item {
+    color: #E84D4D !important;
+    border: none;
+    overflow: hidden;
+}
+
+html[data-bs-theme="dark"] .pagination {
+    background-color: #1e1818 !important;
+    border: none;
+}
+
+html[data-bs-theme="dark"] .page-link.active, .active > .page-link {
+    background-color: #E84D4D !important;
+}
+
+.page-link.active, .active > .page-link {
+    color: white !important;
+}
+
+.page-link:focus {
+    box-shadow: none;
+}
