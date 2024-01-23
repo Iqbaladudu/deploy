@@ -149,8 +149,6 @@ const Info = () => {
       .slice(0, parseInt(selectedValue))
       .sort((a, b) => new Date(a.date_updated) - new Date(b.date_updated));
 
-  console.log(asc, desc);
-
   return (
     <div className="content w-100 p-0">
       <div className="container-fluid p-4">
@@ -316,14 +314,12 @@ const Info = () => {
                       {ascending &&
                         asc.map((props, index) => (
                           <>
-                            {console.log(props)}
                             <LogCard {...props} identifier={props.key} />
                           </>
                         ))}
                       {!ascending &&
                         desc.map((props, index) => (
                           <>
-                            {console.log(props)}
                             <LogCard {...props} identifier={props.key} />
                           </>
                         ))}
@@ -398,7 +394,6 @@ const InfoDetail = ({ view }) => {
   });
 
   const resData = getJSON.isSuccess && JSON.parse(getJSON.data?.result);
-  console.log(resData);
 
   return (
     <>
