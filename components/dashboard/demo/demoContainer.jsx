@@ -59,6 +59,8 @@ const DemoContainer = ({ children }) => {
   const [userId, setUserId] = useState();
   const [convertedImg, setConvertedImg] = useState([]);
 
+  const [loaded, setLoaded] = useState(false);
+
   const option = searchParams.get("option");
   const engine = searchParams.get("engine");
   const router = useRouter();
@@ -77,6 +79,10 @@ const DemoContainer = ({ children }) => {
   const removeBase64ImgAll = useBase64ArrStore(
     (state) => state.removeBase64ImgAll
   );
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
   useEffect(() => {
     if (images[0]?.length > 0 && option == "select-dataset") {

@@ -5,3 +5,4 @@ export * from "./getUser";
 export * from "./getToken";
 export * from "./updateLog";
 export * from "./getResJson";
+export * from "./getTools";

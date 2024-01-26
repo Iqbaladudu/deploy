@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bookmark, Clock, Filter, Grid, List } from "react-feather";
+import { Bookmark, Clock, Filter, Grid, List, Upload } from "react-feather";
 import Zoom from "react-medium-image-zoom";
 
 const LogCard = ({ date_updated, engine, user, id, identifier }) => {
@@ -109,7 +109,7 @@ const LogCard = ({ date_updated, engine, user, id, identifier }) => {
 };
 
 const Info = () => {
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(6);
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
   const user = useUserStore((state) => state.user);
@@ -124,12 +124,14 @@ const Info = () => {
   const log = searchParams.get("key");
 
   useEffect(() => {
-    if (!page) {
+    if (!page && !log) {
       router.push("?page=1");
     }
   }, []);
 
-  const [selectedValue, setSelectedValue] = useState("10");
+  console.log(data);
+
+  const [selectedValue, setSelectedValue] = useState("6");
   const [detailView, setDetailView] = useState("GRID");
   const [ascending, setAscending] = useState(true);
 
@@ -245,7 +247,7 @@ const Info = () => {
                   onChange={handleChange}
                   className="form-select outline-0 shadow-none p-2 text-smaller"
                 >
-                  <option value="10">10 data</option>
+                  <option value="6">6 data</option>
                   <option value="50">50 data</option>
                   <option value="100">100 data</option>
                   <option value="500">500 data</option>
@@ -393,7 +395,10 @@ const InfoDetail = ({ view }) => {
     queryFn: getResJson,
   });
 
-  const resData = getJSON.isSuccess && JSON.parse(getJSON.data?.result);
+  const resData =
+    getJSON.data?.result.length > 0
+      ? JSON.parse(getJSON.data?.result)
+      : "ERROR";
 
   return (
     <>
@@ -405,83 +410,117 @@ const InfoDetail = ({ view }) => {
           ></div>
         </div>
       ) : (
-        <div className="card border-0 outline-0 shadow-sm mt-4">
-          <div className="card-body p-2">
-            <div className="row mt-3" id="content">
-              <p class="fw-semibold">Gambar Hasil Prediksi</p>
-              {view === "GRID" ? (
-                <>
-                  {resData.data.map((arr, index) => (
-                    <>
-                      <div class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3">
-                        <div class="p-2 rounded-2 img-result">
-                          <center>
-                            <div className="image-container" key={index}>
-                              <Zoom>
-                                <Image
-                                  src={`data:image/<mime-type>;base64, ${arr.image}`}
-                                  alt=""
-                                  className="rounded-1"
-                                  style={{
-                                    width: "100%",
-                                  }}
-                                  width={100}
-                                  height={100}
-                                />
-                              </Zoom>
-                            </div>
-                            <p class="text-smaller opacity-50 mb-0">
-                              filename.jpg
-                            </p>
-                          </center>
-                        </div>
-                      </div>
-                    </>
-                  ))}
-                </>
-              ) : (
-                <>
-                  {resData.data.map((arr, index) => (
-                    <div
-                      class="col-12 col-md-4 col-xxl-3 mb-2 mb-md-3"
-                      key={index}
-                    >
-                      <div class="p-2 rounded-2 img-result">
-                        <div class="row">
-                          <div class="col-3">
-                            <Zoom>
-                              <Image
-                                src={`data:image/<mime-type>;base64, ${arr.image}`}
-                                alt=""
-                                className="rounded-1"
-                                style={{
-                                  width: "100%",
-                                }}
-                                width={100}
-                                height={100}
-                              />
-                            </Zoom>
-                          </div>
-                          <div class="col-9 d-flex align-items-center">
-                            <div>
-                              <p class="text-smaller opacity-100 mb-0">
-                                filename:{" "}
-                                <span class="opacity-50">filename.jpg </span>
-                              </p>
-                              <p class="text-smaller opacity-100 mb-0">
-                                split: <span class="opacity-50">valid</span>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+        <>
+          <div className="card border-0 outline-0 shadow-sm mt-4">
+            <div className="card-body p-2">
+              <div className="row mt-3" id="content">
+                <p class="fw-semibold">Gambar Hasil Prediksi</p>
+                {resData === "ERROR" ? (
+                  <div className="d-flex justify-content-center">
+                    <p>Kamu belum memiliki gambar yang berhasil diprediksi</p>
+                    <div>
+                      <a
+                        id="btn-reupload"
+                        // onClick={() =>
+                        //   router.push(
+                        //     `/dashboard/demo?engine=${engine}&option=select-dataset`
+                        //   )
+                        // }
+                        className="btn btn-primary outline-0 border-0 shadow-none text-smaller my-4"
+                      >
+                        <Upload
+                          data-feather="upload"
+                          width="14"
+                          height="14"
+                          className="me-2 mb-1"
+                        />
+                        Mulai prediksi sekarang
+                      </a>
                     </div>
-                  ))}
-                </>
-              )}
+                  </div>
+                ) : (
+                  <>
+                    {view === "GRID" ? (
+                      <>
+                        {resData.data.map((arr, index) => (
+                          <>
+                            <div class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3">
+                              <div class="p-2 rounded-2 img-result">
+                                <center>
+                                  <div className="image-container" key={index}>
+                                    <Zoom>
+                                      <Image
+                                        src={`data:image/<mime-type>;base64, ${arr.image}`}
+                                        alt=""
+                                        className="rounded-1"
+                                        style={{
+                                          width: "100%",
+                                        }}
+                                        width={100}
+                                        height={100}
+                                      />
+                                    </Zoom>
+                                  </div>
+                                  <p class="text-smaller opacity-50 mb-0">
+                                    filename.jpg
+                                  </p>
+                                </center>
+                              </div>
+                            </div>
+                          </>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {resData.data.map((arr, index) => (
+                          <div
+                            class="col-12 col-md-4 col-xxl-3 mb-2 mb-md-3"
+                            key={index}
+                          >
+                            <div class="p-2 rounded-2 img-result">
+                              <div class="row">
+                                <div class="col-3">
+                                  <div className="image-container">
+                                    <Zoom>
+                                      <img
+                                        src={`data:image/<mime-type>;base64, ${arr.image}`}
+                                        alt=""
+                                        className="rounded-1"
+                                        style={{
+                                          width: "100%",
+                                        }}
+                                        width={100}
+                                        height={100}
+                                      />
+                                    </Zoom>
+                                  </div>
+                                </div>
+                                <div class="col-9 d-flex align-items-center">
+                                  <div>
+                                    <p class="text-smaller opacity-100 mb-0">
+                                      filename:{" "}
+                                      <span class="opacity-50">
+                                        filename.jpg{" "}
+                                      </span>
+                                    </p>
+                                    <p class="text-smaller opacity-100 mb-0">
+                                      split:{" "}
+                                      <span class="opacity-50">valid</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

@@ -30,6 +30,8 @@ import garbageTwo from "@/public/app/garbage-classification/2.jpg";
 import parse from "html-react-parser";
 
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { getTools } from "@/app/service";
 
 const engineData = [
   {
@@ -133,20 +135,20 @@ const applicationImg = {
   predict_garbage_detection: [garbageOne, garbageTwo],
 };
 
-const tools = [
-  One,
-  Two,
-  Three,
-  Four,
-  // Five,
-  // Six,
-  // Seven,
-  // Eight,
-  // Nine,
-  // Ten,
-  // Eleven,
-  // Tweleve,
-];
+// const tools = [
+//   One,
+//   Two,
+//   Three,
+//   Four,
+//   // Five,
+//   // Six,
+//   // Seven,
+//   // Eight,
+//   // Nine,
+//   // Ten,
+//   // Eleven,
+//   // Tweleve,
+// ];
 
 const EngineDetail = () => {
   const searchParams = useSearchParams();
@@ -154,6 +156,12 @@ const EngineDetail = () => {
   const url = searchParams.get("engine");
   const image = engines.filter((arr) => arr.base_url_api == url)[0].image;
   const trueEngineData = engines.filter((arr) => arr.base_url_api == url);
+  const slug = engines.filter((arr) => arr.base_url_api == url)[0].slug;
+
+  const tools = useQuery({
+    queryKey: [slug],
+    queryFn: getTools,
+  }).data?.data?.map((arr) => arr.technology_data);
 
   return (
     <>
@@ -167,7 +175,10 @@ const EngineDetail = () => {
           url={url}
         />
         <Detail {...trueEngineData[0]} tools={tools} />
-        <Application {...trueEngineData[0]} img={applicationImg} url={url} />
+        <Application
+          {...trueEngineData[0]}
+          img={trueEngineData[0].application_image}
+        />
       </DemoContainer>
     </>
   );
@@ -175,7 +186,7 @@ const EngineDetail = () => {
 
 export default EngineDetail;
 
-const Application = ({ application, img, url }) => {
+const Application = ({ application, img }) => {
   return (
     <div className="row">
       <div className="col-12">
@@ -184,17 +195,8 @@ const Application = ({ application, img, url }) => {
             <p className="text-smaller">Application</p>
             <p id="application_desc">{application}</p>
             <div className="row p-2" id="application">
-              {img[url]?.map((arr, index) => (
+              {/* {img[url]?.map((arr, index) => (
                 <div className="col-3 d-flex" key={index}>
-                  {/* <div
-                    className="rounded-3"
-                    style={{
-                      backgroundImage: `url(${arr.src})`,
-                      backgroundPosition: "center",
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                  ></div> */}
                   <Image
                     src={arr}
                     alt=""
@@ -207,7 +209,10 @@ const Application = ({ application, img, url }) => {
                     }}
                   />
                 </div>
-              ))}
+              ))} */}
+              <div className="col-3 d-flex">
+                <img src={`${process.env.image + img}`} />
+              </div>
             </div>
           </div>
         </div>
@@ -292,12 +297,12 @@ const Detail = ({ background, technology, tools }) => {
             <p className="text-smaller">Technology</p>
             <p id="technology_desc">{technology}</p>
             <div className="row" id="technology">
-              {tools.map((arr, index) => (
+              {tools?.map((arr, index) => (
                 <div className="col-1 p-2" key={index}>
-                  <Image
+                  <img
                     style={{ width: "100%", height: "100%" }}
-                    src={arr}
-                    alt=""
+                    src={`https://annotation.aiforindonesia.com${arr.image}`}
+                    alt={arr.name}
                   />
                 </div>
               ))}

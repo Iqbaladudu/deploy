@@ -5,7 +5,7 @@ import DemoContainer from "../demoContainer";
 import Image from "next/image";
 import { convertToImage } from "@/app/utils";
 import { useSearchParams } from "next/navigation";
-import { useBase64ArrStore } from "@/app/store";
+import { useBase64ArrStore, useEngineStore } from "@/app/store";
 
 const modelData = {
   predict_corrosion: {
@@ -93,8 +93,11 @@ const Predict = () => {
   const base64Img = useBase64ArrStore((state) => state.base64Img);
   const params = useSearchParams();
   const engine = params.get("engine");
+  const engines = useEngineStore((state) => state.engines);
+  const model = engines.filter((arr) => arr.base_url_api === engine)[0]
+    .model_data[0];
 
-  // console.log(base64Img);
+  const perform = JSON.parse(model.perform);
 
   return (
     <DemoContainer>
@@ -137,7 +140,7 @@ const Predict = () => {
         </div>
         <div className="col-8">
           <p className="mb-0" id="desc-name">
-            {modelData[engine].desc}
+            {model.desc}
           </p>
         </div>
       </div>
@@ -152,7 +155,7 @@ const Predict = () => {
               className="badge bg-soft-primary text-primary fw-semibold"
               id="model-name"
             >
-              {modelData[engine].modelName}
+              {model.name}
             </span>
           </p>
         </div>
@@ -164,26 +167,37 @@ const Predict = () => {
         </div>
         <div className="col-8">
           <p className="mb-0">
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              Accuracy :{" "}
-              <span id="accuracy_val">{modelData[engine].accuracy}%</span>
-            </span>
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              Precission :{" "}
-              <span id="preccission_val">{modelData[engine].preccission}%</span>
-            </span>
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              Recall : <span id="recall_val">{modelData[engine].recall}%</span>
-            </span>
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              F1-Score :<span id="f1-score">{modelData[engine].f1}%</span>{" "}
-            </span>
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              mAP : <span id="map">{modelData[engine].map}%</span>
-            </span>
-            <span className="badge bg-soft-success text-success fw-semibold me-2">
-              MSE : <span id="mse">{modelData[engine].mse}%</span>
-            </span>
+            {perform["accuracy"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                Accuracy : <span id="accuracy_val">{perform["accuracy"]}</span>
+              </span>
+            )}
+            {perform["precission"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                Precission :{" "}
+                <span id="preccission_val">{perform["precission"]}</span>
+              </span>
+            )}
+            {perform["recall"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                Recall : <span id="recall_val">{perform["recall"]}</span>
+              </span>
+            )}
+            {perform["f1-score"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                F1-Score :<span id="f1-score">{perform["f1-score"]}</span>{" "}
+              </span>
+            )}
+            {perform["map50"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                mAP : <span id="map">{perform["map50"]}</span>
+              </span>
+            )}
+            {perform["map50-95"] && (
+              <span className="badge bg-soft-success text-success fw-semibold me-2">
+                mAP50-95 : <span id="mse">{perform["map50-95"]}</span>
+              </span>
+            )}
           </p>
         </div>
       </div>

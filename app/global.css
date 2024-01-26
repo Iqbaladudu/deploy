@@ -352,6 +352,13 @@ html[data-bs-theme="dark"] .page-link, .page-item {
     background-color: #1e1818;
 }
 
+.page-item {
+    margin: 10px;
+    min-width: 40px;
+    text-align: center;
+    border-radius: 5px;
+}
+
 .page-link, .page-item {
     color: #E84D4D !important;
     border: none;
@@ -359,8 +366,10 @@ html[data-bs-theme="dark"] .page-link, .page-item {
 }
 
 html[data-bs-theme="dark"] .pagination {
-    background-color: #1e1818 !important;
+    background-color: #1e1818;
+    overflow: hidden;
     border: none;
+    border-radius: 10px !important;
 }
 
 html[data-bs-theme="dark"] .page-link.active, .active > .page-link {

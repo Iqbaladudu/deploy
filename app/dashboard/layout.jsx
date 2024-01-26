@@ -4,9 +4,10 @@ import HorizontalNavbar from "@/components/navbar/horizontalNavbar";
 import VerticalNavbar from "@/components/sidebar/verticalNavbar";
 import { useMutation } from "@tanstack/react-query";
 import { permanentRedirect, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getUser } from "../service";
 import { useUserStore } from "../store";
+import Loading from "../loading";
 
 export default function DashboardLayout({ children }) {
   const [isDemo, setIsDemo] = useState();
@@ -34,7 +35,7 @@ export default function DashboardLayout({ children }) {
       >
         <div className="row m-0 p-0 vh-100">
           <VerticalNavbar />
-          {children}
+          <Suspense fallback={<Loading />}>{children}</Suspense>
         </div>
       </div>
     </div>
