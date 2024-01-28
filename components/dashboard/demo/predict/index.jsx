@@ -5,7 +5,7 @@ import DemoContainer from "../demoContainer";
 import Image from "next/image";
 import { convertToImage } from "@/app/utils";
 import { useSearchParams } from "next/navigation";
-import { useBase64ArrStore, useEngineStore } from "@/app/store";
+import { useEngineStore } from "@/app/store";
 
 const modelData = {
   predict_corrosion: {
@@ -90,9 +90,9 @@ const modelData = {
 
 const Predict = () => {
   // const images = useImgArrStore((state) => state.images);
-  const base64Img = useBase64ArrStore((state) => state.base64Img);
   const params = useSearchParams();
   const engine = params.get("engine");
+  const images = useImgArrStore((state) => state.images);
   const engines = useEngineStore((state) => state.engines);
   const model = engines.filter((arr) => arr.base_url_api === engine)[0]
     .model_data[0];
@@ -104,15 +104,15 @@ const Predict = () => {
       <div className="row mb-4 justify-content-between">
         <div className="col-12">
           <p className="mb-0" id="total-image">
-            {base64Img.length} total gambar
+            {images[0].length} total gambar
           </p>
         </div>
       </div>
       <div className="row mb-4" id="previewImage">
-        {base64Img.map((url, index) => (
+        {images[0].map((img, index) => (
           <div key={index} className="col-3 col-md-2 col-xxl-2 mb-2 mb-md-3">
             <Image
-              src={convertToImage(url.img)}
+              src={convertToImage(img.base64)}
               className="w-100 rounded-1"
               style={{ aspectRatio: "1/1" }}
               width={100}

@@ -6,7 +6,6 @@ import useUserStore from "./useUserStore";
 import useLogStore from "./useLogStore";
 import useTimeStore from "./useTimeStore";
 import useMenuStore from "./useMenuStore";
-import useBase64ArrStore from "./useBase64ArrStore";
 
 export {
   useCollapseStore,
@@ -17,5 +16,4 @@ export {
   useLogStore,
   useTimeStore,
   useMenuStore,
-  useBase64ArrStore,
 };

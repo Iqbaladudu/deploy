@@ -129,8 +129,6 @@ const Info = () => {
     }
   }, []);
 
-  console.log(data);
-
   const [selectedValue, setSelectedValue] = useState("6");
   const [detailView, setDetailView] = useState("GRID");
   const [ascending, setAscending] = useState(true);
@@ -416,7 +414,7 @@ const InfoDetail = ({ view }) => {
               <div className="row mt-3" id="content">
                 <p class="fw-semibold">Gambar Hasil Prediksi</p>
                 {resData === "ERROR" ? (
-                  <div className="d-flex justify-content-center">
+                  <div>
                     <p>Kamu belum memiliki gambar yang berhasil diprediksi</p>
                     <div>
                       <a
@@ -489,8 +487,6 @@ const InfoDetail = ({ view }) => {
                                         style={{
                                           width: "100%",
                                         }}
-                                        width={100}
-                                        height={100}
                                       />
                                     </Zoom>
                                   </div>

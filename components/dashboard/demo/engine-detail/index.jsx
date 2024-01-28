@@ -296,13 +296,15 @@ const Detail = ({ background, technology, tools }) => {
           <div className="card-body">
             <p className="text-smaller">Technology</p>
             <p id="technology_desc">{technology}</p>
-            <div className="row" id="technology">
+            <div className="row align-items-center" id="technology">
               {tools?.map((arr, index) => (
                 <div className="col-1 p-2" key={index}>
                   <img
-                    style={{ width: "100%", height: "100%" }}
                     src={`https://annotation.aiforindonesia.com${arr.image}`}
                     alt={arr.name}
+                    style={{
+                      width: "100%",
+                    }}
                   />
                 </div>
               ))}

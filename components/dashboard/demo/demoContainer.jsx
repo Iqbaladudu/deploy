@@ -14,7 +14,6 @@ import {
 } from "@/app/service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  useBase64ArrStore,
   useEngineStore,
   useLogStore,
   useMenuStore,
@@ -74,43 +73,10 @@ const DemoContainer = ({ children }) => {
   const addEnd = useTimeStore((state) => state.addEnd);
   const menu = useMenuStore((state) => state.menu);
   const setMenuData = useMenuStore((state) => state.setMenuData);
-  const addBase64Img = useBase64ArrStore((state) => state.addBase64Img);
-  const base64Img = useBase64ArrStore((state) => state.base64Img);
-  const removeBase64ImgAll = useBase64ArrStore(
-    (state) => state.removeBase64ImgAll
-  );
 
   useEffect(() => {
     setLoaded(true);
   }, []);
-
-  useEffect(() => {
-    if (images[0]?.length > 0 && option == "select-dataset") {
-      for (let i = 0; i < images[0].length; i++) {
-        const file = images[0][i];
-        const id = file.id;
-        convertToBase64(file.data)
-          .then((base64Image) => {
-            const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
-            const dataImg = regex.exec(base64Image)[1];
-            setConvertedImg((prevItem) =>
-              Array.from(
-                new Set([...prevItem, `{"id": "${id}", "img": "${dataImg}"}`])
-              )
-            );
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-    }
-  }, [images, addBase64Img, convertedImg, option]);
-
-  useEffect(() => {
-    if (images[0]?.length > 0 && option == "select-dataset") {
-      addBase64Img(convertedImg);
-    }
-  }, [addBase64Img, images, convertedImg, option]);
 
   const currentDateTime = new Date();
   const formattedDateTime = currentDateTime.toLocaleString("en-US", {
@@ -287,7 +253,7 @@ const DemoContainer = ({ children }) => {
     startPredict.mutate({
       engine_id: `${currentEngineId}`,
       log_id: `${log.id}`,
-      images: base64Img.map((arr) => arr.img),
+      images: images[0].map((arr) => arr.base64),
     });
     startUpdateLog.mutate({
       input: `dsfdsfhdjgh`,
@@ -296,12 +262,6 @@ const DemoContainer = ({ children }) => {
       key: `${log.key}`,
     });
   };
-
-  useEffect(() => {
-    if (option === "select-engine") {
-      removeBase64ImgAll();
-    }
-  }, [option, removeBase64ImgAll]);
 
   return (
     <div className="content w-100">
@@ -377,7 +337,7 @@ const DemoContainer = ({ children }) => {
                       onClick={option == "predict" ? onPredict : handleNextStep}
                       className="btn btn-primary outline-0 border-0 shadow-none text-smaller"
                       disabled={
-                        option == "select-dataset" && base64Img?.length === 0
+                        option == "select-dataset" && images[0]?.length === 0
                       }
                     >
                       <Pocket width="14" height="14" className="me-2" />
