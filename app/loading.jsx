@@ -1,10 +1,17 @@
 "use client";
 
-// import { useEffect, useState } from "react";
-// import { Spinner } from "react-bootstrap";
-
-import styles from "./styles.module.css";
-
 export default function Loading({ children }) {
-  return <p>Loading</p>;
+  return (
+    <div
+      className="d-flex h-100 w-100 align-items-center justify-content-center"
+      style={{
+        marginTop: "20px",
+      }}
+    >
+      <div
+        className="spinner-border spinner-border-sm text-white"
+        role="status"
+      ></div>
+    </div>
+  );
 }
