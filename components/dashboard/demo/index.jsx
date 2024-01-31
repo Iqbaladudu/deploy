@@ -8,7 +8,7 @@ import Result from "./result";
 import bgImageCorporate from "@/public/bg-image-corporate.png";
 import { getEngine } from "@/app/service";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useEngineStore } from "@/app/store";
 import EngineDetail from "./engine-detail";
 

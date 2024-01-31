@@ -27,6 +27,7 @@ import {
 import { usePathname } from "next/navigation";
 import { getUser } from "./service";
 import { useEffect } from "react";
+import { Client, HydrationProvider } from "react-hydration-provider";
 
 const inter = Inter({ subsets: ["latin"], preload: true });
 

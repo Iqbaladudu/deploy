@@ -1,10 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense, lazy } from "react";
 
 const components = {
   home: lazy(() => import("@/components/dashboard")),
-  demo: lazy(() => import("@/components/dashboard/demo")),
+  demo: dynamic(() => import("@/components/dashboard/demo"), { ssr: false }),
   upload: lazy(() => import("@/components/dashboard/upload")),
   labeling: lazy(() => import("@/components/dashboard/labeling")),
   result: lazy(() => import("@/components/dashboard/result")),
