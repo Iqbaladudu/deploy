@@ -173,6 +173,7 @@ const EngineDetail = () => {
           description={trueEngineData[0].desc}
           image={image}
           url={url}
+          typeOfData={trueEngineData[0].type_of_data}
         />
         <Detail {...trueEngineData[0]} tools={tools} />
         <Application
@@ -221,7 +222,15 @@ const Application = ({ application, img }) => {
   );
 };
 
-const OverviewCard = ({ category, type, title, description, image, url }) => {
+const OverviewCard = ({
+  category,
+  type,
+  title,
+  description,
+  image,
+  url,
+  typeOfData,
+}) => {
   const peforma = {
     predict_barcode_detection: "71.7%",
     predict_ppe: "79.2%",
@@ -256,6 +265,12 @@ const OverviewCard = ({ category, type, title, description, image, url }) => {
               id="category-name"
             >
               {category}
+            </span>
+            <span
+              className="badge bg-soft-primary text-primary rounded-1 me-2"
+              id="category-name"
+            >
+              {typeOfData}
             </span>
             <span
               className="badge bg-soft-primary text-primary rounded-1"

@@ -19,6 +19,7 @@ const Card = ({
   desc,
   category_data,
   type_data,
+  type_of_data,
 }) => {
   const router = useRouter();
   return (
@@ -51,6 +52,9 @@ const Card = ({
               <div className="d-flex mb-2">
                 <span className="badge bg-secondary rounded-1 me-2">
                   {category_data.name}
+                </span>
+                <span className="badge bg-secondary rounded-1 me-2">
+                  {type_of_data}
                 </span>
                 <span className="badge bg-secondary rounded-1">
                   {type_data.name}
