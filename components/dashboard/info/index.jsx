@@ -247,9 +247,11 @@ const Info = () => {
                   className="form-select outline-0 shadow-none p-2 text-smaller"
                 >
                   <option value="6">6 data</option>
+                  <option value="10">10 data</option>
+                  <option value="20">20 data</option>
                   <option value="50">50 data</option>
-                  <option value="100">100 data</option>
-                  <option value="500">500 data</option>
+                  <option value="100 ">100 data</option>
+                  <option value="200">200 data</option>
                 </select>
               </div>
               <div className="dropdown">
