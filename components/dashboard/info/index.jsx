@@ -114,8 +114,9 @@ const Info = () => {
   const page = searchParams.get("page");
   const user = useUserStore((state) => state.user);
   const id = user.id;
+  const [selectedValue, setSelectedValue] = useState("6");
   const { data, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ["get-log", id, count, page],
+    queryKey: ["get-log", id, selectedValue, page],
     queryFn: getLog,
   });
   const router = useRouter();
@@ -129,12 +130,12 @@ const Info = () => {
     }
   }, []);
 
-  const [selectedValue, setSelectedValue] = useState("6");
   const [detailView, setDetailView] = useState("GRID");
   const [ascending, setAscending] = useState(true);
 
   function handleChange(event) {
     setSelectedValue(event.target.value);
+    refetch();
   }
 
   const asc =
