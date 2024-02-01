@@ -115,7 +115,7 @@ const Info = () => {
   const user = useUserStore((state) => state.user);
   const id = user.id;
   const { data, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ["get-log", id, count, 1 || page],
+    queryKey: ["get-log", id, count, page],
     queryFn: getLog,
   });
   const router = useRouter();
