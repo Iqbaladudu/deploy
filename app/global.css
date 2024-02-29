@@ -229,7 +229,7 @@ nav{
 
 /* Sweet Alert */
 
-html[data-bs-theme="dark"] body > div.swal2-container.swal2-center.swal2-backdrop-show > div {
+html[data-bs-theme="dark"] body > div.swal2-container.swal2-center.swal2-backdrop-show > div, html[data-bs-theme="dark"] body > div.swal2-container.swal2-center.swal2-noanimation > div {
     background-color: #161111;
     color: white;
     width: 20em;
@@ -247,10 +247,20 @@ body > div.swal2-container.swal2-center.swal2-backdrop-show > div {
     width: 20em;
 }
 
-body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.swal2-styled {
-    background-color: #E84D4D;
-    color: white;
+body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.swal2-styled, body > div.swal2-container.swal2-center.swal2-noanimation > div > div.swal2-actions > button.swal2-confirm.swal2-styled, body > div.swal2-container.swal2-center.swal2-noanimation > div > ul > li.swal2-progress-step.swal2-active-progress-step, body > div.swal2-container.swal2-center.swal2-noanimation > div > ul > li.swal2-progress-step-line, body > div.swal2-container.swal2-center.swal2-noanimation > div > ul > li:nth-child(1) {
+    background-color: #E84D4D !important;
+    color: white !important;
 }
+
+#swal2-select > option {
+    color: black;
+}
+
+body > div.swal2-container.swal2-center.swal2-noanimation > div > ul > li:nth-child(3) {
+    background-color: #fbe2e2 !important;
+    color: #E84D4D !important;
+}
+
 
 [data-rmiz-modal-overlay="visible"] {
     background-color: black !important;
@@ -265,42 +275,44 @@ html[data-bs-theme="dark"] .btn:disabled {
     background-color: #0e0707 !important;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles {
+html[data-bs-theme="dark"] .uppy-Dashboard-AddFiles {
     background-color:  #140B0B !important;
     border: none !important;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles {
+.uppy-Dashboard-AddFiles {
     border: none !important;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div {
+html[data-bs-theme="dark"] .uppy-Dashboard-inner > div {
     background-color:  #140B0B !important;
     border: none !important;
     overflow: hidden !important;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner {
+
+html[data-bs-theme="dark"] .uppy-Dashboard-inner {
     background-color: #140B0B;
     border: none !important;
     overflow: hidden !important;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner {
+
+.uppy-Dashboard-inner {
     border: none !important;
     overflow: hidden !important;
 }
 
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title {
+html[data-bs-theme="dark"] .uppy-Dashboard-AddFiles-title {
     color: white;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title > button {
+html[data-bs-theme="dark"] .uppy-Dashboard-AddFiles-title > button {
     color: #E84D4D;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFiles > div.uppy-Dashboard-AddFiles-title > button {
+.uppy-Dashboard-AddFiles-title > button {
     color: #E84D4D;
 }
 
@@ -308,37 +320,45 @@ body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.conte
     border-bottom: none !important;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
+html[data-bs-theme="dark"] .uppy-DashboardContent-bar {
     background-color: #3f2121 !important;
     border: none;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
+.uppy-DashboardContent-bar {
     background-color: #fbe2e2 !important;
     border: none;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
+.uppy-DashboardContent-bar {
     border: none !important;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > div {
+.uppy-DashboardContent-bar > div {
     color: #E84D4D;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-back {
+.uppy-DashboardContent-back {
     color: #E84D4D;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-back:focus {
+button.uppy-DashboardContent-back:focus {
     background-color: #fbe2e2 !important;;
 }
 
-html[data-bs-theme="dark"] body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-back:focus {
+html[data-bs-theme="dark"] .uppy-DashboardContent-back:focus {
     background-color:#3f2121 !important;
 }
 
-body > div.container-fluid.d-flex.flex-column.vh-100.p-0 > div > div > div.content.w-100 > div > div.row > div.col-12.col-md-9 > div > div > div:nth-child(2) > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-addMore {
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0.false > div > div > div.content.w-100 > div > div.card.border-0.outline-0.shadow-sm > div > div > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-Dashboard-AddFilesPanel > div.uppy-DashboardContent-bar > button {
+    color: #E84D4D;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0.false > div > div > div.content.w-100 > div > div.card.border-0.outline-0.shadow-sm > div > div > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar > button.uppy-DashboardContent-back {
+    color: #E84D4D;
+}
+
+button.uppy-DashboardContent-addMore {
     color: #E84D4D;
 }
 
@@ -383,3 +403,4 @@ html[data-bs-theme="dark"] .page-link.active, .active > .page-link {
 .page-link:focus {
     box-shadow: none;
 }
+

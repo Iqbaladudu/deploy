@@ -7,6 +7,9 @@ import { Dashboard } from "@uppy/react";
 import DropTarget from "@uppy/drop-target";
 import { convertToBase64 } from "@/app/utils";
 import Link from "next/link";
+import { Pocket, UploadCloud } from "react-feather";
+import { useSearchParams } from "next/navigation";
+import useImgArrStore from "@/app/store/useImgArrStore";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -27,8 +30,24 @@ const uppy = baseUppy.use(ImageEditor);
 
 const Upload = () => {
   const [fileNumber, setFileNumber] = useState(0);
+  const [fileName, setFileName] = useState("Uploaded on 10/23/23 at 12:05 pm");
   const directoryRef = useRef(null);
-  const imgFileRef = useRef(null);
+  const searchParams = useSearchParams();
+  const option = searchParams.get("option");
+  const [fileArr, setFileArr] = useState([]);
+  const images = useImgArrStore((state) => state.images);
+  const addImage = useImgArrStore((state) => state.addImage);
+  const removeAll = useImgArrStore((state) => state.removeAll);
+
+  useEffect(() => {
+    addImage(fileArr);
+  }, [fileArr, addImage]);
+
+  useEffect(() => {
+    if (images[0]?.length === 0) {
+      uppy.cancelAll();
+    }
+  }, [images]);
 
   uppy.on("file-added", () => {
     setFileNumber(uppy.getFiles().length);
@@ -44,42 +63,33 @@ const Upload = () => {
     }
   }, []);
 
-  const handleFileUploadChange = (files) => {
-    for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: file,
-        source: "Local",
-        isRemote: false,
-      });
-      convertToBase64(file)
-        .then((base64Image) => {
-          // console.log("Base64 image:", base64Image);
-        })
-        .catch((error) => {
-          // console.error(error);
-        });
+  uppy.on("file-removed", (file, reason) => {
+    if (reason === "removed-by-user") {
+      setFileArr(fileArr.filter((arr) => arr.id !== file.id));
+      // removeBase64Img(file.id);
+    } else if (reason === "cancel-all") {
+      removeAll();
+      setFileArr([]);
     }
-  };
+  });
 
-  const handleFileUploadDirChange = (files) => {
+  uppy.on("file-added", (file) => {
+    convertToBase64(file.data).then((base64Img) => {
+      const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
+      file.base64 = regex.exec(base64Img)[1];
+    });
+    setFileArr((prevItem) => Array.from(new Set([...prevItem, file])));
+  });
+
+  uppy.on("files-added", (files) => {
+    const regex = /^data:image\/[a-z]+;base64,(.*)$/i;
     for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: file,
-        meta: {
-          // optional, store the directory path of a file so Uppy can tell identical files in different directories apart.
-          relativePath: window.FileSystemDirectoryEntry,
-        },
-        source: "Local",
-        isRemote: false,
+      convertToBase64(files[i].data).then((base64Img) => {
+        files[i].base64 = regex.exec(base64Img)[1];
+        setFileArr((prevItem) => Array.from(new Set([...prevItem, files[i]])));
       });
     }
-  };
+  });
 
   return (
     <div className="content w-100">
@@ -99,12 +109,12 @@ const Upload = () => {
         <div className="mt-4 row">
           <div className="col-6">
             <p className="fs-4 d-flex align-items-center">
-              <i
+              <UploadCloud
                 data-feather="upload-cloud"
                 width="20"
                 height="20"
                 className="me-2"
-              ></i>
+              />
               Upload
             </p>
           </div>
@@ -113,17 +123,17 @@ const Upload = () => {
               onclick="submit()"
               className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
             >
-              <i
+              <Pocket
                 data-feather="pocket"
                 width="14"
                 height="14"
                 className="me-2"
-              ></i>
+              />
               Simpan & Lanjutkan
             </button>
           </div>
         </div>
-        <div className="row mb-3">
+        <div className="row mb-3 d-flex align-items-center">
           <div className="col-12 col-md-auto">
             <label for="batch_name">Nama Batch</label>
           </div>
@@ -132,37 +142,20 @@ const Upload = () => {
               type="text"
               id="batch_name"
               placeholder="nama batch"
-              value="Uploaded on 10/23/23 at 12:05 pm"
+              value={fileName}
               className="form-control outline-none shadow-none py-2 rounded-2"
+              onChange={(e) => setFileName(e.currentTarget.value)}
               autofocus
             />
           </div>
         </div>
         <div className="card border-0 outline-0 shadow-sm">
           <div className="card-body">
-            <div>
-              <input
-                accept="image/jpeg"
-                multiple
-                type="file"
-                ref={directoryRef}
-                onChange={(e) => {
-                  handleFileUploadDirChange(e.currentTarget.files);
-                }}
-                id="fileInputDir"
-                hidden
-              />
-              <input
-                accept="image/jpeg"
-                multiple
-                type="file"
-                ref={imgFileRef}
-                onChange={(e) => {
-                  handleFileUploadChange(e.currentTarget.files);
-                }}
-                id="fileInput"
-                hidden
-              />
+            <div
+              style={{
+                border: "1px dashed #E84D4D",
+              }}
+            >
               <Dashboard
                 uppy={uppy}
                 plugins={["ImageEditor"]}
