@@ -1,6 +1,9 @@
 "use client";
 
-import { computed, signal } from "@preact/signals-react";
+import { BatchStatus } from "@/app/constant";
+import { db } from "@/app/etc";
+import { useComputed, signal, computed } from "@preact/signals-react";
+import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
 import { Codepen, MoreVertical, Image as Img, ArrowRight } from "react-feather";
 
@@ -69,6 +72,10 @@ const done = computed(() =>
 );
 
 const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
+  const batchData = useLiveQuery(() => db.upload.toArray());
+
+  console.log(batchData);
+
   const removeCard = (id) => {
     const filteredData = labelData.value.filter((item) => item.id !== id);
     labelData.value = filteredData;

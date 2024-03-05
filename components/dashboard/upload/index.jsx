@@ -10,6 +10,13 @@ import Link from "next/link";
 import { Pocket, UploadCloud } from "react-feather";
 import { useSearchParams } from "next/navigation";
 import useImgArrStore from "@/app/store/useImgArrStore";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "@/app/etc";
+import { useRouter } from "next/navigation";
+import slugify from "slugify";
+import BatchDetail from "./batchDetail";
+import { BatchStatus } from "@/app/constant";
+// import BatchDetail from "./batchDetail";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -29,32 +36,22 @@ if (typeof window === "object") {
 const uppy = baseUppy.use(ImageEditor);
 
 const Upload = () => {
-  const [fileNumber, setFileNumber] = useState(0);
   const [fileName, setFileName] = useState("Uploaded on 10/23/23 at 12:05 pm");
+  const [batchId, setBatchId] = useState();
   const directoryRef = useRef(null);
   const searchParams = useSearchParams();
-  const option = searchParams.get("option");
+  const batch = searchParams.get("batch");
+  const id = searchParams.get("id");
   const [fileArr, setFileArr] = useState([]);
-  const images = useImgArrStore((state) => state.images);
-  const addImage = useImgArrStore((state) => state.addImage);
-  const removeAll = useImgArrStore((state) => state.removeAll);
+  const upload = useLiveQuery(() => db.upload.toArray());
+  const router = useRouter();
 
-  useEffect(() => {
-    addImage(fileArr);
-  }, [fileArr, addImage]);
-
-  useEffect(() => {
-    if (images[0]?.length === 0) {
-      uppy.cancelAll();
-    }
-  }, [images]);
-
-  uppy.on("file-added", () => {
-    setFileNumber(uppy.getFiles().length);
-  });
-  uppy.on("files-added", () => {
-    setFileNumber(uppy.getFiles().length);
-  });
+  // uppy.on("file-added", () => {
+  //   setFileNumber(uppy.getFiles().length);
+  // });
+  // uppy.on("files-added", () => {
+  //   setFileNumber(uppy.getFiles().length);
+  // });
 
   useEffect(() => {
     if (directoryRef.current !== null) {
@@ -68,7 +65,6 @@ const Upload = () => {
       setFileArr(fileArr.filter((arr) => arr.id !== file.id));
       // removeBase64Img(file.id);
     } else if (reason === "cancel-all") {
-      removeAll();
       setFileArr([]);
     }
   });
@@ -91,87 +87,120 @@ const Upload = () => {
     }
   });
 
+  async function addUpload({ batch_name, data }) {
+    await db.upload
+      .add({
+        batch_name: batch_name,
+        data: data,
+        time: "Baru saja",
+        status: BatchStatus.UNASSIGNED,
+      })
+      .then((data) => {
+        router.push(
+          `/dashboard/upload?batch=${slugify(fileName, {
+            lower: true,
+          })}&id=${data}`
+        );
+      });
+  }
+
+  async function updateUpload({ id, data }) {
+    await db.project.where("id").equals(parseInt(id)).modify({ data });
+  }
+
   return (
-    <div className="content w-100">
-      <div className="container-fluid p-4">
-        <div className="d-flex align-items-center text-smaller">
-          <Link
-            className="text-decoration-none text-primary pointer"
-            href="/dashboard"
-          >
-            Beranda
-          </Link>
-          <span className="mx-2 opacity-75">/</span>
-          <p id="page-title" className="mb-0 opacity-75">
-            Upload
-          </p>
-        </div>
-        <div className="mt-4 row">
-          <div className="col-6">
-            <p className="fs-4 d-flex align-items-center">
-              <UploadCloud
-                data-feather="upload-cloud"
-                width="20"
-                height="20"
-                className="me-2"
-              />
-              Upload
-            </p>
-          </div>
-          <div className="col-6">
-            <button
-              onclick="submit()"
-              className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
-            >
-              <Pocket
-                data-feather="pocket"
-                width="14"
-                height="14"
-                className="me-2"
-              />
-              Simpan & Lanjutkan
-            </button>
-          </div>
-        </div>
-        <div className="row mb-3 d-flex align-items-center">
-          <div className="col-12 col-md-auto">
-            <label for="batch_name">Nama Batch</label>
-          </div>
-          <div className="col-12 col-md-4">
-            <input
-              type="text"
-              id="batch_name"
-              placeholder="nama batch"
-              value={fileName}
-              className="form-control outline-none shadow-none py-2 rounded-2"
-              onChange={(e) => setFileName(e.currentTarget.value)}
-              autofocus
-            />
-          </div>
-        </div>
-        <div className="card border-0 outline-0 shadow-sm">
-          <div className="card-body">
-            <div
-              style={{
-                border: "1px dashed #E84D4D",
-              }}
-            >
-              <Dashboard
-                uppy={uppy}
-                plugins={["ImageEditor"]}
-                hideUploadButton={true}
-                width={"100%"}
-                locale={{
-                  strings: {
-                    poweredBy: "Indonesia AI",
-                  },
-                }}
-              />
+    <>
+      {batch === slugify(fileName, { lower: true }) && id ? (
+        <BatchDetail id={id} />
+      ) : (
+        <div className="content w-100">
+          <div className="container-fluid p-4">
+            <div className="d-flex align-items-center text-smaller">
+              <Link
+                className="text-decoration-none text-primary pointer"
+                href="/dashboard"
+              >
+                Beranda
+              </Link>
+              <span className="mx-2 opacity-75">/</span>
+              <p id="page-title" className="mb-0 opacity-75">
+                Upload
+              </p>
+            </div>
+            <div className="mt-4 row">
+              <div className="col-6">
+                <p className="fs-4 d-flex align-items-center">
+                  <UploadCloud
+                    data-feather="upload-cloud"
+                    width="20"
+                    height="20"
+                    className="me-2"
+                  />
+                  Upload
+                </p>
+              </div>
+              <div className="col-6">
+                <button
+                  onClick={() =>
+                    addUpload({
+                      batch_name: fileName,
+                      data: fileArr,
+                    })
+                  }
+                  className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+                  disabled={fileArr.length === 0}
+                >
+                  <Pocket
+                    data-feather="pocket"
+                    width="14"
+                    height="14"
+                    className="me-2"
+                  />
+                  Simpan & Lanjutkan
+                </button>
+              </div>
+            </div>
+            <div className="row mb-3 d-flex align-items-center">
+              <div className="col-12 col-md-auto">
+                <label for="batch_name">Nama Batch</label>
+              </div>
+              <div className="col-12 col-md-4">
+                <input
+                  type="text"
+                  id="batch_name"
+                  placeholder="nama batch"
+                  value={fileName}
+                  className="form-control outline-none shadow-none py-2 rounded-2"
+                  onChange={(e) => setFileName(e.currentTarget.value)}
+                  autofocus
+                />
+              </div>
+            </div>
+            <div className="card border-0 outline-0 shadow-sm">
+              <div className="card-body">
+                <div
+                  style={{
+                    border: "1px dashed #E84D4D",
+                  }}
+                >
+                  <Dashboard
+                    uppy={uppy}
+                    plugins={["ImageEditor"]}
+                    hideUploadButton={true}
+                    width={"100%"}
+                    locale={{
+                      strings: {
+                        poweredBy: "Indonesia AI",
+                      },
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
