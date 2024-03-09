@@ -404,3 +404,21 @@ html[data-bs-theme="dark"] .page-link.active, .active > .page-link {
     box-shadow: none;
 }
 
+.form-control:focus {
+    outline: unset;
+    box-shadow: unset;
+}
+
+.btn-primary {
+    border: unset;
+}
+
+.form-select:focus {
+    border-color: unset;
+    outline: 0;
+    box-shadow: unset;
+}
+
+body > div.container-fluid.d-flex.flex-column.vh-100.p-0.false > div > div > div.content.w-100 > div > div.card.border-0.outline-0.shadow-sm > div > div > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
+    z-index: 20;
+}

@@ -24,6 +24,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "@/app/etc";
 import { useLiveQuery } from "dexie-react-hooks";
+import slugify from "slugify";
 
 const MySwal = withReactContent(Swal);
 
@@ -512,21 +513,20 @@ const ProjectCard = ({ id, title, category, lastEdited, imgCount }) => {
 export default Dashboard;
 
 function Modal({ id, title, prepopulated_data = null }) {
-  const [projectData, setProjectData] = useState({
-    name: "",
-    category: "",
-  });
-
   const [inputValue, setInputValue] = useState({
     name: "",
+    workspace: "",
     category: "",
   });
 
-  const [workspaceData, setWorkspaceData] = useState([
-    {
-      title: "",
-    },
-  ]);
+  function addZero(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+
+  const dateTime = new Date();
 
   async function updateProject({ id, name, category }) {
     const data = await db.project
@@ -542,19 +542,29 @@ function Modal({ id, title, prepopulated_data = null }) {
       .modify({ name });
   }
 
-  async function addData(database, { name, category = null }) {
+  async function addData(database, { name, workspace, category = null }) {
     if (database === "workspace") {
       await db.workspace.add({
         name: name,
         project_count: 4,
-        time: "1 Jam yang lalu",
+        slug: `${slugify(name)}`,
+        time: `${dateTime.getDate()} ${dateTime.toLocaleDateString("id-ID", {
+          month: "long",
+        })} ${dateTime.getFullYear()} ${addZero(dateTime.getHours())}:${addZero(
+          dateTime.getMinutes()
+        )}`,
       });
     } else if (database === "project") {
       await db.project.add({
         name: name,
         category: category,
+        workspace: `${workspace}`,
         img_count: 6,
-        time: "Hari ini",
+        time: `${dateTime.getDate()} ${dateTime.toLocaleDateString("id-ID", {
+          month: "long",
+        })} ${dateTime.getFullYear()} ${addZero(dateTime.getHours())}:${addZero(
+          dateTime.getMinutes()
+        )}`,
       });
     }
   }
@@ -570,8 +580,8 @@ function Modal({ id, title, prepopulated_data = null }) {
   useEffect(() => {
     if (prepopulated_data) {
       setInputValue((prevState) => ({
-        ...prevState,
         name: prepopulated_data.name,
+        workspace: prepopulated_data.workspace,
         category: prepopulated_data.category,
       }));
     }
@@ -588,8 +598,9 @@ function Modal({ id, title, prepopulated_data = null }) {
       addData("project", {
         name: inputValue.name,
         category: inputValue.category,
+        workspace: inputValue.workspace,
       });
-      setInputValue({ name: "", category: "" });
+      setInputValue({ name: "", category: "", workspace: "" });
     },
 
     UpdateWorkspace: () => {
@@ -647,23 +658,63 @@ function Modal({ id, title, prepopulated_data = null }) {
             />
             {(id === OperationTypes.AddProject) |
             (id === OperationTypes.UpdateProject) ? (
-              <select
-                class="form-select mt-2"
-                value={inputValue.category}
-                onChange={(e) => {
-                  setInputValue((prevState) => ({
-                    ...prevState,
-                    category: e.target.value,
-                  }));
-                }}
-              >
-                <option selected>Pilih kategori</option>
-                <option value="Automation">Automation</option>
-                <option value="Image Recognition">Image Recognition</option>
-                <option value="Image Classification">
-                  Image Classification
-                </option>
-              </select>
+              <>
+                <select
+                  class="form-select mt-2 mb-1"
+                  value={inputValue.workspace}
+                  onChange={(e) => {
+                    setInputValue((prevState) => ({
+                      ...prevState,
+                      workspace: e.target.value,
+                    }));
+                  }}
+                >
+                  <option selected>
+                    {workspace?.length == 0
+                      ? "Kamu belum memiliki workspace"
+                      : "Pilih workspace"}
+                  </option>
+                  {workspace?.map((arr, index) => (
+                    <option
+                      selected={arr.name == inputValue.workspace}
+                      key={index}
+                      value={`${slugify(arr.name)}`}
+                    >
+                      {arr.name}
+                    </option>
+                  ))}
+                </select>
+                {workspace?.length == 0 && (
+                  <span>
+                    klik{" "}
+                    <a
+                      href="#"
+                      data-bs-toggle="modal"
+                      data-bs-target={`#${OperationTypes.AddWorkspace}`}
+                    >
+                      di sini
+                    </a>{" "}
+                    untuk membuat workspace baru
+                  </span>
+                )}
+                <select
+                  class="form-select mt-2"
+                  value={inputValue.category}
+                  onChange={(e) => {
+                    setInputValue((prevState) => ({
+                      ...prevState,
+                      category: e.target.value,
+                    }));
+                  }}
+                >
+                  <option selected>Pilih kategori</option>
+                  <option value="Automation">Automation</option>
+                  <option value="Image Recognition">Image Recognition</option>
+                  <option value="Image Classification">
+                    Image Classification
+                  </option>
+                </select>
+              </>
             ) : null}
           </div>
           <div class="modal-footer">

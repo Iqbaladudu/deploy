@@ -13,6 +13,7 @@ const components = {
   tutorial: lazy(() => import("@/components/dashboard/tutorial")),
   help: lazy(() => import("@/components/dashboard/help")),
   info: lazy(() => import("@/components/dashboard/info")),
+  batch: lazy(() => import("@/components/dashboard/batch")),
 };
 
 const Page = ({ params }) => {

@@ -2,96 +2,31 @@
 
 import { BatchStatus } from "@/app/constant";
 import { db } from "@/app/etc";
-import { useComputed, signal, computed } from "@preact/signals-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Codepen, MoreVertical, Image as Img, ArrowRight } from "react-feather";
+import slugify from "slugify";
 
-const labelData = signal([
-  {
-    id: 1,
-    status: "unassigned",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 2,
-    status: "unassigned",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 3,
-    status: "unassigned",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 4,
-    status: "labeling",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 5,
-    status: "labeling",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 6,
-    status: "done",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-  {
-    id: 7,
-    status: "done",
-    dateUpload: "10/10/2024",
-    timeUpload: "10:30",
-    imgTotal: "10",
-  },
-]);
+const LabelingCard = ({ props }) => {
+  async function removeCard(id) {
+    await db?.upload?.where("id").equals(parseInt(id)).delete();
+  }
 
-const unassigned = computed(() =>
-  labelData.value.filter((item) => item.status == "unassigned")
-);
-
-const labeling = computed(() =>
-  labelData.value.filter((item) => item.status == "labeling")
-);
-
-const done = computed(() =>
-  labelData.value.filter((item) => item.status == "done")
-);
-
-const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
-  const batchData = useLiveQuery(() => db.upload.toArray());
-
-  console.log(batchData);
-
-  const removeCard = (id) => {
-    const filteredData = labelData.value.filter((item) => item.id !== id);
-    labelData.value = filteredData;
-  };
+  const router = useRouter();
 
   return (
     <div
       className={`card mt-3 ${
-        status == "labeling" && "bg-soft-primary border-primary"
+        props.status == BatchStatus.LABELLING &&
+        "bg-soft-primary border-primary"
       }`}
     >
       <div className="card-body p-2">
         <div className="row">
           <div className="col-10">
-            <p className="text-smaller mb-0">Upload on {dateUpload}</p>
-            <p className="text-smaller opacity-50 mb-0">at {timeUpload}</p>
+            <p className="text-smaller mb-0">{props.batch_name}</p>
+            <p className="text-smaller opacity-50 mb-0">{props.time}</p>
           </div>
           <div className="col-2">
             <div className="dropdown ms-4">
@@ -112,7 +47,7 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
                 <li>
                   <span
                     className="dropdown-item pointer"
-                    onClick={() => removeCard(id)}
+                    onClick={() => removeCard(props.id)}
                   >
                     Hapus
                   </span>
@@ -123,15 +58,24 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
           <div className="col-12 mt-2">
             <p className="opacity-50 text-smaller d-flex align-items-center mb-0">
               <Img data-feather="image" width="13" height="13" />
-              <span className="ms-2">{imgTotal} unassigned images</span>
+              <span className="ms-2">
+                {props.data.length}{" "}
+                {props.status === BatchStatus.UNASSIGNED
+                  ? "unassigned"
+                  : "labeling"}{" "}
+                images
+              </span>
             </p>
           </div>
           <div className="col-12 mt-1">
             <a
-              href="/pages/upload/view.html"
               className="text-decoration-none text-primary text-smaller float-end"
+              role="button"
+              onClick={() => {
+                router.push(`/dashboard/batch?id=${props.id}`);
+              }}
             >
-              <span className="me-2">Upload Image</span>
+              <span className="me-2">Lihat Gambar</span>
               <ArrowRight data-feather="arrow-right" width="13" height="13" />
             </a>
           </div>
@@ -142,6 +86,14 @@ const LabelingCard = ({ id, status, dateUpload, timeUpload, imgTotal }) => {
 };
 
 const Labeling = () => {
+  const batchData = useLiveQuery(() => db?.upload?.toArray());
+  const unassigned = batchData?.filter(
+    (arr) => arr.status === BatchStatus.UNASSIGNED
+  );
+  const labelling = batchData?.filter(
+    (arr) => arr.status === BatchStatus.LABELLING
+  );
+
   return (
     <div className="content w-100">
       <div className="container-fluid p-4">
@@ -177,12 +129,19 @@ const Labeling = () => {
                 <center>
                   <p className="mb-0 fs-6 fw-semibold">Unassigned</p>
                   <span className="opacity-50 text-smaller">
-                    3 batch • 48 images
+                    {unassigned?.length} batch •{" "}
+                    {unassigned?.length === 0
+                      ? "0"
+                      : unassigned
+                          ?.map((arr) => [...arr.data])
+                          .map((arr) => arr.length)
+                          .reduce((total, num) => total + num)}{" "}
+                    images
                   </span>
                 </center>
                 {/* Card here */}
-                {unassigned.value.map((props, index) => (
-                  <LabelingCard {...props} key={index} />
+                {unassigned?.map((props, index) => (
+                  <LabelingCard props={props} key={index} />
                 ))}
               </div>
             </div>
@@ -193,12 +152,19 @@ const Labeling = () => {
                 <center>
                   <p className="mb-0 fs-6 fw-semibold">Labeling</p>
                   <span className="opacity-50 text-smaller">
-                    1 batch • 12 images
+                    {labelling?.length} batch •{" "}
+                    {labelling?.length === 0
+                      ? "0"
+                      : labelling
+                          ?.map((arr) => [...arr.data])
+                          .map((arr) => arr.length)
+                          .reduce((total, num) => total + num)}{" "}
+                    images
                   </span>
                 </center>
                 {/* Card here */}
-                {labeling.value.map((props, index) => (
-                  <LabelingCard {...props} key={index} />
+                {labelling?.map((props, index) => (
+                  <LabelingCard props={props} key={index} />
                 ))}
               </div>
             </div>
@@ -209,13 +175,13 @@ const Labeling = () => {
                 <center>
                   <p className="mb-0 fs-6 fw-semibold">Hasil</p>
                   <span className="opacity-50 text-smaller">
-                    2 batch • 18 images
+                    0 batch • 0 images
                   </span>
                 </center>
                 {/* Card Here */}
-                {done.value.map((props, index) => (
+                {/* {done.value.map((props, index) => (
                   <LabelingCard {...props} key={index} />
-                ))}
+                ))} */}
               </div>
             </div>
           </div>

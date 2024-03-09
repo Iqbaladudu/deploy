@@ -14,9 +14,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/app/etc";
 import { useRouter } from "next/navigation";
 import slugify from "slugify";
-import BatchDetail from "./batchDetail";
 import { BatchStatus } from "@/app/constant";
-// import BatchDetail from "./batchDetail";
 
 const baseUppy = new Uppy({
   restrictions: {
@@ -36,7 +34,10 @@ if (typeof window === "object") {
 const uppy = baseUppy.use(ImageEditor);
 
 const Upload = () => {
-  const [fileName, setFileName] = useState("Uploaded on 10/23/23 at 12:05 pm");
+  const date = new Date();
+  const [fileName, setFileName] = useState(
+    `Upload at ${date.toLocaleString()}`
+  );
   const [batchId, setBatchId] = useState();
   const directoryRef = useRef(null);
   const searchParams = useSearchParams();
@@ -96,11 +97,7 @@ const Upload = () => {
         status: BatchStatus.UNASSIGNED,
       })
       .then((data) => {
-        router.push(
-          `/dashboard/upload?batch=${slugify(fileName, {
-            lower: true,
-          })}&id=${data}`
-        );
+        router.push(`/dashboard/batch?id=${data}`);
       });
   }
 
@@ -109,98 +106,92 @@ const Upload = () => {
   }
 
   return (
-    <>
-      {batch === slugify(fileName, { lower: true }) && id ? (
-        <BatchDetail id={id} />
-      ) : (
-        <div className="content w-100">
-          <div className="container-fluid p-4">
-            <div className="d-flex align-items-center text-smaller">
-              <Link
-                className="text-decoration-none text-primary pointer"
-                href="/dashboard"
-              >
-                Beranda
-              </Link>
-              <span className="mx-2 opacity-75">/</span>
-              <p id="page-title" className="mb-0 opacity-75">
-                Upload
-              </p>
-            </div>
-            <div className="mt-4 row">
-              <div className="col-6">
-                <p className="fs-4 d-flex align-items-center">
-                  <UploadCloud
-                    data-feather="upload-cloud"
-                    width="20"
-                    height="20"
-                    className="me-2"
-                  />
-                  Upload
-                </p>
-              </div>
-              <div className="col-6">
-                <button
-                  onClick={() =>
-                    addUpload({
-                      batch_name: fileName,
-                      data: fileArr,
-                    })
-                  }
-                  className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
-                  disabled={fileArr.length === 0}
-                >
-                  <Pocket
-                    data-feather="pocket"
-                    width="14"
-                    height="14"
-                    className="me-2"
-                  />
-                  Simpan & Lanjutkan
-                </button>
-              </div>
-            </div>
-            <div className="row mb-3 d-flex align-items-center">
-              <div className="col-12 col-md-auto">
-                <label for="batch_name">Nama Batch</label>
-              </div>
-              <div className="col-12 col-md-4">
-                <input
-                  type="text"
-                  id="batch_name"
-                  placeholder="nama batch"
-                  value={fileName}
-                  className="form-control outline-none shadow-none py-2 rounded-2"
-                  onChange={(e) => setFileName(e.currentTarget.value)}
-                  autofocus
-                />
-              </div>
-            </div>
-            <div className="card border-0 outline-0 shadow-sm">
-              <div className="card-body">
-                <div
-                  style={{
-                    border: "1px dashed #E84D4D",
-                  }}
-                >
-                  <Dashboard
-                    uppy={uppy}
-                    plugins={["ImageEditor"]}
-                    hideUploadButton={true}
-                    width={"100%"}
-                    locale={{
-                      strings: {
-                        poweredBy: "Indonesia AI",
-                      },
-                    }}
-                  />
-                </div>
-              </div>
+    <div className="content w-100">
+      <div className="container-fluid p-4">
+        <div className="d-flex align-items-center text-smaller">
+          <Link
+            className="text-decoration-none text-primary pointer"
+            href="/dashboard"
+          >
+            Beranda
+          </Link>
+          <span className="mx-2 opacity-75">/</span>
+          <p id="page-title" className="mb-0 opacity-75">
+            Upload
+          </p>
+        </div>
+        <div className="mt-4 row">
+          <div className="col-6">
+            <p className="fs-4 d-flex align-items-center">
+              <UploadCloud
+                data-feather="upload-cloud"
+                width="20"
+                height="20"
+                className="me-2"
+              />
+              Upload
+            </p>
+          </div>
+          <div className="col-6">
+            <button
+              onClick={() =>
+                addUpload({
+                  batch_name: fileName,
+                  data: fileArr,
+                })
+              }
+              className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+              disabled={fileArr.length === 0}
+            >
+              <Pocket
+                data-feather="pocket"
+                width="14"
+                height="14"
+                className="me-2"
+              />
+              Simpan & Lanjutkan
+            </button>
+          </div>
+        </div>
+        <div className="row mb-3 d-flex align-items-center">
+          <div className="col-12 col-md-auto">
+            <label for="batch_name">Nama Batch</label>
+          </div>
+          <div className="col-12 col-md-4">
+            <input
+              type="text"
+              id="batch_name"
+              placeholder="nama batch"
+              value={fileName}
+              className="form-control outline-none shadow-none py-2 rounded-2"
+              onChange={(e) => setFileName(e.currentTarget.value)}
+              autofocus
+            />
+          </div>
+        </div>
+        <div className="card border-0 outline-0 shadow-sm">
+          <div className="card-body">
+            <div
+              style={{
+                border: "1px dashed #E84D4D",
+              }}
+            >
+              <Dashboard
+                uppy={uppy}
+                plugins={["ImageEditor"]}
+                hideUploadButton={true}
+                width={"100%"}
+                locale={{
+                  strings: {
+                    poweredBy: "Indonesia AI",
+                  },
+                }}
+              />
             </div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

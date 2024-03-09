@@ -6,11 +6,14 @@ import { db } from "@/app/etc";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BatchStatus } from "@/app/constant";
+import { useSearchParams } from "next/navigation";
 
-const BatchDetail = ({ id }) => {
+const Page = () => {
   const [batchName, setBatchName] = useState();
   const [edit, setEdit] = useState(false);
   const batchData = useLiveQuery(() => db.upload.toArray());
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const trueBatchData = batchData?.filter((arr) => arr.id == id)[0];
 
   async function changeBatchName({ id, batch_name }) {
@@ -55,50 +58,61 @@ const BatchDetail = ({ id }) => {
         <div className="card border-0 outline-0 shadow-sm mt-4">
           <div className="card-body p-2">
             <div className="row mt-3 mx-2" id="content">
-              <span className="d-flex flex-row gap-1 mb-4 align-items-center justify-content-between">
+              <span className="d-flex flex-row gap-5 flex-wrap mb-4 align-items-center justify-content-between">
                 {edit ? (
-                  <>
-                    <div className="col-12 col-md-4">
+                  <span className="d-flex flex-wrap gap-4">
+                    <div>
                       <input
                         type="text"
                         id="batch_name"
                         placeholder="nama batch"
                         value={batchName}
                         className="form-control outline-none shadow-none rounded-2"
+                        style={{
+                          width: "40vw",
+                        }}
                         onChange={(e) => setBatchName(e.target.value)}
                         autofocus
                       />
                     </div>
-                    <button
-                      onClick={() => {
-                        changeBatchName({
-                          id,
-                          batch_name: batchName,
-                        }).then(() => setEdit(false));
+
+                    <div
+                      className="d-flex flex-row gap-2 mr-5"
+                      style={{
+                        maxHeight: 40,
                       }}
-                      className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
                     >
-                      <Pocket
-                        data-feather="pocket"
-                        width="14"
-                        height="14"
-                        className="me-2"
-                      />
-                      Simpan
-                    </button>
-                    <button
-                      onClick={() => setEdit(false)}
-                      className="btn btn-secondary outline-0 border-0 shadow-none text-smaller float-end"
-                    >
-                      <XCircle
-                        data-feather="pocket"
-                        width="14"
-                        height="14"
-                        className="me-2"
-                      />
-                      Batal
-                    </button>
-                  </>
+                      <button
+                        onClick={() => {
+                          changeBatchName({
+                            id,
+                            batch_name: batchName,
+                          }).then(() => setEdit(false));
+                        }}
+                        className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+                      >
+                        <Pocket
+                          data-feather="pocket"
+                          width="14"
+                          height="14"
+                          className="me-2"
+                        />
+                        Simpan
+                      </button>
+                      <button
+                        onClick={() => setEdit(false)}
+                        className="btn btn-secondary outline-0 border-0 shadow-none text-smaller float-end"
+                      >
+                        <XCircle
+                          data-feather="pocket"
+                          width="14"
+                          height="14"
+                          className="me-2"
+                        />
+                        Batal
+                      </button>
+                    </div>
+                  </span>
                 ) : (
                   <span className="d-flex flex-row gap-1">
                     <p class="fw-semibold my-auto">
@@ -115,7 +129,7 @@ const BatchDetail = ({ id }) => {
                       () => setEdit(false)
                     );
                   }}
-                  className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+                  className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end mr-5"
                 >
                   Assign Gambar
                 </button>
@@ -183,4 +197,4 @@ const BatchDetail = ({ id }) => {
     </div>
   );
 };
-export default BatchDetail;
+export default Page;
