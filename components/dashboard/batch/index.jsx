@@ -6,7 +6,7 @@ import { db } from "@/app/etc";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BatchStatus } from "@/app/constant";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Page = () => {
   const [batchName, setBatchName] = useState();
@@ -15,6 +15,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const trueBatchData = batchData?.filter((arr) => arr.id == id)[0];
+  const router = useRouter();
 
   async function changeBatchName({ id, batch_name }) {
     await db.upload
@@ -165,21 +166,26 @@ const Page = () => {
                       class="col-4 col-md-2 col-xxl-1 mb-2 mb-md-3"
                       key={index}
                     >
-                      <div class="p-2 rounded-2 img-result">
+                      <div
+                        class="p-2 rounded-2 img-result"
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/annotate?batch=${id}&img=${arr.id}`
+                          )
+                        }
+                      >
                         <center>
                           <div className="image-container" key={index}>
-                            <Zoom>
-                              <Image
-                                src={`data:image/<mime-type>;base64, ${arr.base64}`}
-                                alt=""
-                                className="rounded-1"
-                                style={{
-                                  width: "100%",
-                                }}
-                                width={100}
-                                height={100}
-                              />
-                            </Zoom>
+                            <Image
+                              src={`data:image/<mime-type>;base64, ${arr.base64}`}
+                              alt=""
+                              className="rounded-1"
+                              style={{
+                                width: "100%",
+                              }}
+                              width={100}
+                              height={100}
+                            />
                           </div>
                           <p class="text-smaller opacity-50 mb-0">
                             filename.jpg

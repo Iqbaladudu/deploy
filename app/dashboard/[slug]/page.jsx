@@ -14,6 +14,7 @@ const components = {
   help: lazy(() => import("@/components/dashboard/help")),
   info: lazy(() => import("@/components/dashboard/info")),
   batch: lazy(() => import("@/components/dashboard/batch")),
+  annotate: lazy(() => import("@/components/dashboard/annotate")),
 };
 
 const Page = ({ params }) => {
