@@ -131,13 +131,11 @@ export default function Annotate() {
   const [savedBox, setSavedBox] = useState([]);
   const layerRef = useRef(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [hoverObject, setHoverObject] = useState();
+  const [hoverObject, setHoverObject] = useState(false);
   const [boundingBox, setBoundingBox] = useState([]);
   const [editLabel, setEditLabel] = useState();
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedOverTransformer, setSelectedOverTransformer] = useState();
-
-  console.log(isDrawing);
 
   const getColor = generateRandomHexColor();
 
@@ -156,11 +154,9 @@ export default function Annotate() {
     }
 
     const stage = e.target.getStage();
-    console.log(stage.getPointerPosition());
 
     if (!hoverObject && !selectedOverTransformer && !selectedShape) {
       setIsDrawing(true);
-      console.log(box);
       setBox((prevState) => [
         ...prevState,
         {
@@ -200,8 +196,6 @@ export default function Annotate() {
     height: 0,
   });
 
-  console.log(savedBox, "console");
-
   useEffect(() => {
     if (divRef.current?.offsetHeight && divRef.current?.offsetWidth) {
       setDimensions({
@@ -221,6 +215,12 @@ export default function Annotate() {
       setLabelWidth(textLabelRefs.current.offsetWidth);
     }
   }, []);
+
+  useEffect(() => {
+    if (!boundingBox) {
+      setBoundingBox([]);
+    }
+  }, [boundingBox, setBoundingBox]);
 
   return (
     <div className="content w-100 gap-3 d-flex align-content-center">
@@ -302,9 +302,12 @@ export default function Annotate() {
             tabIndex={1}
             onKeyDown={(e) => {
               if (e.key === "Delete") {
-                setBoundingBox((arr) =>
-                  arr.filter((dt) => dt.key !== selectedShape)
-                );
+                setBoundingBox((arr) => {
+                  if (arr) {
+                    arr.filter((dt) => dt.key !== selectedShape);
+                    setSelectedShape(null);
+                  }
+                });
               }
             }}
           >
