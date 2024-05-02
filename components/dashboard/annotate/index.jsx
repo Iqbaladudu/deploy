@@ -4,7 +4,7 @@ import { db } from "@/app/etc";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Edit, X } from "react-feather";
+import { Delete, Edit, Trash, Trash2, X } from "react-feather";
 import {
   Group,
   Image,
@@ -222,6 +222,10 @@ export default function Annotate() {
     }
   }, [boundingBox, setBoundingBox]);
 
+  function deleteBox(key) {
+    setBoundingBox((arr) => arr.filter((dt) => dt.key !== key));
+  }
+
   return (
     <div className="content w-100 gap-3 d-flex align-content-center">
       <div className="col-2">
@@ -279,6 +283,9 @@ export default function Annotate() {
                   >
                     <Edit height={10} width={10} />
                   </div>
+                  <div className="pointer" onClick={() => deleteBox(arr?.key)}>
+                    <Trash2 height={10} width={10} />
+                  </div>
                 </div>
               )}
             </div>
@@ -299,17 +306,17 @@ export default function Annotate() {
               height: "50%",
             }}
             className="my-auto"
-            tabIndex={1}
-            onKeyDown={(e) => {
-              if (e.key === "Delete") {
-                setBoundingBox((arr) => {
-                  if (arr) {
-                    arr.filter((dt) => dt.key !== selectedShape);
-                    setSelectedShape(null);
-                  }
-                });
-              }
-            }}
+            // tabIndex={1}
+            // onKeyDown={(e) => {
+            //   if (e.key === "Delete") {
+            //     setBoundingBox((arr) => {
+            //       if (arr) {
+            //         arr.filter((dt) => dt.key !== selectedShape);
+            //         setSelectedShape(null);
+            //       }
+            //     });
+            //   }
+            // }}
           >
             <Stage
               width={dimensions.width}
