@@ -30,11 +30,11 @@ import Image from "next/image";
 import imgDummy from "@/public/image-dummy.png";
 
 const menu = [
-  {
-    nama: "Beranda",
-    icon: <BsHouseDoor className={`styles.h16w16`} />,
-    url: "home",
-  },
+  // {
+  //   nama: "Beranda",
+  //   icon: <BsHouseDoor className={`styles.h16w16`} />,
+  //   url: "home",
+  // },
   {
     nama: "Upload",
     icon: <FiUploadCloud className={`styles.h16w16`} />,
@@ -50,37 +50,37 @@ const menu = [
     icon: <BsFillImageFill className={`styles.h16w16`} />,
     url: "result",
   },
-  {
-    nama: "Profil Akun",
-    icon: <BsPerson className={`styles.h16w16`} />,
-    url: "profile",
-  },
+  // {
+  //   nama: "Profil Akun",
+  //   icon: <BsPerson className={`styles.h16w16`} />,
+  //   url: "profile",
+  // },
 ];
 
 const information = [
-  {
-    nama: "Tutorial",
-    icon: <BsInfoCircle className={`styles.h16w16`} />,
-    url: "tutorial",
-  },
-  {
-    nama: "Help & Support",
-    icon: <BsHeadset className={`styles.h16w16`} />,
-    url: "help",
-  },
+  // {
+  //   nama: "Tutorial",
+  //   icon: <BsInfoCircle className={`styles.h16w16`} />,
+  //   url: "tutorial",
+  // },
+  // {
+  //   nama: "Help & Support",
+  //   icon: <BsHeadset className={`styles.h16w16`} />,
+  //   url: "help",
+  // },
 ];
 
 const engine = [
-  {
-    nama: "Demo",
-    icon: <BsInfoCircle className={`styles.h16w16`} />,
-    url: "demo",
-  },
-  {
-    nama: "Lihat Info",
-    icon: <BsHeadset className={`styles.h16w16`} />,
-    url: "info",
-  },
+  // {
+  //   nama: "Demo",
+  //   icon: <BsInfoCircle className={`styles.h16w16`} />,
+  //   url: "demo",
+  // },
+  // {
+  //   nama: "Lihat Info",
+  //   icon: <BsHeadset className={`styles.h16w16`} />,
+  //   url: "info",
+  // },
 ];
 
 const projectList = [
@@ -106,7 +106,7 @@ const VerticalNavbar = () => {
     <>
       <div className={`sidebar shadow-sm py-3 ${!collapse && "open"}`}>
         <ul className="list-group list-unstyled" style={{ paddingTop: "12px" }}>
-          <li className="mb-2">
+          {/* <li className="mb-2">
             <div
               className="card border-0 outline-0"
               style={{ backgroundColor: "#c4c4c42a" }}
@@ -177,11 +177,11 @@ const VerticalNavbar = () => {
                 </div>
               </div>
             </div>
-          </li>
-          <li className="text-smaller mb-2 px-2">
+          </li> */}
+          {/* <li className="text-smaller mb-2 px-2">
             <small className="gap opacity-50">AI Engine</small>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-smaller mb-2"
             onClick={() => router.push("/dashboard/demo")}
             style={{ cursor: "pointer" }}
@@ -194,8 +194,8 @@ const VerticalNavbar = () => {
               <Airplay width="16" height="16" />
               <span className="ms-2">Demo</span>
             </span>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-smaller mb-0"
             onClick={() => router.push("info")}
             style={{ cursor: "pointer" }}
@@ -208,12 +208,12 @@ const VerticalNavbar = () => {
               <Bookmark width={16} height={16} />
               <span className="ms-2">Log Demo</span>
             </span>
-          </li>
+          </li> */}
           <li className="text-smaller mb-2 px-2">
             <small className="gap opacity-50">Annotation Tool</small>
             <small className="dot text-center opacity-50">•</small>
           </li>
-          <li
+          {/* <li
             className="text-smaller mb-0"
             onClick={() => router.push("home")}
             style={{ cursor: "pointer" }}
@@ -226,7 +226,7 @@ const VerticalNavbar = () => {
               <Home width="16" height="16" />
               <span className="ms-2">Beranda</span>
             </span>
-          </li>
+          </li> */}
           <li
             className="text-smaller mb-0"
             onClick={() => router.push("upload")}
@@ -255,7 +255,7 @@ const VerticalNavbar = () => {
               <span className="ms-2">Labeling</span>
             </span>
           </li>
-          <li
+          {/* <li
             className="text-smaller mb-0"
             onClick={() => router.push("result")}
             style={{ cursor: "pointer" }}
@@ -268,12 +268,12 @@ const VerticalNavbar = () => {
               <ImgIcn width="16" height="16" />
               <span className="ms-2">Hasil</span>
             </span>
-          </li>
-          <li className="text-smaller mb-2 px-2">
+          </li> */}
+          {/* <li className="text-smaller mb-2 px-2">
             <small className="gap opacity-50">Information</small>
             <small className="dot text-center opacity-50">•</small>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-smaller mb-0"
             onClick={() => router.push("tutorial")}
             style={{ cursor: "pointer" }}
@@ -286,8 +286,8 @@ const VerticalNavbar = () => {
               <Info width="16" height="16" />
               <span className="ms-2">Tutorial</span>
             </span>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-smaller mb-0"
             onClick={() => router.push("help")}
             style={{ cursor: "pointer" }}
@@ -300,7 +300,7 @@ const VerticalNavbar = () => {
               <Headphones width="16" height="16" />
               <span className="ms-2">Help & Support</span>
             </span>
-          </li>
+          </li> */}
         </ul>
       </div>
     </>
