@@ -190,20 +190,30 @@ export default function Annotate() {
 
   const [image] = useImage(`data:image/<mime-type>;base64, ${getImage}`);
 
-  const divRef = useRef(null);
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
   });
 
   useEffect(() => {
-    if (divRef.current?.offsetHeight && divRef.current?.offsetWidth) {
+    if (image) {
       setDimensions({
-        width: divRef.current.offsetWidth,
-        height: divRef.current.offsetHeight,
+        width: image?.naturalWidth * 0.2,
+        height: image.naturalHeight * 0.2,
       });
     }
-  }, []);
+  }, [image, setDimensions]);
+
+  const divRef = useRef(null);
+
+  // useEffect(() => {
+  //   if (divRef.current?.offsetHeight && divRef.current?.offsetWidth) {
+  //     setDimensions({
+  //       width: divRef.current.offsetWidth,
+  //       height: divRef.current.offsetHeight,
+  //     });
+  //   }
+  // }, []);
 
   const [labelWidth, setLabelWidth] = useState();
 
@@ -223,7 +233,10 @@ export default function Annotate() {
   }, [boundingBox, setBoundingBox]);
 
   function deleteBox(key) {
-    setBoundingBox((arr) => arr.filter((dt) => dt.key !== key));
+    const result = confirm("Apakah kamu yakin untuk menghapus box ini?");
+    if (result) {
+      setBoundingBox((arr) => arr.filter((dt) => dt.key !== key));
+    } else null;
   }
 
   return (
@@ -295,7 +308,7 @@ export default function Annotate() {
       {imageId && batch ? (
         <div
           style={{
-            height: "100vh",
+            height: dimensions?.height,
           }}
           className="mx-auto my-auto col-10"
         >
@@ -306,21 +319,10 @@ export default function Annotate() {
               height: "50%",
             }}
             className="my-auto"
-            // tabIndex={1}
-            // onKeyDown={(e) => {
-            //   if (e.key === "Delete") {
-            //     setBoundingBox((arr) => {
-            //       if (arr) {
-            //         arr.filter((dt) => dt.key !== selectedShape);
-            //         setSelectedShape(null);
-            //       }
-            //     });
-            //   }
-            // }}
           >
             <Stage
-              width={dimensions.width}
-              height={dimensions.height}
+              width={dimensions?.width}
+              height={dimensions?.height}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onTouchStart={checkDeselect}
