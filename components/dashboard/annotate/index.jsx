@@ -2,6 +2,7 @@
 
 import { db } from "@/app/etc";
 import { useLiveQuery } from "dexie-react-hooks";
+import Konva from "konva";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Delete, Edit, Trash, Trash2, X } from "react-feather";
@@ -131,6 +132,7 @@ export default function Annotate() {
   const [savedBox, setSavedBox] = useState([]);
   const layerRef = useRef(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [hoverImage, setHoverImage] = useState(false);
   const [hoverObject, setHoverObject] = useState(false);
   const [boundingBox, setBoundingBox] = useState([]);
   const [editLabel, setEditLabel] = useState();
@@ -155,7 +157,12 @@ export default function Annotate() {
 
     const stage = e.target.getStage();
 
-    if (!hoverObject && !selectedOverTransformer && !selectedShape) {
+    if (
+      !hoverObject &&
+      !selectedOverTransformer &&
+      !selectedShape &&
+      hoverImage
+    ) {
       setIsDrawing(true);
       setBox((prevState) => [
         ...prevState,
@@ -195,25 +202,38 @@ export default function Annotate() {
     height: 0,
   });
 
+  const [canvasSize, setCanvasSize] = useState({
+    height: 0,
+    width: 0,
+  });
+
   useEffect(() => {
     if (image) {
+      console.log(image?.naturalHeight, image?.naturalWidth, "asli");
+      console.log(
+        image?.naturalHeight * 0.15,
+        image?.naturalWidth * 0.15,
+        "diedit"
+      );
       setDimensions({
-        width: image?.naturalWidth * 0.2,
-        height: image.naturalHeight * 0.2,
+        width: image?.naturalWidth * 0.2063977746870654,
+        height: image?.naturalHeight * 0.1844943067649029,
       });
     }
-  }, [image, setDimensions]);
+  }, [image, setDimensions, canvasSize]);
 
   const divRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (divRef.current?.offsetHeight && divRef.current?.offsetWidth) {
-  //     setDimensions({
-  //       width: divRef.current.offsetWidth,
-  //       height: divRef.current.offsetHeight,
-  //     });
-  //   }
-  // }, []);
+  console.log(canvasSize);
+
+  useEffect(() => {
+    if (divRef.current?.offsetWidth && divRef.current?.offsetHeight) {
+      setCanvasSize({
+        height: divRef.current?.offsetHeight,
+        width: divRef.current?.offsetWidth,
+      });
+    }
+  }, []);
 
   const [labelWidth, setLabelWidth] = useState();
 
@@ -240,8 +260,19 @@ export default function Annotate() {
   }
 
   return (
-    <div className="content w-100 gap-3 d-flex align-content-center">
-      <div className="col-2">
+    <div
+      className="content d-flex align-content-center p-0 m-0"
+      style={{
+        height: "calc(100vh - 68px)",
+      }}
+    >
+      <div
+        className="col-3 me-3"
+        style={{
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+        }}
+      >
         <div className="d-flex gap-1 my-2 flex-column">
           {savedBox.length > 0 &&
             savedBox
@@ -308,90 +339,88 @@ export default function Annotate() {
       {imageId && batch ? (
         <div
           style={{
-            height: dimensions?.height,
+            // height: dimensions?.height - 68,
+            height: "calc(100vh - 68px)",
+            overflow: "hidden",
           }}
-          className="mx-auto my-auto col-10"
+          ref={divRef}
+          className="col-8 d-flex justify-content-center align-items-center"
         >
-          <div
-            ref={divRef}
-            style={{
-              maxWidth: "50%",
-              height: "50%",
+          <Stage
+            width={dimensions.width}
+            height={dimensions.height}
+            // draggable={!hoverImage}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onTouchStart={checkDeselect}
+            onClick={() => setDrawMode(false)}
+            onMouseMove={(e) => {
+              if (isDrawing) {
+                const stage = e.target.getStage();
+                setBox([
+                  ...box,
+                  {
+                    x: stage.getPointerPosition().x,
+                    y: stage.getPointerPosition().y,
+                  },
+                ]);
+              }
             }}
-            className="my-auto"
           >
-            <Stage
-              width={dimensions?.width}
-              height={dimensions?.height}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onTouchStart={checkDeselect}
-              onClick={() => setDrawMode(false)}
-              onMouseMove={(e) => {
-                if (isDrawing) {
-                  const stage = e.target.getStage();
-                  setBox([
-                    ...box,
-                    {
-                      x: stage.getPointerPosition().x,
-                      y: stage.getPointerPosition().y,
-                    },
-                  ]);
-                }
-              }}
-            >
-              <Layer>
-                <Image
-                  image={image}
-                  height={dimensions.height}
-                  width={dimensions.width}
+            <Layer>
+              <Image
+                image={image}
+                height={dimensions.height}
+                width={dimensions.width}
+                alt=""
+                onMouseOver={() => setHoverImage(true)}
+                onMouseOut={() => setHoverImage(false)}
+              />
+              {isDrawing && (
+                <Rect
+                  x={box[0].x}
+                  y={box[0].y}
+                  draggable
+                  width={box[box.length - 1].x - box[0].x}
+                  height={box[box.length - 1].y - box[0].y}
+                  stroke={"green"}
+                  strokeWidth={1}
                 />
-                {isDrawing && (
+              )}
+
+              {savedBox
+                ?.filter((arr) => arr.done === false)
+                .map((arr, index) => (
                   <Rect
-                    x={box[0].x}
-                    y={box[0].y}
-                    draggable
-                    width={box[box.length - 1].x - box[0].x}
-                    height={box[box.length - 1].y - box[0].y}
+                    key={index}
+                    x={arr?.initialX}
+                    y={arr?.initialY}
+                    width={arr?.lastX - arr?.initialX}
+                    height={arr?.lastY - arr?.initialY}
                     stroke={"green"}
                     strokeWidth={1}
                   />
-                )}
-
-                {savedBox
-                  ?.filter((arr) => arr.done === false)
-                  .map((arr, index) => (
-                    <Rect
-                      key={index}
-                      x={arr?.initialX}
-                      y={arr?.initialY}
-                      width={arr?.lastX - arr?.initialX}
-                      height={arr?.lastY - arr?.initialY}
-                      stroke={"green"}
-                      strokeWidth={1}
-                    />
-                  ))}
-
-                {boundingBox?.map((arr, index) => (
-                  <RectComponent
-                    key={index}
-                    index={index}
-                    setHoverObject={setHoverObject}
-                    hoverObject={hoverObject}
-                    arr={arr}
-                    setBoundingBox={setBoundingBox}
-                    textLabelRefs={textLabelRefs}
-                    isSelected={arr?.key === selectedShape}
-                    onSelect={() => {
-                      setSelectedShape(arr?.key);
-                    }}
-                    selectedShape={selectedShape}
-                    setSelectedOverTransformer={setSelectedOverTransformer}
-                  />
                 ))}
-              </Layer>
-            </Stage>
-          </div>
+
+              {boundingBox?.map((arr, index) => (
+                <RectComponent
+                  key={index}
+                  index={index}
+                  setHoverObject={setHoverObject}
+                  hoverObject={hoverObject}
+                  arr={arr}
+                  setBoundingBox={setBoundingBox}
+                  textLabelRefs={textLabelRefs}
+                  isSelected={arr?.key === selectedShape}
+                  onSelect={() => {
+                    setSelectedShape(arr?.key);
+                  }}
+                  selectedShape={selectedShape}
+                  setSelectedOverTransformer={setSelectedOverTransformer}
+                />
+              ))}
+            </Layer>
+          </Stage>
         </div>
       ) : (
         <p>Gambar tidak ditemukan</p>

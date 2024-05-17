@@ -422,3 +422,7 @@ html[data-bs-theme="dark"] .page-link.active, .active > .page-link {
 body > div.container-fluid.d-flex.flex-column.vh-100.p-0.false > div > div > div.content.w-100 > div > div.card.border-0.outline-0.shadow-sm > div > div > div > div > div > div.uppy-Dashboard-inner > div > div.uppy-DashboardContent-bar {
     z-index: 20;
 }
+
+.canvas-height {
+    height: calc(100vh - 100px);
+}

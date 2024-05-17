@@ -30,7 +30,7 @@ const LoginPage = () => {
       setCookie(null, "iaiaccess", `${data.access}`, {
         maxAge: 60 * 60,
       });
-      router.push("/dashboard/demo");
+      router.push("/dashboard/labeling");
     },
     onError: () => {
       setError(true);

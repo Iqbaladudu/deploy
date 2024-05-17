@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div
-      className={`container-fluid d-flex flex-column vh-100 p-0 ${
+      className={`container-fluid d-flex flex-column p-0 ${
         !isClient && "justify-content-center"
       }`}
     >
@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }) {
               marginTop: "60px",
             }}
           >
-            <div className="row m-0 p-0 vh-100">
+            <div className="row m-0 p-0">
               <VerticalNavbar suppressHydrationWarning={true} />
               <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
