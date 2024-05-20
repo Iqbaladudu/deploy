@@ -16,9 +16,11 @@ import {
   Tag,
   Text,
   Transformer,
+  P,
 } from "react-konva";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
+import darkShaders from "@/app/utils/darkShaders";
 
 function generateRandomHexColor() {
   // Create a hexadecimal color code with the '#' symbol
@@ -138,8 +140,24 @@ export default function Annotate() {
   const [editLabel, setEditLabel] = useState();
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedOverTransformer, setSelectedOverTransformer] = useState();
+  const imageRef = useRef(null);
 
   const getColor = generateRandomHexColor();
+
+  const darkenImage = () => {
+    const node = imageRef.current;
+    if (node) {
+      node.cache();
+      node.filters([Konva.Filters.Brighten]);
+      const tween = new Konva.Tween({
+        node: node,
+        duration: 5, // Animation duration in seconds
+        brightness: -0.5, // Target brightness
+        easing: Konva.Easings.EaseInOut, // Choose an easing function
+      });
+      tween.play();
+    }
+  };
 
   const checkDeselect = (e) => {
     const clickedOnEmpty = e.target === e.target.getStage();
@@ -207,24 +225,7 @@ export default function Annotate() {
     width: 0,
   });
 
-  useEffect(() => {
-    if (image) {
-      console.log(image?.naturalHeight, image?.naturalWidth, "asli");
-      console.log(
-        image?.naturalHeight * 0.15,
-        image?.naturalWidth * 0.15,
-        "diedit"
-      );
-      setDimensions({
-        width: image?.naturalWidth * 0.2063977746870654,
-        height: image?.naturalHeight * 0.1844943067649029,
-      });
-    }
-  }, [image, setDimensions, canvasSize]);
-
   const divRef = useRef(null);
-
-  console.log(canvasSize);
 
   useEffect(() => {
     if (divRef.current?.offsetWidth && divRef.current?.offsetHeight) {
@@ -258,6 +259,37 @@ export default function Annotate() {
       setBoundingBox((arr) => arr.filter((dt) => dt.key !== key));
     } else null;
   }
+
+  useEffect(() => {
+    if (image) {
+      const originalWidth = image.width;
+      const originalHeight = image.height;
+      const desiredPercentage = 50;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight; // Get screen height
+      const maxAllowedHeight = screenHeight * 0.8; // Allow some margin
+
+      // Calculate potential new width and height
+      const potentialNewWidth = (screenWidth * desiredPercentage) / 100;
+      const potentialNewHeight =
+        (potentialNewWidth * originalHeight) / originalWidth;
+
+      let newWidth, newHeight;
+
+      // Check if potential height exceeds the max allowed
+      if (potentialNewHeight > maxAllowedHeight) {
+        newHeight = maxAllowedHeight; // Cap the height
+        newWidth = (newHeight * originalWidth) / originalHeight; // Adjust width accordingly
+      } else {
+        newWidth = potentialNewWidth;
+        newHeight = potentialNewHeight;
+      }
+      setDimensions({
+        width: newWidth,
+        height: newHeight,
+      });
+    }
+  }, [image]);
 
   return (
     <div
@@ -339,7 +371,6 @@ export default function Annotate() {
       {imageId && batch ? (
         <div
           style={{
-            // height: dimensions?.height - 68,
             height: "calc(100vh - 68px)",
             overflow: "hidden",
           }}
@@ -370,11 +401,13 @@ export default function Annotate() {
             <Layer>
               <Image
                 image={image}
+                ref={imageRef}
                 height={dimensions.height}
                 width={dimensions.width}
                 alt=""
                 onMouseOver={() => setHoverImage(true)}
                 onMouseOut={() => setHoverImage(false)}
+                // onClick={darkenImage}
               />
               {isDrawing && (
                 <Rect
