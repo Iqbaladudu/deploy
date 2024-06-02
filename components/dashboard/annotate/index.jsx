@@ -5,22 +5,27 @@ import { useLiveQuery } from "dexie-react-hooks";
 import Konva from "konva";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Delete, Edit, Trash, Trash2, X } from "react-feather";
+import { Edit, Trash2 } from "react-feather";
 import {
   Group,
   Image,
-  Label,
   Layer,
   Rect,
   Stage,
-  Tag,
   Text,
   Transformer,
-  P,
 } from "react-konva";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
-import darkShaders from "@/app/utils/darkShaders";
+import ShadertoyReact from "shadertoy-react";
+
+const fragmentShader = `
+  void main(void) {
+     vec2 uv = gl_FragCoord.xy/iResolution.xy;
+     vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+     gl_FragColor = vec4(col ,1.0);
+  }
+`;
 
 function generateRandomHexColor() {
   // Create a hexadecimal color code with the '#' symbol
@@ -124,7 +129,6 @@ export default function Annotate() {
   const searchParams = useSearchParams();
   const imageId = searchParams.get("img");
   const batch = searchParams.get("batch");
-  const [drawMode, setDrawMode] = useState(false);
   const getImage = useLiveQuery(() => db.upload.toArray())
     ?.filter((arr) => arr.id == batch)[0]
     .data.filter((arr) => arr.id == imageId)[0].base64;
@@ -132,8 +136,6 @@ export default function Annotate() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [box, setBox] = useState([]);
   const [savedBox, setSavedBox] = useState([]);
-  const layerRef = useRef(null);
-  const [showSaveModal, setShowSaveModal] = useState(false);
   const [hoverImage, setHoverImage] = useState(false);
   const [hoverObject, setHoverObject] = useState(false);
   const [boundingBox, setBoundingBox] = useState([]);
@@ -141,23 +143,9 @@ export default function Annotate() {
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedOverTransformer, setSelectedOverTransformer] = useState();
   const imageRef = useRef(null);
+  const stageRef = useRef(null);
 
   const getColor = generateRandomHexColor();
-
-  const darkenImage = () => {
-    const node = imageRef.current;
-    if (node) {
-      node.cache();
-      node.filters([Konva.Filters.Brighten]);
-      const tween = new Konva.Tween({
-        node: node,
-        duration: 5, // Animation duration in seconds
-        brightness: -0.5, // Target brightness
-        easing: Konva.Easings.EaseInOut, // Choose an easing function
-      });
-      tween.play();
-    }
-  };
 
   const checkDeselect = (e) => {
     const clickedOnEmpty = e.target === e.target.getStage();
@@ -196,7 +184,6 @@ export default function Annotate() {
     setIsDrawing(false);
     setHoverObject(false);
     if (hoverObject === false && box[box?.length - 1]?.x - box[0]?.x > 10) {
-      setShowSaveModal(true);
       setSavedBox([
         {
           initialX: box[0]?.x,
@@ -220,32 +207,7 @@ export default function Annotate() {
     height: 0,
   });
 
-  const [canvasSize, setCanvasSize] = useState({
-    height: 0,
-    width: 0,
-  });
-
   const divRef = useRef(null);
-
-  useEffect(() => {
-    if (divRef.current?.offsetWidth && divRef.current?.offsetHeight) {
-      setCanvasSize({
-        height: divRef.current?.offsetHeight,
-        width: divRef.current?.offsetWidth,
-      });
-    }
-  }, []);
-
-  const [labelWidth, setLabelWidth] = useState();
-
-  useEffect(() => {
-    if (
-      textLabelRefs.current?.offsetHeight &&
-      textLabelRefs.current?.offsetWidth
-    ) {
-      setLabelWidth(textLabelRefs.current.offsetWidth);
-    }
-  }, []);
 
   useEffect(() => {
     if (!boundingBox) {
@@ -291,18 +253,108 @@ export default function Annotate() {
     }
   }, [image]);
 
+  const [konvaImage, setKonvaImage] = useState();
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    const layer = stage.findOne(Layer);
+    const canvas = layer.getCanvas()._canvas;
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.src = `data:image/<mime-type>;base64, ${getImage}`;
+
+    img.onload = () => {
+      if (img) {
+        const originalWidth = img.width;
+        const originalHeight = img.height;
+        const desiredPercentage = 50;
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight; // Get screen height
+        const maxAllowedHeight = screenHeight * 0.8; // Allow some margin
+
+        // Calculate potential new width and height
+        const potentialNewWidth = (screenWidth * desiredPercentage) / 100;
+        const potentialNewHeight =
+          (potentialNewWidth * originalHeight) / originalWidth;
+
+        let newWidth, newHeight;
+
+        // Check if potential height exceeds the max allowed
+        if (potentialNewHeight > maxAllowedHeight) {
+          newHeight = maxAllowedHeight; // Cap the height
+          newWidth = (newHeight * originalWidth) / originalHeight; // Adjust width accordingly
+        } else {
+          newWidth = potentialNewWidth;
+          newHeight = potentialNewHeight;
+        }
+        img.width = newWidth;
+        img.height = newHeight;
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+      }
+      ctx.drawImage(img, 0, 0);
+      applyFilter();
+    };
+
+    const applyFilter = () => {
+      img.addEventListener("loadeddata", () => {
+        ctx.drawImage(img, 0, 0); //
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          dimensions.width,
+          dimensions.height
+        );
+        const data = imageData.data;
+
+        if (boundingBox.length > 0) {
+          for (let i = 0; i < data.length; i += 4) {
+            const x = (i / 4) % canvas.width;
+            const y = Math.floor(i / 4 / canvas.width);
+
+            const isInBbox = boundingBox.some(
+              (bbox) =>
+                x >= bbox.x &&
+                x <= bbox.x + bbox.width &&
+                y >= bbox.y &&
+                y <= bbox.y + bbox.height
+            );
+
+            if (!isInBbox) {
+              data[i] *= 0.5; // Red
+              data[i + 1] *= 0.5; // Green
+              data[i + 2] *= 0.5; // Blue
+            }
+          }
+
+          ctx.putImageData(imageData, 0, 0);
+        }
+      });
+    };
+
+    applyFilter();
+  }, [boundingBox, dimensions, getImage]);
+
   return (
     <div
-      className="content d-flex align-content-center p-0 m-0"
+      className="content d-flex align-content-center m-0"
       style={{
-        height: "calc(100vh - 68px)",
+        height: "calc(-60px + 100vh)",
+        paddingLeft: 60,
       }}
     >
       <div
         className="col-3 me-3"
         style={{
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+          paddingLeft: 20,
+          paddingRight: 20,
+          borderRight: "1px solid #97979757",
+          boxShadow: "none",
         }}
       >
         <div className="d-flex gap-1 my-2 flex-column">
@@ -371,7 +423,7 @@ export default function Annotate() {
       {imageId && batch ? (
         <div
           style={{
-            height: "calc(100vh - 68px)",
+            height: "calc(-60px + 100vh)",
             overflow: "hidden",
           }}
           ref={divRef}
@@ -380,11 +432,11 @@ export default function Annotate() {
           <Stage
             width={dimensions.width}
             height={dimensions.height}
+            ref={stageRef}
             // draggable={!hoverImage}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onTouchStart={checkDeselect}
-            onClick={() => setDrawMode(false)}
             onMouseMove={(e) => {
               if (isDrawing) {
                 const stage = e.target.getStage();
@@ -398,8 +450,8 @@ export default function Annotate() {
               }
             }}
           >
-            <Layer>
-              <Image
+            <Layer id="imgLayer">
+              {/* <Image
                 image={image}
                 ref={imageRef}
                 height={dimensions.height}
@@ -408,7 +460,7 @@ export default function Annotate() {
                 onMouseOver={() => setHoverImage(true)}
                 onMouseOut={() => setHoverImage(false)}
                 // onClick={darkenImage}
-              />
+              /> */}
               {isDrawing && (
                 <Rect
                   x={box[0].x}
