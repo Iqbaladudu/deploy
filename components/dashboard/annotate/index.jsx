@@ -17,7 +17,7 @@ import {
 } from "react-konva";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
-import ShadertoyReact from "shadertoy-react";
+import chroma from "chroma-js";
 
 const fragmentShader = `
   void main(void) {
@@ -27,20 +27,24 @@ const fragmentShader = `
   }
 `;
 
+const strongColors = [
+  "#FF5733",
+  "#3498DB",
+  "#2ECC71",
+  "#9B59B6",
+  "#F1C40F",
+  "#E74C3C",
+  "#2980B9",
+  "#1ABC9C",
+  "#8E44AD",
+  "#F39C12",
+];
+
 function generateRandomHexColor() {
-  // Create a hexadecimal color code with the '#' symbol
-  let color = "#";
-
-  // Loop to generate 6 random hexadecimal digits (0-F)
-  for (let i = 0; i < 6; i++) {
-    // Generate a random number between 0 and 15 (inclusive)
-    const random = Math.floor(Math.random() * 16);
-
-    // Convert the number to hexadecimal string representation
-    color += random.toString(16);
-  }
-
-  return color;
+  const hue = Math.random() * 360;
+  const saturation = 80 + Math.random() * 20; // 80-100%
+  const lightness = 40 + Math.random() * 20; // 40-60%
+  return chroma(`hsl(${hue}, ${saturation}%, ${lightness}%)`).darken().hex();
 }
 
 function EditLabel({
@@ -163,27 +167,26 @@ export default function Annotate() {
 
     const stage = e.target.getStage();
 
-    if (
-      !hoverObject &&
-      !selectedOverTransformer &&
-      !selectedShape &&
-      hoverImage
-    ) {
+    if (hoverImage) {
       setIsDrawing(true);
-      setBox((prevState) => [
-        ...prevState,
-        {
-          x: stage.getPointerPosition().x,
-          y: stage.getPointerPosition().y,
-        },
-      ]);
+      if (isDrawing) {
+        setBox((prevState) => [
+          ...prevState,
+          {
+            x: stage.getPointerPosition().x,
+            y: stage.getPointerPosition().y,
+          },
+        ]);
+      }
     }
   }
 
   function handleMouseUp() {
     setIsDrawing(false);
-    setHoverObject(false);
-    if (hoverObject === false && box[box?.length - 1]?.x - box[0]?.x > 10) {
+    if (
+      box[box?.length - 1]?.x - box[0]?.x > 10 ||
+      box[box?.length - 1]?.y - box[0]?.y > 10
+    ) {
       setSavedBox([
         {
           initialX: box[0]?.x,
@@ -208,6 +211,7 @@ export default function Annotate() {
   });
 
   const divRef = useRef(null);
+  const layerRef = useRef(null);
 
   useEffect(() => {
     if (!boundingBox) {
@@ -253,92 +257,31 @@ export default function Annotate() {
     }
   }, [image]);
 
-  const [konvaImage, setKonvaImage] = useState();
-
   useEffect(() => {
-    const stage = stageRef.current;
-    const layer = stage.findOne(Layer);
-    const canvas = layer.getCanvas()._canvas;
+    const img = imageRef.current;
+    console.log("Bening");
+    const canvas = img.getCanvas()._canvas;
     const ctx = canvas.getContext("2d");
+    const imageData = ctx.getImageData(
+      0,
+      0,
+      dimensions.width,
+      dimensions.height
+    );
+    const data = imageData.data;
+    console.log("hai");
 
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] *= 0.5; // Red
+      data[i + 1] *= 0.5; // Green
+      data[i + 2] *= 0.5; // Blue
+    }
+    ctx.putImageData(imageData, 0, 0);
 
-    const img = new window.Image();
-    img.crossOrigin = "anonymous";
-    img.src = `data:image/<mime-type>;base64, ${getImage}`;
-
-    img.onload = () => {
-      if (img) {
-        const originalWidth = img.width;
-        const originalHeight = img.height;
-        const desiredPercentage = 50;
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight; // Get screen height
-        const maxAllowedHeight = screenHeight * 0.8; // Allow some margin
-
-        // Calculate potential new width and height
-        const potentialNewWidth = (screenWidth * desiredPercentage) / 100;
-        const potentialNewHeight =
-          (potentialNewWidth * originalHeight) / originalWidth;
-
-        let newWidth, newHeight;
-
-        // Check if potential height exceeds the max allowed
-        if (potentialNewHeight > maxAllowedHeight) {
-          newHeight = maxAllowedHeight; // Cap the height
-          newWidth = (newHeight * originalWidth) / originalHeight; // Adjust width accordingly
-        } else {
-          newWidth = potentialNewWidth;
-          newHeight = potentialNewHeight;
-        }
-        img.width = newWidth;
-        img.height = newHeight;
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-      }
-      ctx.drawImage(img, 0, 0);
-      applyFilter();
-    };
-
-    const applyFilter = () => {
-      img.addEventListener("loadeddata", () => {
-        ctx.drawImage(img, 0, 0); //
-        const imageData = ctx.getImageData(
-          0,
-          0,
-          dimensions.width,
-          dimensions.height
-        );
-        const data = imageData.data;
-
-        if (boundingBox.length > 0) {
-          for (let i = 0; i < data.length; i += 4) {
-            const x = (i / 4) % canvas.width;
-            const y = Math.floor(i / 4 / canvas.width);
-
-            const isInBbox = boundingBox.some(
-              (bbox) =>
-                x >= bbox.x &&
-                x <= bbox.x + bbox.width &&
-                y >= bbox.y &&
-                y <= bbox.y + bbox.height
-            );
-
-            if (!isInBbox) {
-              data[i] *= 0.5; // Red
-              data[i + 1] *= 0.5; // Green
-              data[i + 2] *= 0.5; // Blue
-            }
-          }
-
-          ctx.putImageData(imageData, 0, 0);
-        }
-      });
-    };
-
-    applyFilter();
-  }, [boundingBox, dimensions, getImage]);
+    if (layerRef.current) {
+      layerRef.current.draw();
+    }
+  }, [imageRef, image, dimensions.width, dimensions.height, getImage]);
 
   return (
     <div
@@ -450,8 +393,9 @@ export default function Annotate() {
               }
             }}
           >
-            <Layer id="imgLayer">
-              {/* <Image
+            <Layer id="imgLayer" ref={layerRef}>
+              <Image
+                id="img"
                 image={image}
                 ref={imageRef}
                 height={dimensions.height}
@@ -460,14 +404,14 @@ export default function Annotate() {
                 onMouseOver={() => setHoverImage(true)}
                 onMouseOut={() => setHoverImage(false)}
                 // onClick={darkenImage}
-              /> */}
+              />
               {isDrawing && (
                 <Rect
-                  x={box[0].x}
-                  y={box[0].y}
+                  x={box[0]?.x}
+                  y={box[0]?.y}
                   draggable
-                  width={box[box.length - 1].x - box[0].x}
-                  height={box[box.length - 1].y - box[0].y}
+                  width={box[box?.length - 1]?.x - box[0]?.x}
+                  height={box[box?.length - 1]?.y - box[0]?.y}
                   stroke={"green"}
                   strokeWidth={1}
                 />
