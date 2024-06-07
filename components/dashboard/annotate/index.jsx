@@ -21,6 +21,12 @@ import {
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
 import darkShaders from "@/app/utils/darkShaders";
+import FabricCanvas from "@/components/annotation/canvas";
+import {
+  handleCanvasMouseDown,
+  handleCanvasMouseUp,
+  initializeFabric,
+} from "@/lib/canvas";
 
 function generateRandomHexColor() {
   // Create a hexadecimal color code with the '#' symbol
@@ -40,20 +46,14 @@ function generateRandomHexColor() {
 
 function EditLabel({
   type,
-  value,
+  value = "",
+  setBox = false,
   id,
-  setSavedBox,
-  savedBox,
-  boundingBox,
-  setBoundingBox,
-  setEditLabel = false,
-  editLabel = false,
+  canvas,
+  setEditLabel,
 }) {
   const [labelValue, setLabelValue] = useState();
-  useEffect(() => setLabelValue(value), []);
-
-  const filteredData =
-    type === "SAVE" && savedBox.filter((arr) => arr.key === id)[0];
+  useEffect(() => setLabelValue(value), [value]);
 
   return (
     <div>
@@ -69,32 +69,13 @@ function EditLabel({
         <button
           className="btn"
           onClick={() => {
-            if (type === "SAVE") {
-              setSavedBox((prevItem) =>
-                prevItem.map((item) =>
-                  item.key === id
-                    ? { ...item, label: labelValue, done: true }
-                    : item
-                )
-              );
-              setBoundingBox((state) => [
-                ...state,
-                {
-                  x: filteredData.initialX,
-                  y: filteredData.initialY,
-                  width: filteredData.lastX - filteredData.initialX,
-                  height: filteredData.lastY - filteredData.initialY,
-                  color: filteredData.color,
-                  label: labelValue,
-                  key: filteredData.key,
-                },
-              ]);
-            } else {
-              setBoundingBox((state) =>
-                state.map((arr) =>
-                  arr.key === editLabel ? { ...arr, label: labelValue } : arr
-                )
-              );
+            canvas
+              .getObjects()
+              .find((arr) => arr.id === id)
+              ?.set({ label: labelValue, done: true });
+            setBox();
+
+            if (type === "EDIT") {
               setEditLabel();
             }
           }}
@@ -105,11 +86,12 @@ function EditLabel({
           className="btn"
           onClick={() => {
             if (type === "SAVE") {
-              setSavedBox((prevItem) =>
-                prevItem.filter((arr) => arr.key !== id)
-              );
+              const obj = canvas.getObjects().find((arr) => arr.id === id);
+              canvas?.remove(obj);
+              setBox();
             } else {
-              setEditLabel();
+              setBox();
+              setEditLabel(null);
             }
           }}
         >
@@ -124,147 +106,18 @@ export default function Annotate() {
   const searchParams = useSearchParams();
   const imageId = searchParams.get("img");
   const batch = searchParams.get("batch");
-  const [drawMode, setDrawMode] = useState(false);
   const getImage = useLiveQuery(() => db.upload.toArray())
     ?.filter((arr) => arr.id == batch)[0]
     .data.filter((arr) => arr.id == imageId)[0].base64;
 
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [box, setBox] = useState([]);
-  const [savedBox, setSavedBox] = useState([]);
-  const layerRef = useRef(null);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [hoverImage, setHoverImage] = useState(false);
-  const [hoverObject, setHoverObject] = useState(false);
-  const [boundingBox, setBoundingBox] = useState([]);
-  const [editLabel, setEditLabel] = useState();
-  const [selectedShape, setSelectedShape] = useState(null);
-  const [selectedOverTransformer, setSelectedOverTransformer] = useState();
-  const imageRef = useRef(null);
-
-  const getColor = generateRandomHexColor();
-
-  const darkenImage = () => {
-    const node = imageRef.current;
-    if (node) {
-      node.cache();
-      node.filters([Konva.Filters.Brighten]);
-      const tween = new Konva.Tween({
-        node: node,
-        duration: 5, // Animation duration in seconds
-        brightness: -0.5, // Target brightness
-        easing: Konva.Easings.EaseInOut, // Choose an easing function
-      });
-      tween.play();
-    }
-  };
-
-  const checkDeselect = (e) => {
-    const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
-      setSelectedShape(null);
-    }
-  };
-
-  const textLabelRefs = useRef();
-
-  function handleMouseDown(e) {
-    if (selectedOverTransformer !== selectedShape && hoverObject === null) {
-      setSelectedShape(null);
-    }
-
-    const stage = e.target.getStage();
-
-    if (
-      !hoverObject &&
-      !selectedOverTransformer &&
-      !selectedShape &&
-      hoverImage
-    ) {
-      setIsDrawing(true);
-      setBox((prevState) => [
-        ...prevState,
-        {
-          x: stage.getPointerPosition().x,
-          y: stage.getPointerPosition().y,
-        },
-      ]);
-    }
-  }
-
-  function handleMouseUp() {
-    setIsDrawing(false);
-    setHoverObject(false);
-    if (hoverObject === false && box[box?.length - 1]?.x - box[0]?.x > 10) {
-      setShowSaveModal(true);
-      setSavedBox([
-        {
-          initialX: box[0]?.x,
-          initialY: box[0]?.y,
-          lastX: box[box?.length - 1]?.x,
-          lastY: box[box?.length - 1]?.y,
-          color: getColor,
-          key: uuidv4(),
-          label: "",
-          done: false,
-        },
-      ]);
-      setBox([]);
-    }
-  }
-
+  const [dimensions, setDimensions] = useState();
   const [image] = useImage(`data:image/<mime-type>;base64, ${getImage}`);
-
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  const [canvasSize, setCanvasSize] = useState({
-    height: 0,
-    width: 0,
-  });
-
-  const divRef = useRef(null);
-
-  useEffect(() => {
-    if (divRef.current?.offsetWidth && divRef.current?.offsetHeight) {
-      setCanvasSize({
-        height: divRef.current?.offsetHeight,
-        width: divRef.current?.offsetWidth,
-      });
-    }
-  }, []);
-
-  const [labelWidth, setLabelWidth] = useState();
-
-  useEffect(() => {
-    if (
-      textLabelRefs.current?.offsetHeight &&
-      textLabelRefs.current?.offsetWidth
-    ) {
-      setLabelWidth(textLabelRefs.current.offsetWidth);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!boundingBox) {
-      setBoundingBox([]);
-    }
-  }, [boundingBox, setBoundingBox]);
-
-  function deleteBox(key) {
-    const result = confirm("Apakah kamu yakin untuk menghapus box ini?");
-    if (result) {
-      setBoundingBox((arr) => arr.filter((dt) => dt.key !== key));
-    } else null;
-  }
 
   useEffect(() => {
     if (image) {
       const originalWidth = image.width;
       const originalHeight = image.height;
-      const desiredPercentage = 50;
+      const desiredPercentage = 40;
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight; // Get screen height
       const maxAllowedHeight = screenHeight * 0.8; // Allow some margin
@@ -291,261 +144,203 @@ export default function Annotate() {
     }
   }, [image]);
 
+  const canvasRef = useRef(null);
+  const canvasWrapper = useRef(null);
+  const fabricRef = useRef(null);
+  let canvas = useRef(null);
+
+  const [box, setBox] = useState();
+  const [editLabel, setEditLabel] = useState();
+
+  useEffect(() => {
+    canvas.current = initializeFabric({
+      canvasRef,
+      fabricRef,
+      dimensions,
+      getImage,
+      canvasWrapper,
+    });
+
+    const imgElement = document.getElementById("bening");
+    const img = new fabric.Image(imgElement, {
+      hoverCursor: "crosshair",
+      selectable: false,
+    });
+
+    img.scaleToHeight(dimensions?.height);
+    img.scaleToWidth(dimensions?.width);
+
+    img.bringForward();
+
+    canvas.current.centerObject(img);
+
+    canvas.current.add(img);
+
+    let rect, darkeningRect, startX, startY;
+
+    darkeningRect = new fabric.Rect({
+      left: img.left,
+      top: img.top,
+      width: img.width * img.scaleX,
+      height: img.height * img.scaleY,
+      fill: "rgba(0, 0, 0, 0.5)", // Semi-transparent black overlay
+      selectable: false,
+      evented: false,
+    });
+
+    canvas.current.on("mouse:down", function (options) {
+      if (options.target !== img) return;
+
+      startX = options.pointer.x;
+      startY = options.pointer.y;
+
+      rect = new fabric.Rect({
+        left: startX,
+        top: startY,
+        width: 0,
+        height: 0,
+        fill: "transparent",
+        stroke: `${generateRandomHexColor()}`,
+        strokeWidth: 1,
+        evented: false, // Prevent interaction with rectangle while drawing
+      });
+
+      canvas.current.add(rect); // Add rectangle immediately
+    });
+
+    canvas.current.on("mouse:move", function (options) {
+      if (rect) {
+        rect.set({
+          width: options.pointer.x - startX,
+          height: options.pointer.y - startY,
+        });
+        canvas.current.renderAll();
+      }
+    });
+
+    canvas.current.on("mouse:up", function () {
+      if (rect && rect.width > 20 && rect.height > 20) {
+        rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
+        const rectId = rect.id;
+
+        setBox(rectId);
+
+        rect = null;
+      } else {
+        rect = null;
+      }
+    });
+
+    canvas.current.renderAll();
+  }, [canvasRef, dimensions, getImage]);
+
   return (
     <div
       className="content d-flex align-content-center p-0 m-0"
       style={{
-        height: "calc(100vh - 68px)",
+        height: "calc(-60px + 100vh)",
+        paddingLeft: 60,
       }}
     >
       <div
         className="col-3 me-3"
         style={{
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+          boxShadow: "none",
+          paddingLeft: 20,
+          paddingRight: 20,
+          borderRight: "1px solid #97979757",
         }}
       >
         <div className="d-flex gap-1 my-2 flex-column">
-          {savedBox.length > 0 &&
-            savedBox
-              ?.filter((arr) => arr.done === false)
-              .map((arr, index) => (
-                <EditLabel
-                  type="SAVE"
-                  key={index}
-                  value={arr?.label}
-                  id={arr?.key}
-                  setSavedBox={setSavedBox}
-                  savedBox={savedBox}
-                  boundingBox={boundingBox}
-                  setBoundingBox={setBoundingBox}
-                />
-              ))}
+          {canvas?.current
+            ?.getObjects()
+            .filter((obj) => obj.type === "rect")
+            .map((arr, index) => (
+              <div key={index} className="d-flex flex-row gap-1">
+                {editLabel === arr?.id ? (
+                  <EditLabel
+                    type="EDIT"
+                    value={arr?.label}
+                    setBox={setBox}
+                    id={arr?.id}
+                    canvas={canvas.current}
+                    setEditLabel={setEditLabel}
+                  />
+                ) : (
+                  <>
+                    {arr?.done && (
+                      <div className={`d-flex flex-row gap-1`}>
+                        <div>
+                          <p
+                            class="fw-semibold my-auto"
+                            style={{
+                              fontSize: 15,
+                            }}
+                          >
+                            {arr?.label}
+                          </p>
+                        </div>
+                        <div
+                          className="pointer"
+                          onClick={() => setEditLabel(arr?.id)}
+                        >
+                          <Edit height={10} width={10} />
+                        </div>
+                        <div
+                          className="pointer"
+                          onClick={() => {
+                            if (
+                              confirm(
+                                "Apakah kamu yakin akan menghapus bounding box ini?"
+                              ) === true
+                            ) {
+                              const obj = canvas?.current
+                                .getObjects()
+                                .find((item) => item.id === arr?.id);
+                              canvas?.current.remove(obj);
+                              setEditLabel(1);
+                            } else return;
+                          }}
+                        >
+                          <Trash2 height={10} width={10} />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
         </div>
         <div className="d-flex gap-1 my-2 flex-column">
-          {boundingBox?.map((arr, index) => (
-            <div key={index} className="d-flex flex-row gap-1">
-              {editLabel === arr?.key ? (
-                <EditLabel
-                  type="EDIT"
-                  value={arr?.label}
-                  id={arr?.key}
-                  setSavedBox={setSavedBox}
-                  savedBox={savedBox}
-                  boundingBox={boundingBox}
-                  setBoundingBox={setBoundingBox}
-                  setEditLabel={setEditLabel}
-                  editLabel={editLabel}
-                />
-              ) : (
-                <div
-                  className={`d-flex flex-row gap-1 ${
-                    arr.key === selectedShape && "border"
-                  }`}
-                >
-                  <div>
-                    <p
-                      class="fw-semibold my-auto"
-                      style={{
-                        fontSize: 15,
-                      }}
-                    >
-                      {arr?.label}
-                    </p>
-                  </div>
-                  <div
-                    className="pointer"
-                    onClick={() => setEditLabel(arr?.key)}
-                  >
-                    <Edit height={10} width={10} />
-                  </div>
-                  <div className="pointer" onClick={() => deleteBox(arr?.key)}>
-                    <Trash2 height={10} width={10} />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+          {box && (
+            <EditLabel
+              type="SAVE"
+              id={box}
+              setBox={setBox}
+              canvas={canvas.current}
+            />
+          )}
         </div>
       </div>
       {imageId && batch ? (
         <div
           style={{
-            height: "calc(100vh - 68px)",
+            height: "calc(-60px + 100vh)",
             overflow: "hidden",
           }}
-          ref={divRef}
+          ref={canvasWrapper}
           className="col-8 d-flex justify-content-center align-items-center"
         >
-          <Stage
-            width={dimensions.width}
-            height={dimensions.height}
-            // draggable={!hoverImage}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onTouchStart={checkDeselect}
-            onClick={() => setDrawMode(false)}
-            onMouseMove={(e) => {
-              if (isDrawing) {
-                const stage = e.target.getStage();
-                setBox([
-                  ...box,
-                  {
-                    x: stage.getPointerPosition().x,
-                    y: stage.getPointerPosition().y,
-                  },
-                ]);
-              }
-            }}
-          >
-            <Layer>
-              <Image
-                image={image}
-                ref={imageRef}
-                height={dimensions.height}
-                width={dimensions.width}
-                alt=""
-                onMouseOver={() => setHoverImage(true)}
-                onMouseOut={() => setHoverImage(false)}
-                // onClick={darkenImage}
-              />
-              {isDrawing && (
-                <Rect
-                  x={box[0].x}
-                  y={box[0].y}
-                  draggable
-                  width={box[box.length - 1].x - box[0].x}
-                  height={box[box.length - 1].y - box[0].y}
-                  stroke={"green"}
-                  strokeWidth={1}
-                />
-              )}
-
-              {savedBox
-                ?.filter((arr) => arr.done === false)
-                .map((arr, index) => (
-                  <Rect
-                    key={index}
-                    x={arr?.initialX}
-                    y={arr?.initialY}
-                    width={arr?.lastX - arr?.initialX}
-                    height={arr?.lastY - arr?.initialY}
-                    stroke={"green"}
-                    strokeWidth={1}
-                  />
-                ))}
-
-              {boundingBox?.map((arr, index) => (
-                <RectComponent
-                  key={index}
-                  index={index}
-                  setHoverObject={setHoverObject}
-                  hoverObject={hoverObject}
-                  arr={arr}
-                  setBoundingBox={setBoundingBox}
-                  textLabelRefs={textLabelRefs}
-                  isSelected={arr?.key === selectedShape}
-                  onSelect={() => {
-                    setSelectedShape(arr?.key);
-                  }}
-                  selectedShape={selectedShape}
-                  setSelectedOverTransformer={setSelectedOverTransformer}
-                />
-              ))}
-            </Layer>
-          </Stage>
+          <FabricCanvas
+            canvasRef={canvasRef}
+            imgSrc={image}
+            imgWidth={dimensions?.width}
+            imgHeight={dimensions?.height}
+          />
         </div>
       ) : (
         <p>Gambar tidak ditemukan</p>
       )}
     </div>
-  );
-}
-
-function RectComponent({
-  index,
-  setHoverObject,
-  hoverObject,
-  arr,
-  setBoundingBox,
-  textLabelRefs,
-  isSelected,
-  onSelect,
-  setSelectedOverTransformer,
-  selectedShape,
-}) {
-  const trRef = useRef();
-  const rectRef = useRef();
-
-  useEffect(() => {
-    if (isSelected) {
-      trRef.current.nodes([rectRef.current]);
-      trRef.current.getLayer().batchDraw();
-    }
-  }, [isSelected, rectRef]);
-
-  return (
-    <>
-      <Group draggable={arr?.key === selectedShape} ref={rectRef}>
-        <div>
-          <Rect
-            // onDragEnd={(e) => {
-            //   console.log(e.target.position());
-            // }}
-            onTransformEnd={(e) => {
-              setBoundingBox((prevState) =>
-                prevState.map((item) =>
-                  item.key === arr?.key
-                    ? {
-                        ...item,
-                        x: e.target.x(),
-                        y: e.target.y(),
-                        width: e.target.getAbsoluteScale().x * arr?.width,
-                        height: e.target.getAbsoluteScale().y * arr?.height,
-                      }
-                    : item
-                )
-              );
-            }}
-            onClick={onSelect}
-            onMouseOver={() => {
-              setHoverObject(arr?.key);
-            }}
-            onMouseLeave={() => {
-              setHoverObject(null);
-            }}
-            x={arr?.x}
-            y={arr?.y}
-            width={arr?.width}
-            height={arr?.height}
-            stroke={`${arr.color}`}
-            strokeWidth={1}
-          />
-          <Text
-            ref={textLabelRefs}
-            x={arr?.x + 3}
-            y={arr?.y - 20}
-            text={arr?.label}
-            fontSize={20}
-            fill="black"
-          />
-        </div>
-      </Group>
-      {isSelected && (
-        <Transformer
-          ref={trRef}
-          x={arr?.x}
-          y={arr?.y}
-          onMouseOver={() => setSelectedOverTransformer(arr?.key)}
-          onMouseLeave={() => setSelectedOverTransformer(null)}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        />
-      )}
-    </>
   );
 }
