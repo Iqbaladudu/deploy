@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { useCollapseStore, useThemeStore, useUserStore } from "@/app/store";
-import { destroyCookie } from "nookies";
 import {
   Bell,
   ChevronDown,
@@ -103,7 +102,7 @@ const HorizontalNavbar = () => {
           {theme == "light" ? (
             <Moon
               className="text-dark mx-2 pointer"
-              onClick={toggleTheme}
+              onClick={() => toggleTheme("dark")}
               id="toggle-dark-theme"
               width="16"
               height="16"
@@ -111,7 +110,7 @@ const HorizontalNavbar = () => {
           ) : (
             <Sun
               className="text-dark mx-2 pointer"
-              onClick={toggleTheme}
+              onClick={() => toggleTheme("light")}
               id="toggle-light-theme"
               width="16"
               height="16"

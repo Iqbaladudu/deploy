@@ -426,3 +426,7 @@ body > div.container-fluid.d-flex.flex-column.vh-100.p-0.false > div > div > div
 .canvas-height {
     height: calc(100vh - 100px);
 }
+
+.upper-canvas {
+    position: relative !important;
+}
