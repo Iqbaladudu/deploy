@@ -102,7 +102,7 @@ const HorizontalNavbar = () => {
           {theme == "light" ? (
             <Moon
               className="text-dark mx-2 pointer"
-              onClick={toggleTheme("dark")}
+              onClick={() => toggleTheme("dark")}
               id="toggle-dark-theme"
               width="16"
               height="16"
@@ -110,7 +110,7 @@ const HorizontalNavbar = () => {
           ) : (
             <Sun
               className="text-dark mx-2 pointer"
-              onClick={toggleTheme("light")}
+              onClick={() => toggleTheme("light")}
               id="toggle-light-theme"
               width="16"
               height="16"
