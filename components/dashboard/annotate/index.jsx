@@ -9,6 +9,7 @@ import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
 import { initializeFabric } from "@/lib/canvas";
+import chroma from "chroma-js";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
