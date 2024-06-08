@@ -2,28 +2,13 @@
 
 import { db } from "@/app/etc";
 import { useLiveQuery } from "dexie-react-hooks";
-import Konva from "konva";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Edit, Trash2 } from "react-feather";
-import {
-  Group,
-  Image,
-  Layer,
-  Rect,
-  Stage,
-  Text,
-  Transformer,
-} from "react-konva";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
-import darkShaders from "@/app/utils/darkShaders";
 import FabricCanvas from "@/components/annotation/canvas";
-import {
-  handleCanvasMouseDown,
-  handleCanvasMouseUp,
-  initializeFabric,
-} from "@/lib/canvas";
+import { initializeFabric } from "@/lib/canvas";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
