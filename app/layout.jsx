@@ -26,7 +26,7 @@ import {
 } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { getUser } from "./service";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Client, HydrationProvider } from "react-hydration-provider";
 
 const inter = Inter({ subsets: ["latin"], preload: true });
@@ -42,12 +42,16 @@ export default function RootLayout({ children }) {
   const theme = useThemeStore((state) => state.theme);
 
   useEffect(() => {
+    document.documentElement.setAttribute("data-bs-theme", `${theme}`);
+  }, [theme]);
+
+  useEffect(() => {
     import("bootstrap/dist/js/bootstrap.js");
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <html lang="en" data-bs-theme={theme}>
+      <html lang="en">
         <head>
           <title>Axioma</title>
         </head>

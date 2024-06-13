@@ -61,7 +61,7 @@ const Page = () => {
             <div className="row mt-3 mx-2" id="content">
               <span className="d-flex flex-row gap-5 flex-wrap mb-4 align-items-center justify-content-between">
                 {edit ? (
-                  <span className="d-flex flex-wrap gap-4">
+                  <span className="d-flex flex-wrap gap-4 align-items-center">
                     <div>
                       <input
                         type="text"
@@ -78,9 +78,9 @@ const Page = () => {
                     </div>
 
                     <div
-                      className="d-flex flex-row gap-2 mr-5"
+                      className="d-flex flex-row gap-2"
                       style={{
-                        maxHeight: 40,
+                        maxHeight: 27.98,
                       }}
                     >
                       <button
@@ -90,7 +90,7 @@ const Page = () => {
                             batch_name: batchName,
                           }).then(() => setEdit(false));
                         }}
-                        className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
+                        className="btn btn-sm btn-primary outline-0 border-0 shadow-none text-smaller float-end"
                       >
                         <Pocket
                           data-feather="pocket"
@@ -102,7 +102,7 @@ const Page = () => {
                       </button>
                       <button
                         onClick={() => setEdit(false)}
-                        className="btn btn-secondary outline-0 border-0 shadow-none text-smaller float-end"
+                        className="btn btn-sm btn-secondary outline-0 border-0 shadow-none text-smaller float-end"
                       >
                         <XCircle
                           data-feather="pocket"
@@ -115,12 +115,17 @@ const Page = () => {
                     </div>
                   </span>
                 ) : (
-                  <span className="d-flex flex-row gap-1">
-                    <p class="fw-semibold my-auto">
-                      {trueBatchData?.batch_name}
-                    </p>
-                    <div className="pointer" onClick={() => setEdit(true)}>
-                      <Edit height={10} width={10} />
+                  <span className="d-flex flex-row gap-1 align-items-center">
+                    <div>
+                      <p class="fw-semibold my-auto">
+                        {trueBatchData?.batch_name}
+                      </p>
+                    </div>
+                    <div
+                      className="pointer d-flex align-items-center"
+                      onClick={() => setEdit(true)}
+                    >
+                      <Edit height={14} width={14} />
                     </div>
                   </span>
                 )}
@@ -130,7 +135,7 @@ const Page = () => {
                       () => setEdit(false)
                     );
                   }}
-                  className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end mr-5"
+                  className="btn btn-sm btn-primary outline-0 border-0 shadow-none text-smaller float-end mr-5"
                 >
                   Assign Gambar
                 </button>

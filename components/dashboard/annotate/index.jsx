@@ -62,6 +62,10 @@ function EditLabel({
             if (type === "SAVE") {
               const obj = canvas.getObjects().find((arr) => arr.id === id);
               canvas?.remove(obj);
+              const removeFilter = canvas
+                .getObjects()
+                .find((arr) => arr.type === "filter");
+              canvas?.remove(removeFilter);
               setBox();
             } else {
               setBox();
@@ -121,7 +125,8 @@ export default function Annotate() {
   const canvasRef = useRef(null);
   const canvasWrapper = useRef(null);
   const fabricRef = useRef(null);
-  let canvas = useRef(null);
+  const canvas = useRef(null);
+  const [selected, setSelected] = useState(null);
 
   const [box, setBox] = useState();
   const [editLabel, setEditLabel] = useState();
@@ -150,20 +155,35 @@ export default function Annotate() {
 
     canvas.current.add(img);
 
-    let rect, darkeningRect, startX, startY;
+    let rect, darkeningRect, startX, startY, group, highlight;
 
     darkeningRect = new fabric.Rect({
+      absolutePositioned: true,
       left: img.left,
       top: img.top,
       width: img.width * img.scaleX,
       height: img.height * img.scaleY,
-      fill: "rgba(0, 0, 0, 0.5)", // Semi-transparent black overlay
+      fill: "rgba(0, 0, 0, 0.5)",
       selectable: false,
       evented: false,
+      type: "filter",
     });
 
+    if (
+      canvas.current.getObjects().filter((arr) => arr.type == "rect").length > 0
+    ) {
+      canvas.current.add(darkeningRect);
+    } else {
+      canvas.current.remove(darkeningRect);
+    }
+
     canvas.current.on("mouse:down", function (options) {
-      if (options.target !== img) return;
+      if (options.target !== img || options.target?.type === "rect") {
+        setSelected(options.target?.id);
+        return;
+      }
+
+      setSelected(null);
 
       startX = options.pointer.x;
       startY = options.pointer.y;
@@ -174,12 +194,11 @@ export default function Annotate() {
         width: 0,
         height: 0,
         fill: "transparent",
-        stroke: `${generateRandomHexColor()}`,
-        strokeWidth: 1,
-        evented: false, // Prevent interaction with rectangle while drawing
+        evented: false,
+        globalCompositeOperation: "destination-out",
       });
-
-      canvas.current.add(rect); // Add rectangle immediately
+      canvas.current.add(rect);
+      canvas.current.bringToFront(darkeningRect);
     });
 
     canvas.current.on("mouse:move", function (options) {
@@ -188,6 +207,30 @@ export default function Annotate() {
           width: options.pointer.x - startX,
           height: options.pointer.y - startY,
         });
+
+        const layer = new fabric.Rect({
+          width: img.width,
+          height: img.height,
+          left: img.left,
+          top: img.top,
+          absolutePositioned: true,
+        });
+
+        highlight = new fabric.Rect({
+          width: rect.width,
+          height: rect.height,
+          left: rect.left,
+          top: rect.top,
+          absolutePositioned: true,
+          globalCompositeOperation: "destination-out",
+        });
+
+        group = new fabric.Group([layer, highlight], {
+          absolutePositioned: true,
+        });
+
+        darkeningRect.clipPath = group;
+
         canvas.current.renderAll();
       }
     });
@@ -195,10 +238,17 @@ export default function Annotate() {
     canvas.current.on("mouse:up", function () {
       if (rect && rect.width > 20 && rect.height > 20) {
         rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
+
+        highlight?.set({
+          id: rect.id,
+        });
         const rectId = rect.id;
+
+        console.log(group._objects);
 
         setBox(rectId);
 
+        highlight = null;
         rect = null;
       } else {
         rect = null;
@@ -207,6 +257,23 @@ export default function Annotate() {
 
     canvas.current.renderAll();
   }, [canvasRef, dimensions, getImage]);
+
+  useEffect(() => {
+    canvas.current?.on("object:modified", function (options) {
+      if (options.target && options.target?.type === "rect") {
+        const movedRect = options.target;
+        console.log(
+          "Rectangle moved to:",
+          movedRect.left,
+          movedRect.top,
+          movedRect.id,
+          selected
+        );
+      }
+    });
+  }, [selected]);
+
+  console.log(selected);
 
   return (
     <div
@@ -217,7 +284,7 @@ export default function Annotate() {
       }}
     >
       <div
-        className="col-3 me-3"
+        className="col-2 me-3"
         style={{
           boxShadow: "none",
           paddingLeft: 20,
@@ -230,7 +297,7 @@ export default function Annotate() {
             ?.getObjects()
             .filter((obj) => obj.type === "rect")
             .map((arr, index) => (
-              <div key={index} className="d-flex flex-row gap-1">
+              <div key={index} className="d-flex flex-row gap-1 w-full">
                 {editLabel === arr?.id ? (
                   <EditLabel
                     type="EDIT"
@@ -243,7 +310,12 @@ export default function Annotate() {
                 ) : (
                   <>
                     {arr?.done && (
-                      <div className={`d-flex flex-row gap-1`}>
+                      <div
+                        className={`d-flex flex-row gap-1 justify-content-between w-full`}
+                        style={{
+                          width: "100%",
+                        }}
+                      >
                         <div>
                           <p
                             class="fw-semibold my-auto"
@@ -254,29 +326,31 @@ export default function Annotate() {
                             {arr?.label}
                           </p>
                         </div>
-                        <div
-                          className="pointer"
-                          onClick={() => setEditLabel(arr?.id)}
-                        >
-                          <Edit height={10} width={10} />
-                        </div>
-                        <div
-                          className="pointer"
-                          onClick={() => {
-                            if (
-                              confirm(
-                                "Apakah kamu yakin akan menghapus bounding box ini?"
-                              ) === true
-                            ) {
-                              const obj = canvas?.current
-                                .getObjects()
-                                .find((item) => item.id === arr?.id);
-                              canvas?.current.remove(obj);
-                              setEditLabel(1);
-                            } else return;
-                          }}
-                        >
-                          <Trash2 height={10} width={10} />
+                        <div className="d-flex flex-row gap-2">
+                          <div
+                            className="pointer"
+                            onClick={() => setEditLabel(arr?.id)}
+                          >
+                            <Edit height={10} width={10} />
+                          </div>
+                          <div
+                            className="pointer"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  "Apakah kamu yakin akan menghapus bounding box ini?"
+                                ) === true
+                              ) {
+                                const obj = canvas?.current
+                                  .getObjects()
+                                  .find((item) => item.id === arr?.id);
+                                canvas?.current.remove(obj);
+                                setEditLabel(1);
+                              } else return;
+                            }}
+                          >
+                            <Trash2 height={10} width={10} />
+                          </div>
                         </div>
                       </div>
                     )}
