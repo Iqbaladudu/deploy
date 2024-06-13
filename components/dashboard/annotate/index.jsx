@@ -8,7 +8,7 @@ import { Edit, Trash2 } from "react-feather";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
-import { initializeFabric } from "@/lib/canvas";
+import { Annotation, initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
 
 function generateRandomHexColor() {
@@ -132,131 +132,136 @@ export default function Annotate() {
   const [editLabel, setEditLabel] = useState();
 
   useEffect(() => {
-    canvas.current = initializeFabric({
-      canvasRef,
-      fabricRef,
-      dimensions,
-      getImage,
-      canvasWrapper,
+    const annotation = new Annotation({
+      canvasRef: canvasRef,
+      fabricRef: fabricRef,
+      dimensions: dimensions,
+      canvasWrapper: canvasWrapper,
     });
 
-    const imgElement = document.getElementById("bening");
-    const img = new fabric.Image(imgElement, {
-      hoverCursor: "crosshair",
-      selectable: false,
-    });
+    // canvas.current = initializeFabric({
+    //   canvasRef,
+    //   fabricRef,
+    //   canvasWrapper,
+    // });
 
-    img.scaleToHeight(dimensions?.height);
-    img.scaleToWidth(dimensions?.width);
+    // const imgElement = document.getElementById("bening");
+    // const img = new fabric.Image(imgElement, {
+    //   hoverCursor: "crosshair",
+    //   selectable: false,
+    // });
 
-    img.bringForward();
+    // img.scaleToHeight(dimensions?.height);
+    // img.scaleToWidth(dimensions?.width);
 
-    canvas.current.centerObject(img);
+    // img.bringForward();
 
-    canvas.current.add(img);
+    // canvas.current.centerObject(img);
 
-    let rect, darkeningRect, startX, startY, group, highlight;
+    // canvas.current.add(img);
 
-    darkeningRect = new fabric.Rect({
-      absolutePositioned: true,
-      left: img.left,
-      top: img.top,
-      width: img.width * img.scaleX,
-      height: img.height * img.scaleY,
-      fill: "rgba(0, 0, 0, 0.5)",
-      selectable: false,
-      evented: false,
-      type: "filter",
-    });
+    // let rect, darkeningRect, startX, startY, group, highlight;
 
-    if (
-      canvas.current.getObjects().filter((arr) => arr.type == "rect").length > 0
-    ) {
-      canvas.current.add(darkeningRect);
-    } else {
-      canvas.current.remove(darkeningRect);
-    }
+    // darkeningRect = new fabric.Rect({
+    //   absolutePositioned: true,
+    //   left: img.left,
+    //   top: img.top,
+    //   width: img.width * img.scaleX,
+    //   height: img.height * img.scaleY,
+    //   fill: "rgba(0, 0, 0, 0.5)",
+    //   selectable: false,
+    //   evented: false,
+    //   type: "filter",
+    // });
 
-    canvas.current.on("mouse:down", function (options) {
-      if (options.target !== img || options.target?.type === "rect") {
-        setSelected(options.target?.id);
-        return;
-      }
+    // if (
+    //   canvas.current.getObjects().filter((arr) => arr.type == "rect").length > 0
+    // ) {
+    //   canvas.current.add(darkeningRect);
+    // } else {
+    //   canvas.current.remove(darkeningRect);
+    // }
 
-      setSelected(null);
+    // canvas.current.on("mouse:down", function (options) {
+    //   if (options.target !== img || options.target?.type === "rect") {
+    //     setSelected(options.target?.id);
+    //     return;
+    //   }
 
-      startX = options.pointer.x;
-      startY = options.pointer.y;
+    //   setSelected(null);
 
-      rect = new fabric.Rect({
-        left: startX,
-        top: startY,
-        width: 0,
-        height: 0,
-        fill: "transparent",
-        evented: false,
-        globalCompositeOperation: "destination-out",
-      });
-      canvas.current.add(rect);
-      canvas.current.bringToFront(darkeningRect);
-    });
+    //   startX = options.pointer.x;
+    //   startY = options.pointer.y;
 
-    canvas.current.on("mouse:move", function (options) {
-      if (rect) {
-        rect.set({
-          width: options.pointer.x - startX,
-          height: options.pointer.y - startY,
-        });
+    //   rect = new fabric.Rect({
+    //     left: startX,
+    //     top: startY,
+    //     width: 0,
+    //     height: 0,
+    //     fill: "transparent",
+    //     evented: false,
+    //     globalCompositeOperation: "destination-out",
+    //   });
+    //   canvas.current.add(rect);
+    //   canvas.current.bringToFront(darkeningRect);
+    // });
 
-        const layer = new fabric.Rect({
-          width: img.width,
-          height: img.height,
-          left: img.left,
-          top: img.top,
-          absolutePositioned: true,
-        });
+    // canvas.current.on("mouse:move", function (options) {
+    //   if (rect) {
+    //     rect.set({
+    //       width: options.pointer.x - startX,
+    //       height: options.pointer.y - startY,
+    //     });
 
-        highlight = new fabric.Rect({
-          width: rect.width,
-          height: rect.height,
-          left: rect.left,
-          top: rect.top,
-          absolutePositioned: true,
-          globalCompositeOperation: "destination-out",
-        });
+    //     const layer = new fabric.Rect({
+    //       width: img.width,
+    //       height: img.height,
+    //       left: img.left,
+    //       top: img.top,
+    //       absolutePositioned: true,
+    //     });
 
-        group = new fabric.Group([layer, highlight], {
-          absolutePositioned: true,
-        });
+    //     highlight = new fabric.Rect({
+    //       width: rect.width,
+    //       height: rect.height,
+    //       left: rect.left,
+    //       top: rect.top,
+    //       absolutePositioned: true,
+    //       globalCompositeOperation: "destination-out",
+    //     });
 
-        darkeningRect.clipPath = group;
+    //     group = new fabric.Group([layer, highlight], {
+    //       absolutePositioned: true,
+    //     });
 
-        canvas.current.renderAll();
-      }
-    });
+    //     darkeningRect.clipPath = group;
 
-    canvas.current.on("mouse:up", function () {
-      if (rect && rect.width > 20 && rect.height > 20) {
-        rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
+    //     canvas.current.renderAll();
+    //   }
+    // });
 
-        highlight?.set({
-          id: rect.id,
-        });
-        const rectId = rect.id;
+    // canvas.current.on("mouse:up", function () {
+    //   if (rect && rect.width > 20 && rect.height > 20) {
+    //     rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
 
-        console.log(group._objects);
+    //     highlight?.set({
+    //       id: rect.id,
+    //     });
+    //     const rectId = rect.id;
 
-        setBox(rectId);
+    //     console.log(group._objects);
 
-        highlight = null;
-        rect = null;
-      } else {
-        rect = null;
-      }
-    });
+    //     setBox(rectId);
 
-    canvas.current.renderAll();
-  }, [canvasRef, dimensions, getImage]);
+    //     highlight = null;
+    //     rect = null;
+    //   } else {
+    //     rect = null;
+    //   }
+    // });
+
+    // canvas.current.renderAll();
+  }, [canvasRef, dimensions]);
 
   useEffect(() => {
     canvas.current?.on("object:modified", function (options) {
@@ -272,8 +277,6 @@ export default function Annotate() {
       }
     });
   }, [selected]);
-
-  console.log(selected);
 
   return (
     <div
