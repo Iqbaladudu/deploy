@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
 import { Annotation, initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
+import { filter } from "rxjs";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
@@ -125,18 +126,23 @@ export default function Annotate() {
   const canvasRef = useRef(null);
   const canvasWrapper = useRef(null);
   const fabricRef = useRef(null);
-  const canvas = useRef(null);
+  const [canvas, setCanvas] = useState(null);
+  const annotation = useRef();
   const [selected, setSelected] = useState(null);
 
   const [box, setBox] = useState();
   const [editLabel, setEditLabel] = useState();
 
   useEffect(() => {
-    const annotation = new Annotation({
+    annotation.current = new Annotation({
       canvasRef: canvasRef,
       fabricRef: fabricRef,
       dimensions: dimensions,
       canvasWrapper: canvasWrapper,
+    });
+
+    annotation.current.getCanvasObject$.subscribe((data) => {
+      setCanvas(data);
     });
 
     // canvas.current = initializeFabric({
@@ -281,7 +287,7 @@ export default function Annotate() {
         }}
       >
         <div className="d-flex gap-1 my-2 flex-column">
-          {canvas?.current
+          {canvas
             ?.getObjects()
             .filter((obj) => obj.type === "rect")
             .map((arr, index) => (
@@ -292,7 +298,7 @@ export default function Annotate() {
                     value={arr?.label}
                     setBox={setBox}
                     id={arr?.id}
-                    canvas={canvas.current}
+                    canvas={canvas}
                     setEditLabel={setEditLabel}
                   />
                 ) : (
@@ -329,10 +335,10 @@ export default function Annotate() {
                                   "Apakah kamu yakin akan menghapus bounding box ini?"
                                 ) === true
                               ) {
-                                const obj = canvas?.current
-                                  .getObjects()
+                                const obj = canvas
+                                  ?.getObjects()
                                   .find((item) => item.id === arr?.id);
-                                canvas?.current.remove(obj);
+                                canvas?.remove(obj);
                                 setEditLabel(1);
                               } else return;
                             }}
@@ -349,12 +355,7 @@ export default function Annotate() {
         </div>
         <div className="d-flex gap-1 my-2 flex-column">
           {box && (
-            <EditLabel
-              type="SAVE"
-              id={box}
-              setBox={setBox}
-              canvas={canvas.current}
-            />
+            <EditLabel type="SAVE" id={box} setBox={setBox} canvas={canvas} />
           )}
         </div>
       </div>
