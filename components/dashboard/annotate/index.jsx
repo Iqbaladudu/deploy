@@ -263,21 +263,6 @@ export default function Annotate() {
     // canvas.current.renderAll();
   }, [canvasRef, dimensions]);
 
-  useEffect(() => {
-    canvas.current?.on("object:modified", function (options) {
-      if (options.target && options.target?.type === "rect") {
-        const movedRect = options.target;
-        console.log(
-          "Rectangle moved to:",
-          movedRect.left,
-          movedRect.top,
-          movedRect.id,
-          selected
-        );
-      }
-    });
-  }, [selected]);
-
   return (
     <div
       className="content d-flex align-content-center m-0"
