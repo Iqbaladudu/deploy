@@ -10,7 +10,16 @@ import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
 import { initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
-import { BehaviorSubject, distinctUntilChanged, filter, map, tap } from "rxjs";
+import {
+  BehaviorSubject,
+  distinct,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
+  filter,
+  map,
+  scan,
+  tap,
+} from "rxjs";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
@@ -44,10 +53,22 @@ function EditLabel({
         <button
           className="btn"
           onClick={() => {
-            canvas.value
+            const edit = canvas.value
               .getObjects()
               .find((arr) => arr.id === id)
               ?.set({ label: labelValue, done: true });
+
+            const text = new fabric.Text(`${edit.label}`, {
+              top: edit?.top - 20,
+              left: edit?.left,
+              fontSize: 15,
+              id: `${edit.id}`,
+              selectable: false,
+              type: "label",
+              evented: false,
+            });
+
+            canvas.value.add(text);
 
             setBox();
 
@@ -161,12 +182,14 @@ export default function Annotate() {
 
     canvas.current.value.add(img);
 
-    let rect, startX, startY, text, group;
+    let rect, startX, startY;
 
     canvas.current.value.on("mouse:down", function (options) {
       if (options.target !== img || options.target?.type === "rect") {
         return;
       }
+
+      // box.current.subscribe((arr) => console.log(arr));
 
       startX = options.pointer.x;
       startY = options.pointer.y;
@@ -200,7 +223,6 @@ export default function Annotate() {
       if (rect && rect.width > 20 && rect.height > 20) {
         rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
         const rectId = rect.id;
-
         setBox(rectId);
 
         rect = null;
@@ -212,17 +234,22 @@ export default function Annotate() {
     canvas.current.value.renderAll();
   }, [canvasRef, dimensions, getImage]);
 
-  // useEffect(() => {
-  //   canvas.current.value?.on("object:modified", function (options) {
-  //     if (options.target && options.target?.type === "rect") {
-  //       const movedRect = options.target;
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    canvas.current.value?.on("object:modified", function (options) {
+      if (options.target && options.target?.type === "rect") {
+        const movedRect = options.target;
+        canvas.current.value
+          .getObjects()
+          .find((arr) => arr.id === movedRect.id && arr.type === "label")
+          ?.set({ top: movedRect?.top - 20, left: movedRect?.left });
+      }
+    });
+  }, [canvas.current.value]);
 
   canvas.current
     .pipe(
       map((arr) => arr?.getObjects()),
+      tap((arr) => console.log(arr)),
       map((arr) =>
         arr?.filter((rect) => rect.type === "rect" && rect.done === true)
       )
@@ -299,8 +326,8 @@ export default function Annotate() {
                               ) {
                                 const obj = canvas?.current.value
                                   .getObjects()
-                                  .find((item) => item.id === arr?.id);
-                                canvas?.current.value.remove(obj);
+                                  .filter((item) => item.id === arr?.id);
+                                canvas?.current.value.remove(obj[0], obj[1]);
                                 setEditLabel(1);
                               } else return;
                             }}
