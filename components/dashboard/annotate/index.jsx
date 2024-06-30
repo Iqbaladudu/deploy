@@ -10,16 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
 import { initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
-import {
-  BehaviorSubject,
-  distinct,
-  distinctUntilChanged,
-  distinctUntilKeyChanged,
-  filter,
-  map,
-  scan,
-  tap,
-} from "rxjs";
+import { BehaviorSubject, map, tap } from "rxjs";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
@@ -27,6 +18,53 @@ function generateRandomHexColor() {
   const lightness = 40 + Math.random() * 20; // 40-60%
   return chroma(`hsl(${hue}, ${saturation}%, ${lightness}%)`).darken().hex();
 }
+
+fabric.TextboxWithPadding = fabric.util.createClass(fabric.Textbox, {
+  type: "textboxwithpadding",
+  toObject: function () {
+    return fabric.util.object.extend(this.callSuper("toObject"), {
+      backgroundColor: this.get("backgroundColor"),
+      padding: this.get("padding"),
+    });
+  },
+
+  // _splitTextIntoLines: function (text) {
+  //   var lines = text.split(this._reNewline),
+  //     newLines = new Array(lines.length),
+  //     newLine = ["\n"],
+  //     newText = [];
+  //   for (var i = 0; i < lines.length; i++) {
+  //     newLines[i] = fabric.util.string.graphemeSplit(lines[i]);
+  //     newText = newText.concat(newLines[i], newLine);
+  //   }
+  //   console.log(lines, newLines, newText);
+  //   newText.pop();
+  //   return {
+  //     _unwrappedLines: newLines,
+  //     lines: lines,
+  //     graphemeText: newText,
+  //     graphemeLines: newLines,
+  //   };
+  // },
+
+  _renderBackground: function (ctx) {
+    if (!this.backgroundColor) {
+      return;
+    }
+    var dim = this._getNonTransformedDimensions();
+    ctx.fillStyle = this.backgroundColor;
+
+    ctx.fillRect(
+      -dim.x / 2 - this.padding,
+      -dim.y / 2 - this.padding,
+      dim.x + this.padding * 2,
+      dim.y + this.padding * 2
+    );
+    // if there is background color no other shadows
+    // should be casted
+    this._removeShadow(ctx);
+  },
+});
 
 function EditLabel({
   type,
@@ -58,15 +96,27 @@ function EditLabel({
               .find((arr) => arr.id === id)
               ?.set({ label: labelValue, done: true });
 
-            const text = new fabric.Text(`${edit.label}`, {
-              top: edit?.top - 20,
-              left: edit?.left,
+            const text = new fabric.TextboxWithPadding(`${edit.label}`, {
+              top: edit?.top - 25,
+              left: edit?.left + 3,
               fontSize: 15,
               id: `${edit.id}`,
               selectable: false,
               type: "label",
               evented: false,
+              textAlign: "center",
+              backgroundColor: "rgb(0,200,0)",
+              padding: 3,
+              splitByGrapheme: false,
             });
+
+            // const bg = new fabric.Rect({
+            //   top: text.top - 3,
+            //   left: text.left,
+            //   height: text.height + 3,
+            //   width: text.width + 3,
+            //   fill: "rgb(0,200,0)",
+            // });
 
             canvas.value.add(text);
 
@@ -173,6 +223,9 @@ export default function Annotate() {
       selectable: false,
     });
 
+    canvas.current.value.setWidth(dimensions?.width);
+    canvas.current.value.setHeight(dimensions?.height);
+
     img.scaleToHeight(dimensions?.height);
     img.scaleToWidth(dimensions?.width);
 
@@ -235,13 +288,17 @@ export default function Annotate() {
   }, [canvasRef, dimensions, getImage]);
 
   useEffect(() => {
-    canvas.current.value?.on("object:modified", function (options) {
-      if (options.target && options.target?.type === "rect") {
+    canvas.current.value?.on("mouse:move", function (options) {
+      if (
+        options.target &&
+        options.target?.type === "rect" &&
+        options.target?.done === true
+      ) {
         const movedRect = options.target;
         canvas.current.value
           .getObjects()
           .find((arr) => arr.id === movedRect.id && arr.type === "label")
-          ?.set({ top: movedRect?.top - 20, left: movedRect?.left });
+          ?.set({ top: movedRect?.top - 25, left: movedRect?.left + 3 });
       }
     });
   }, [canvas.current.value]);
@@ -391,12 +448,19 @@ export default function Annotate() {
           ref={canvasWrapper}
           className="col-8 d-flex justify-content-center align-items-center"
         >
-          <FabricCanvas
-            canvasRef={canvasRef}
-            imgSrc={image}
-            imgWidth={dimensions?.width}
-            imgHeight={dimensions?.height}
-          />
+          <div
+            style={{
+              height: "50%",
+              width: "50%",
+            }}
+          >
+            <FabricCanvas
+              canvasRef={canvasRef}
+              imgSrc={image}
+              imgWidth={dimensions?.width}
+              imgHeight={dimensions?.height}
+            />
+          </div>
         </div>
       ) : (
         <p>Gambar tidak ditemukan</p>

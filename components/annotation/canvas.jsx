@@ -17,6 +17,7 @@ export default function FabricCanvas({
         id="bening"
         style={{
           display: "none",
+          // border: "1px solid white",
         }}
       />
     </>
