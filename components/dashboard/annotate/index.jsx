@@ -11,6 +11,8 @@ import FabricCanvas from "@/components/annotation/canvas";
 import { initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
 import { BehaviorSubject, map, tap } from "rxjs";
+import useObservable from "@/app/hooks/useObservable";
+import { useRenderThrow, useSubscription } from "observable-hooks";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
@@ -27,7 +29,6 @@ fabric.TextboxWithPadding = fabric.util.createClass(fabric.Textbox, {
       padding: this.get("padding"),
     });
   },
-
   // _splitTextIntoLines: function (text) {
   //   var lines = text.split(this._reNewline),
   //     newLines = new Array(lines.length),
@@ -69,7 +70,7 @@ fabric.TextboxWithPadding = fabric.util.createClass(fabric.Textbox, {
 function EditLabel({
   type,
   value = "",
-  setBox = false,
+  box = false,
   id,
   canvas,
   setEditLabel,
@@ -96,33 +97,36 @@ function EditLabel({
               .find((arr) => arr.id === id)
               ?.set({ label: labelValue, done: true });
 
-            const text = new fabric.TextboxWithPadding(`${edit.label}`, {
-              top: edit?.top - 25,
-              left: edit?.left + 3,
-              fontSize: 15,
-              id: `${edit.id}`,
-              selectable: false,
-              type: "label",
-              evented: false,
-              textAlign: "center",
-              backgroundColor: "rgb(0,200,0)",
-              padding: 3,
-              splitByGrapheme: false,
-            });
+            if (type === "SAVE") {
+              const text = new fabric.TextboxWithPadding(`${edit?.label}`, {
+                top: edit?.top - 20,
+                left: edit?.left + 3,
+                fontSize: 15,
+                id: `${edit.id}`,
+                selectable: false,
+                type: "label",
+                evented: false,
+                textAlign: "center",
+                backgroundColor: `${edit?.stroke}`,
+                padding: 3,
+                splitByGrapheme: false,
+                fill: "white",
+              });
 
-            // const bg = new fabric.Rect({
-            //   top: text.top - 3,
-            //   left: text.left,
-            //   height: text.height + 3,
-            //   width: text.width + 3,
-            //   fill: "rgb(0,200,0)",
-            // });
+              text.set({ width: edit?.label.length * 7 });
 
-            canvas.value.add(text);
+              canvas.value.add(text);
+              canvas.value.discardActiveObject();
 
-            setBox();
+              box.next();
+            }
 
             if (type === "EDIT") {
+              canvas.value
+                .getObjects()
+                .find((arr) => arr.id === id && arr.type === "label")
+                .set({ text: edit?.label });
+              canvas.value.renderAll();
               setEditLabel();
             }
           }}
@@ -141,9 +145,9 @@ function EditLabel({
                 .getObjects()
                 .find((arr) => arr.type === "filter");
               canvas?.value.remove(removeFilter);
-              setBox();
+              box.next();
             } else {
-              setBox();
+              box.next();
               setEditLabel(null);
             }
           }}
@@ -201,9 +205,10 @@ export default function Annotate() {
   const canvasWrapper = useRef(null);
   const fabricRef = useRef(null);
   const canvas = useRef(new BehaviorSubject());
-  const rects = useRef();
+  const rects = useRef([]);
 
-  const [box, setBox] = useState();
+  const box = useRef(new BehaviorSubject());
+  const [boxId, setBoxId] = useState();
   const [editLabel, setEditLabel] = useState();
 
   useEffect(() => {
@@ -242,23 +247,28 @@ export default function Annotate() {
         return;
       }
 
-      // box.current.subscribe((arr) => console.log(arr));
+      if (!box.current.value) {
+        startX = options.pointer.x;
+        startY = options.pointer.y;
 
-      startX = options.pointer.x;
-      startY = options.pointer.y;
+        rect = new fabric.Rect({
+          left: startX,
+          top: startY,
+          width: 0,
+          height: 0,
+          fill: "transparent",
+          evented: false,
+          stroke: `${generateRandomHexColor()}`,
+          strokeWidth: 2,
+          selectable: true,
+        });
 
-      rect = new fabric.Rect({
-        left: startX,
-        top: startY,
-        width: 0,
-        height: 0,
-        fill: "transparent",
-        evented: false,
-        stroke: `${generateRandomHexColor()}`,
-        strokeWidth: 2,
-      });
+        rect.bringToFront();
 
-      canvas.current.value.add(rect);
+        canvas.current.value.add(rect);
+      } else if (box && options.target?.id !== box) {
+        return;
+      } else return;
     });
 
     canvas.current.value.on("mouse:move", function (options) {
@@ -268,24 +278,31 @@ export default function Annotate() {
           height: options.pointer.y - startY,
         });
 
+        // canvas.current.value.selection = false;
+
         canvas.current.value.renderAll();
       }
     });
 
     canvas.current.value.on("mouse:up", function () {
       if (rect && rect.width > 20 && rect.height > 20) {
-        rect.set({ evented: true, id: uuidv4(), type: "rect", done: false });
+        rect.set({
+          evented: true,
+          id: uuidv4(),
+          type: "rect",
+          done: false,
+          selectable: true,
+        });
         const rectId = rect.id;
-        setBox(rectId);
-
+        box.current.next(rectId);
         rect = null;
       } else {
-        rect = null;
+        canvas.current.value.remove(rect);
       }
     });
 
     canvas.current.value.renderAll();
-  }, [canvasRef, dimensions, getImage]);
+  }, [box, canvasRef, dimensions, getImage]);
 
   useEffect(() => {
     canvas.current.value?.on("mouse:move", function (options) {
@@ -298,22 +315,63 @@ export default function Annotate() {
         canvas.current.value
           .getObjects()
           .find((arr) => arr.id === movedRect.id && arr.type === "label")
-          ?.set({ top: movedRect?.top - 25, left: movedRect?.left + 3 });
+          ?.set({ top: movedRect?.top - 20, left: movedRect?.left + 3 });
       }
     });
+
+    canvas.current.value.on("selection:created", (e) => {
+      canvas.current.value.selection = false;
+      if (e.selected.length > 1) {
+        canvas.current?.value?.discardActiveObject();
+      }
+    });
+    canvas.current.value.on("selection:updated", (e) => {
+      canvas.current.value.selection = false;
+      if (e.selected.length > 1) {
+        canvas.current?.value?.discardActiveObject();
+      }
+    });
+    canvas.current.value.on("selection:cleared", (e) => {
+      canvas.current.value.selection = true;
+    });
+
+    console.log(canvas.current?.value?.getActiveObject(), "object");
+    console.log(canvas.current?.value?.getActiveObjects(), "obbjects");
   }, [canvas.current.value]);
 
   canvas.current
     .pipe(
       map((arr) => arr?.getObjects()),
-      tap((arr) => console.log(arr)),
       map((arr) =>
         arr?.filter((rect) => rect.type === "rect" && rect.done === true)
       )
     )
     .subscribe((arr) => {
-      rects.current = arr;
+      if (arr) {
+        rects.current = arr;
+      } else {
+        rects.current = [];
+      }
     });
+
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  const handleUpdate = () => {
+    // Force re-render
+    setForceUpdate((prev) => !prev);
+  };
+
+  useEffect(() => {
+    box.current.subscribe((id) => {
+      if (id) {
+        setBoxId(id);
+        canvas.current.value.selection = false;
+      } else {
+        setBoxId();
+        canvas.current.value.selection = true;
+      }
+    });
+  }, []);
 
   return (
     <div
@@ -336,76 +394,85 @@ export default function Annotate() {
       >
         <div>
           <div className="d-flex gap-1 my-2 flex-column">
-            {rects.current?.map((arr, index) => (
-              <div key={index} className="d-flex flex-row gap-1 w-full">
-                {editLabel === arr?.id ? (
-                  <EditLabel
-                    type="EDIT"
-                    value={arr?.label}
-                    setBox={setBox}
-                    id={arr?.id}
-                    canvas={canvas.current}
-                    setEditLabel={setEditLabel}
-                  />
-                ) : (
-                  <>
-                    {arr?.done && (
-                      <div
-                        className={`d-flex flex-row gap-1 justify-content-between w-full`}
-                        style={{
-                          width: "100%",
-                        }}
-                      >
-                        <div>
-                          <p
-                            class="fw-semibold my-auto"
+            {rects.current?.length > 0
+              ? rects.current?.map((arr, index) => (
+                  <div key={index} className="d-flex flex-row gap-1 w-full">
+                    {editLabel === arr?.id ? (
+                      <EditLabel
+                        type="EDIT"
+                        value={arr?.label}
+                        box={box.current}
+                        id={arr?.id}
+                        canvas={canvas.current}
+                        setEditLabel={setEditLabel}
+                      />
+                    ) : (
+                      <>
+                        {arr?.done && (
+                          <div
+                            className={`d-flex flex-row gap-1 justify-content-between w-full`}
                             style={{
-                              fontSize: 15,
+                              width: "100%",
                             }}
                           >
-                            {arr?.label}
-                          </p>
-                        </div>
-                        <div className="d-flex flex-row gap-2">
-                          <div
-                            className="pointer"
-                            onClick={() => setEditLabel(arr?.id)}
-                          >
-                            <Edit height={10} width={10} />
+                            <div>
+                              <p
+                                class="fw-semibold my-auto"
+                                style={{
+                                  fontSize: 15,
+                                }}
+                              >
+                                {arr?.label}
+                              </p>
+                            </div>
+                            <div className="d-flex flex-row gap-2">
+                              <div
+                                className="pointer"
+                                onClick={() => setEditLabel(arr?.id)}
+                              >
+                                <Edit height={10} width={10} />
+                              </div>
+                              <div
+                                className="pointer"
+                                onClick={async () => {
+                                  if (
+                                    confirm(
+                                      "Apakah kamu yakin akan menghapus bounding box ini?"
+                                    ) === true
+                                  ) {
+                                    const obj = await canvas?.current.value
+                                      .getObjects()
+                                      .filter((item) => item.id === arr?.id);
+
+                                    await canvas?.current.value.remove(
+                                      obj[0],
+                                      obj[1]
+                                    );
+
+                                    handleUpdate();
+
+                                    setEditLabel(1);
+                                  } else return;
+                                }}
+                              >
+                                <Trash2 height={10} width={10} />
+                              </div>
+                            </div>
                           </div>
-                          <div
-                            className="pointer"
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  "Apakah kamu yakin akan menghapus bounding box ini?"
-                                ) === true
-                              ) {
-                                const obj = canvas?.current.value
-                                  .getObjects()
-                                  .filter((item) => item.id === arr?.id);
-                                canvas?.current.value.remove(obj[0], obj[1]);
-                                setEditLabel(1);
-                              } else return;
-                            }}
-                          >
-                            <Trash2 height={10} width={10} />
-                          </div>
-                        </div>
-                      </div>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </div>
-            ))}
+                  </div>
+                ))
+              : null}
           </div>
 
           <div className="d-flex gap-1 my-2 flex-column">
-            {box && (
+            {boxId && (
               <EditLabel
                 type="SAVE"
-                id={box}
-                setBox={setBox}
+                id={box.current.value}
+                box={box.current}
                 canvas={canvas.current}
               />
             )}
