@@ -4,159 +4,22 @@ import { db } from "@/app/etc";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Download, Edit, Trash2 } from "react-feather";
 import useImage from "use-image";
 import { v4 as uuidv4 } from "uuid";
 import FabricCanvas from "@/components/annotation/canvas";
 import { initializeFabric } from "@/lib/canvas";
 import chroma from "chroma-js";
 import { BehaviorSubject, map, tap } from "rxjs";
-import useObservable from "@/app/hooks/useObservable";
-import { useRenderThrow, useSubscription } from "observable-hooks";
+import ZoomTool from "./zoomTool";
+import AnnotationLabel from "./annotationLabel";
+import ImageTool from "./imageTool";
+import { Mode } from "@/app/constant";
 
 function generateRandomHexColor() {
   const hue = Math.random() * 360;
   const saturation = 80 + Math.random() * 20; // 80-100%
   const lightness = 40 + Math.random() * 20; // 40-60%
   return chroma(`hsl(${hue}, ${saturation}%, ${lightness}%)`).darken().hex();
-}
-
-fabric.TextboxWithPadding = fabric.util.createClass(fabric.Textbox, {
-  type: "textboxwithpadding",
-  toObject: function () {
-    return fabric.util.object.extend(this.callSuper("toObject"), {
-      backgroundColor: this.get("backgroundColor"),
-      padding: this.get("padding"),
-    });
-  },
-  // _splitTextIntoLines: function (text) {
-  //   var lines = text.split(this._reNewline),
-  //     newLines = new Array(lines.length),
-  //     newLine = ["\n"],
-  //     newText = [];
-  //   for (var i = 0; i < lines.length; i++) {
-  //     newLines[i] = fabric.util.string.graphemeSplit(lines[i]);
-  //     newText = newText.concat(newLines[i], newLine);
-  //   }
-  //   console.log(lines, newLines, newText);
-  //   newText.pop();
-  //   return {
-  //     _unwrappedLines: newLines,
-  //     lines: lines,
-  //     graphemeText: newText,
-  //     graphemeLines: newLines,
-  //   };
-  // },
-
-  _renderBackground: function (ctx) {
-    if (!this.backgroundColor) {
-      return;
-    }
-    var dim = this._getNonTransformedDimensions();
-    ctx.fillStyle = this.backgroundColor;
-
-    ctx.fillRect(
-      -dim.x / 2 - this.padding,
-      -dim.y / 2 - this.padding,
-      dim.x + this.padding * 2,
-      dim.y + this.padding * 2
-    );
-    // if there is background color no other shadows
-    // should be casted
-    this._removeShadow(ctx);
-  },
-});
-
-function EditLabel({
-  type,
-  value = "",
-  box = false,
-  id,
-  canvas,
-  setEditLabel,
-}) {
-  const [labelValue, setLabelValue] = useState();
-  useEffect(() => setLabelValue(value), [value]);
-
-  return (
-    <div>
-      <input
-        type="text"
-        name="label"
-        value={labelValue}
-        placeholder="Label"
-        onChange={(e) => setLabelValue(e.target.value)}
-        className="form-control outline-none shadow-none py-1 rounded-2"
-      />
-      <div className="w-100 d-flex justify-content-center">
-        <button
-          className="btn"
-          onClick={() => {
-            const edit = canvas.value
-              .getObjects()
-              .find((arr) => arr.id === id)
-              ?.set({ label: labelValue, done: true });
-
-            if (type === "SAVE") {
-              const text = new fabric.TextboxWithPadding(`${edit?.label}`, {
-                top: edit?.top - 20,
-                left: edit?.left + 3,
-                fontSize: 15,
-                id: `${edit.id}`,
-                selectable: false,
-                type: "label",
-                evented: false,
-                textAlign: "center",
-                backgroundColor: `${edit?.stroke}`,
-                padding: 3,
-                splitByGrapheme: false,
-                fill: "white",
-              });
-
-              text.set({ width: edit?.label.length * 7 });
-
-              canvas.value.add(text);
-              canvas.value.discardActiveObject();
-
-              box.next();
-            }
-
-            if (type === "EDIT") {
-              canvas.value
-                .getObjects()
-                .find((arr) => arr.id === id && arr.type === "label")
-                .set({ text: edit?.label });
-              canvas.value.renderAll();
-              setEditLabel();
-            }
-          }}
-        >
-          Save
-        </button>
-        <button
-          className="btn"
-          onClick={() => {
-            if (type === "SAVE") {
-              const obj = canvas.value
-                .getObjects()
-                .find((arr) => arr.id === id);
-              canvas.value.remove(obj);
-              const removeFilter = canvas.value
-                .getObjects()
-                .find((arr) => arr.type === "filter");
-              canvas?.value.remove(removeFilter);
-              box.next();
-            } else {
-              box.next();
-              setEditLabel(null);
-            }
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export default function Annotate() {
@@ -169,6 +32,9 @@ export default function Annotate() {
 
   const [dimensions, setDimensions] = useState();
   const [image] = useImage(`data:image/<mime-type>;base64, ${getImage}`);
+
+  const mode = useRef(new BehaviorSubject(Mode.DRAG));
+  const [imgMode, setImgMode] = useState();
 
   useEffect(() => {
     if (image) {
@@ -224,17 +90,17 @@ export default function Annotate() {
 
     const imgElement = document.getElementById("bening");
     const img = new fabric.Image(imgElement, {
-      hoverCursor: "crosshair",
-      selectable: false,
+      hoverCursor: "move",
+      selectable: true,
+      type: "image",
+      lockScalingX: true,
+      lockScalingY: true,
     });
-
-    canvas.current.value.setWidth(dimensions?.width);
-    canvas.current.value.setHeight(dimensions?.height);
 
     img.scaleToHeight(dimensions?.height);
     img.scaleToWidth(dimensions?.width);
 
-    img.bringForward();
+    img.sendToBack();
 
     canvas.current.value.centerObject(img);
 
@@ -247,7 +113,15 @@ export default function Annotate() {
         return;
       }
 
-      if (!box.current.value) {
+      if (options.target === null) {
+        return;
+      }
+
+      if (options.target === img) {
+        canvas.current.value.moveTo(img, 0);
+      }
+
+      if (!box.current.value && img.selectable === false) {
         startX = options.pointer.x;
         startY = options.pointer.y;
 
@@ -266,13 +140,14 @@ export default function Annotate() {
         rect.bringToFront();
 
         canvas.current.value.add(rect);
+        canvas.current.value.renderAll();
       } else if (box && options.target?.id !== box) {
         return;
       } else return;
     });
 
     canvas.current.value.on("mouse:move", function (options) {
-      if (rect) {
+      if (rect && img.selectable === false) {
         rect.set({
           width: options.pointer.x - startX,
           height: options.pointer.y - startY,
@@ -285,7 +160,12 @@ export default function Annotate() {
     });
 
     canvas.current.value.on("mouse:up", function () {
-      if (rect && rect.width > 20 && rect.height > 20) {
+      if (
+        rect &&
+        rect.width > 20 &&
+        rect.height > 20 &&
+        img.selectable === false
+      ) {
         rect.set({
           evented: true,
           id: uuidv4(),
@@ -293,9 +173,11 @@ export default function Annotate() {
           done: false,
           selectable: true,
         });
+        rect.bringToFront();
         const rectId = rect.id;
         box.current.next(rectId);
         rect = null;
+        canvas.current.value.renderAll();
       } else {
         canvas.current.value.remove(rect);
       }
@@ -316,6 +198,7 @@ export default function Annotate() {
           .getObjects()
           .find((arr) => arr.id === movedRect.id && arr.type === "label")
           ?.set({ top: movedRect?.top - 20, left: movedRect?.left + 3 });
+      } else if (options.target?.type === "image") {
       }
     });
 
@@ -334,9 +217,6 @@ export default function Annotate() {
     canvas.current.value.on("selection:cleared", (e) => {
       canvas.current.value.selection = true;
     });
-
-    console.log(canvas.current?.value?.getActiveObject(), "object");
-    console.log(canvas.current?.value?.getActiveObjects(), "obbjects");
   }, [canvas.current.value]);
 
   canvas.current
@@ -373,6 +253,47 @@ export default function Annotate() {
     });
   }, []);
 
+  const labelbarRef = useRef();
+  const [labelbarWidth, setLabelbarWidth] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (labelbarRef.current) {
+        setLabelbarWidth(labelbarRef.current.offsetWidth);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize); // Clean up
+    };
+  }, []);
+
+  useEffect(() => {
+    mode.current.subscribe((arr) => {
+      if (arr === Mode.DRAG) {
+        const objects = canvas.current.value.getObjects();
+        const img = objects.find(function (o) {
+          return o.type === "image";
+        });
+        img.hoverCursor = "move";
+        img.selectable = true;
+        canvas.current.value.requestRenderAll();
+      } else if (arr === Mode.RECT) {
+        const img = canvas.current?.value?.getObjects().find(function (o) {
+          return o.type === "image";
+        });
+
+        img.hoverCursor = "crosshair";
+        img.selectable = false;
+        canvas.current.value.discardActiveObject();
+        canvas.current.value.requestRenderAll();
+      }
+    });
+  }, [mode.current.value]);
+
   return (
     <div
       className="content d-flex align-content-center m-0"
@@ -381,139 +302,29 @@ export default function Annotate() {
         paddingLeft: 60,
       }}
     >
-      <div
-        className="col-2 me-3 d-flex flex-column justify-content-between"
-        style={{
-          boxShadow: "none",
-          paddingLeft: 20,
-          paddingRight: 20,
-          borderRight: "1px solid #97979757",
-          paddingTop: 10,
-          paddingBottom: 10,
-        }}
-      >
-        <div>
-          <div className="d-flex gap-1 my-2 flex-column">
-            {rects.current?.length > 0
-              ? rects.current?.map((arr, index) => (
-                  <div key={index} className="d-flex flex-row gap-1 w-full">
-                    {editLabel === arr?.id ? (
-                      <EditLabel
-                        type="EDIT"
-                        value={arr?.label}
-                        box={box.current}
-                        id={arr?.id}
-                        canvas={canvas.current}
-                        setEditLabel={setEditLabel}
-                      />
-                    ) : (
-                      <>
-                        {arr?.done && (
-                          <div
-                            className={`d-flex flex-row gap-1 justify-content-between w-full`}
-                            style={{
-                              width: "100%",
-                            }}
-                          >
-                            <div>
-                              <p
-                                class="fw-semibold my-auto"
-                                style={{
-                                  fontSize: 15,
-                                }}
-                              >
-                                {arr?.label}
-                              </p>
-                            </div>
-                            <div className="d-flex flex-row gap-2">
-                              <div
-                                className="pointer"
-                                onClick={() => setEditLabel(arr?.id)}
-                              >
-                                <Edit height={10} width={10} />
-                              </div>
-                              <div
-                                className="pointer"
-                                onClick={async () => {
-                                  if (
-                                    confirm(
-                                      "Apakah kamu yakin akan menghapus bounding box ini?"
-                                    ) === true
-                                  ) {
-                                    const obj = await canvas?.current.value
-                                      .getObjects()
-                                      .filter((item) => item.id === arr?.id);
+      <ZoomTool canvas={canvas} mode={mode} />
+      <ImageTool canvas={canvas} mode={mode} />
+      <AnnotationLabel
+        labelbarRef={labelbarRef}
+        rects={rects}
+        editLabel={editLabel}
+        box={box}
+        canvas={canvas}
+        setEditLabel={setEditLabel}
+        handleUpdate={handleUpdate}
+        boxId={boxId}
+        imageId={imageId}
+      />
 
-                                    await canvas?.current.value.remove(
-                                      obj[0],
-                                      obj[1]
-                                    );
-
-                                    handleUpdate();
-
-                                    setEditLabel(1);
-                                  } else return;
-                                }}
-                              >
-                                <Trash2 height={10} width={10} />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                ))
-              : null}
-          </div>
-
-          <div className="d-flex gap-1 my-2 flex-column">
-            {boxId && (
-              <EditLabel
-                type="SAVE"
-                id={box.current.value}
-                box={box.current}
-                canvas={canvas.current}
-              />
-            )}
-          </div>
-        </div>
-        <div>
-          <button
-            onClick={() => {
-              const dataURL = canvas.current.value.toDataURL({
-                format: "png",
-              });
-
-              const link = document.createElement("a");
-              link.href = dataURL;
-              link.download = `${imageId}.png`;
-
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }}
-            disabled={rects.current?.length === 0}
-            className="btn btn-primary outline-0 border-0 shadow-none text-smaller float-end"
-          >
-            <Download
-              data-feather="pocket"
-              width="14"
-              height="14"
-              className="me-2"
-            />
-            Simpan Gambar
-          </button>
-        </div>
-      </div>
       {imageId && batch ? (
         <div
           style={{
             height: "calc(-60px + 100vh)",
             overflow: "hidden",
+            width: "80%",
           }}
           ref={canvasWrapper}
-          className="col-8 d-flex justify-content-center align-items-center"
+          className="col-8"
         >
           <div
             style={{
