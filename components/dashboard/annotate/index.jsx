@@ -22,6 +22,22 @@ function generateRandomHexColor() {
   return chroma(`hsl(${hue}, ${saturation}%, ${lightness}%)`).darken().hex();
 }
 
+function keepFirstGroup(canvas) {
+  let firstGroupFound = false;
+
+  canvas.getObjects().forEach((obj, index) => {
+    if (obj.type === "group") {
+      if (!firstGroupFound) {
+        firstGroupFound = true;
+      } else {
+        canvas.remove(obj);
+      }
+    }
+  });
+
+  canvas.renderAll();
+}
+
 export default function Annotate() {
   const searchParams = useSearchParams();
   const imageId = searchParams.get("img");
@@ -76,6 +92,7 @@ export default function Annotate() {
   const box = useRef(new BehaviorSubject());
   const [boxId, setBoxId] = useState();
   const [editLabel, setEditLabel] = useState();
+  const [imgSize, setImgSize] = useState();
 
   useEffect(() => {
     canvas.current.next(
@@ -105,6 +122,15 @@ export default function Annotate() {
     canvas.current.value.centerObject(img);
 
     canvas.current.value.add(img);
+
+    if (img) {
+      setImgSize({
+        height: img.getScaledHeight(),
+        width: img.getScaledWidth(),
+        top: img.top,
+        left: img.left,
+      });
+    }
 
     let rect, startX, startY;
 
@@ -275,13 +301,79 @@ export default function Annotate() {
     mode.current.subscribe((arr) => {
       if (arr === Mode.DRAG) {
         const objects = canvas.current.value.getObjects();
+
+        const rects = objects.filter((arr) => arr.type === "rect");
+        const label = objects.filter((arr) => arr.type === "label");
         const img = objects.find(function (o) {
           return o.type === "image";
         });
-        img.hoverCursor = "move";
-        img.selectable = true;
-        canvas.current.value.requestRenderAll();
+
+        const getGroups = objects.filter((arr) => arr.type === "group");
+        console.log(getGroups, "getGroup");
+
+        if (
+          getGroups.length < 1 &&
+          imgSize?.top &&
+          imgSize?.left &&
+          imgSize?.height &&
+          imgSize?.width &&
+          rects.length > 0
+        ) {
+          const group = new fabric.Group([img], {
+            height: imgSize.height,
+            width: imgSize.width,
+            top: imgSize.top,
+            left: imgSize.left,
+            originX: "left",
+            originY: "top",
+            type: "group",
+            absolutePositioned: true,
+          });
+
+          group.hoverCursor = "move";
+          group.selectable = true;
+
+          for (let i = 0; i < rects.length; i++) {
+            group.addWithUpdate(rects[i]);
+            group.addWithUpdate(label[i]);
+          }
+
+          canvas.current.value.centerObject(group);
+          canvas.current.value.add(group);
+          canvas.current.value.remove([img, ...rects, ...label]);
+          keepFirstGroup(canvas.current.value);
+          canvas.current.value.renderAll();
+        }
       } else if (arr === Mode.RECT) {
+        const getObj = canvas.current.value.getObjects();
+        const group = getObj.find((arr) => arr.type === "group");
+
+        console.log(group, "grup");
+
+        function unpackGroup(group, canvas) {
+          const objects = group._objects;
+
+          // Remove the group from the canvas
+          canvas.remove(group);
+
+          // Add each object to the canvas, checking for duplicates
+          objects.forEach((obj) => {
+            // Check if an object with the same ID already exists
+            const existingObject = canvas
+              .getObjects()
+              .find((o) => o.id === obj.id);
+            if (!existingObject) {
+              canvas.add(obj);
+            }
+          });
+
+          canvas.renderAll();
+        }
+
+        if (group) {
+          unpackGroup(group, canvas.current.value);
+        }
+
         const img = canvas.current?.value?.getObjects().find(function (o) {
           return o.type === "image";
         });
@@ -292,7 +384,7 @@ export default function Annotate() {
         canvas.current.value.requestRenderAll();
       }
     });
-  }, [mode.current.value]);
+  }, [mode.current.value, imgSize]);
 
   return (
     <div

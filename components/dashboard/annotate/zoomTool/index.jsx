@@ -56,7 +56,16 @@ export default function ZoomTool({ canvas, mode }) {
           const img = canvas.current.value.getObjects().find(function (o) {
             return o.type === "image";
           });
-          canvas.current.value.centerObject(img);
+          const group = canvas.current.value.getObjects().find(function (o) {
+            return o.type === "group";
+          });
+
+          if (img) {
+            canvas.current.value.centerObject(img);
+          } else if (group) {
+            canvas.current.value.centerObject(group);
+          }
+
           mode.current.next(Mode.DRAG);
         }}
         style={{
