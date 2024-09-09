@@ -22,7 +22,7 @@ export default function ZoomTool({ canvas, mode }) {
           }
         }}
         style={{
-          fontSize: 15,
+          // fontSize: 15,
           cursor: "pointer",
         }}
       >
@@ -31,9 +31,11 @@ export default function ZoomTool({ canvas, mode }) {
       <div>
         <p
           className="my-auto"
-          style={{
-            fontSize: 15,
-          }}
+          style={
+            {
+              // fontSize: 15,
+            }
+          }
         ></p>
       </div>
       <div
@@ -43,7 +45,7 @@ export default function ZoomTool({ canvas, mode }) {
           mode.current.next(Mode.DRAG);
         }}
         style={{
-          fontSize: 15,
+          // fontSize: 15,
           cursor: "pointer",
         }}
       >
@@ -52,21 +54,14 @@ export default function ZoomTool({ canvas, mode }) {
       <div
         className="my-auto"
         onClick={() => {
+          mode.current.next(Mode.DRAG);
           canvas.current.value.setZoom(1);
-          const img = canvas.current.value.getObjects().find(function (o) {
-            return o.type === "image";
-          });
           const group = canvas.current.value.getObjects().find(function (o) {
             return o.type === "group";
           });
-
-          if (img) {
-            canvas.current.value.centerObject(img);
-          } else if (group) {
+          if (group) {
             canvas.current.value.centerObject(group);
           }
-
-          mode.current.next(Mode.DRAG);
         }}
         style={{
           fontSize: 10,

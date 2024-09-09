@@ -49,7 +49,7 @@ export default function Annotate() {
   const [dimensions, setDimensions] = useState();
   const [image] = useImage(`data:image/<mime-type>;base64, ${getImage}`);
 
-  const mode = useRef(new BehaviorSubject(Mode.DRAG));
+  const mode = useRef(new BehaviorSubject(Mode.RECT));
   const [imgMode, setImgMode] = useState();
 
   useEffect(() => {
@@ -300,16 +300,14 @@ export default function Annotate() {
   useEffect(() => {
     mode.current.subscribe((arr) => {
       if (arr === Mode.DRAG) {
-        const objects = canvas.current.value.getObjects();
-
-        const rects = objects.filter((arr) => arr.type === "rect");
-        const label = objects.filter((arr) => arr.type === "label");
-        const img = objects.find(function (o) {
-          return o.type === "image";
-        });
+        const objects = canvas.current.value._objects;
+        const rectss = objects.filter((arr) => arr.type === "rect");
+        // const label = objects.filter((arr) => arr.type === "label");
+        // const img = objects.find(function (o) {
+        //   return o.type === "image";
+        // });
 
         const getGroups = objects.filter((arr) => arr.type === "group");
-        console.log(getGroups, "getGroup");
 
         if (
           getGroups.length < 1 &&
@@ -317,9 +315,9 @@ export default function Annotate() {
           imgSize?.left &&
           imgSize?.height &&
           imgSize?.width &&
-          rects.length > 0
+          rectss.length > 0
         ) {
-          const group = new fabric.Group([img], {
+          const group = new fabric.Group([...objects], {
             height: imgSize.height,
             width: imgSize.width,
             top: imgSize.top,
@@ -330,28 +328,24 @@ export default function Annotate() {
             absolutePositioned: true,
           });
 
+          // for (let i = 0; i < objects.length; i++) {
+          //   group.addWithUpdate(objects[i]);
+          //   group.addWithUpdate(objects[i]);
+          // }
+
           group.hoverCursor = "move";
           group.selectable = true;
 
-          for (let i = 0; i < rects.length; i++) {
-            group.addWithUpdate(rects[i]);
-            group.addWithUpdate(label[i]);
-          }
-
-          canvas.current.value.centerObject(group);
           canvas.current.value.add(group);
-          canvas.current.value.remove([img, ...rects, ...label]);
-          keepFirstGroup(canvas.current.value);
+          console.log(group.getObjects(), "drag");
           canvas.current.value.renderAll();
         }
       } else if (arr === Mode.RECT) {
         const getObj = canvas.current.value.getObjects();
         const group = getObj.find((arr) => arr.type === "group");
 
-        console.log(group, "grup");
-
         function unpackGroup(group, canvas) {
-          const objects = group._objects;
+          const objects = group.destroy().getObjects();
 
           // Remove the group from the canvas
           canvas.remove(group);
@@ -361,7 +355,7 @@ export default function Annotate() {
             // Check if an object with the same ID already exists
             const existingObject = canvas
               .getObjects()
-              .find((o) => o.id === obj.id);
+              .find((o) => o.id === obj.id && o.type === obj.type);
             if (!existingObject) {
               canvas.add(obj);
             }
