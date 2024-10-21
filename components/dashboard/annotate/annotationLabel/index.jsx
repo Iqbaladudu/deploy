@@ -196,6 +196,7 @@ function EditLabel({
       <div className="w-100 d-flex justify-content-center">
         <button
           className="btn"
+          disabled={labelValue?.length < 1}
           onClick={() => {
             const edit = canvas.value
               .getObjects()

@@ -273,6 +273,7 @@ html[data-bs-theme="dark"] .btn:disabled {
 
 .btn:disabled {
     background-color: #0e0707 !important;
+    border: none;
 }
 
 html[data-bs-theme="dark"] .uppy-Dashboard-AddFiles {

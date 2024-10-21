@@ -20,7 +20,7 @@ export default function FabricCanvas({
         width={imgWidth}
         height={imgHeight}
         alt=""
-        id="bening"
+        id="gambar"
         style={{
           display: "none",
           // border: "1px solid white",

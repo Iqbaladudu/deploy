@@ -16,9 +16,17 @@ export default function ZoomTool({ canvas, mode }) {
       <div
         className="my-auto"
         onClick={() => {
-          if (canvas.current.value.getZoom() <= 2) {
-            canvas.current.value.setZoom(canvas.current.value.getZoom() + 0.1);
+          const zoomLevel = canvas.current.value.getZoom();
+          if (zoomLevel <= 2) {
+            canvas.current.value.setZoom(zoomLevel + 0.1);
             mode.current.next(Mode.DRAG);
+            const group = canvas.current.value.getObjects().find(function (o) {
+              return o.type === "group";
+            });
+            if (group) {
+              canvas.current.value.viewportCenterObject(group);
+            }
+            canvas.current.value.renderAll();
           }
         }}
         style={{
@@ -43,6 +51,13 @@ export default function ZoomTool({ canvas, mode }) {
         onClick={() => {
           canvas.current.value.setZoom(canvas.current.value.getZoom() - 0.1);
           mode.current.next(Mode.DRAG);
+          const group = canvas.current.value.getObjects().find(function (o) {
+            return o.type === "group";
+          });
+          if (group) {
+            canvas.current.value.viewportCenterObject(group);
+          }
+          canvas.current.value.renderAll();
         }}
         style={{
           // fontSize: 15,

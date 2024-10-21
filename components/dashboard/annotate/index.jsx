@@ -50,7 +50,6 @@ export default function Annotate() {
   const [image] = useImage(`data:image/<mime-type>;base64, ${getImage}`);
 
   const mode = useRef(new BehaviorSubject(Mode.RECT));
-  const [imgMode, setImgMode] = useState();
 
   useEffect(() => {
     if (image) {
@@ -105,7 +104,7 @@ export default function Annotate() {
       })
     );
 
-    const imgElement = document.getElementById("bening");
+    const imgElement = document.getElementById("gambar");
     const img = new fabric.Image(imgElement, {
       hoverCursor: "move",
       selectable: true,
@@ -134,6 +133,16 @@ export default function Annotate() {
 
     let rect, startX, startY;
 
+    function getAdjustedPosition(x, y) {
+      var zoom = canvas.current.value.getZoom();
+      var vpX = canvas.current.value.viewportTransform[4]; // X offset
+      var vpY = canvas.current.value.viewportTransform[5]; // Y offset
+      return {
+        x: (x - vpX) / zoom,
+        y: (y - vpY) / zoom,
+      };
+    }
+
     canvas.current.value.on("mouse:down", function (options) {
       if (options.target !== img || options.target?.type === "rect") {
         return;
@@ -148,8 +157,10 @@ export default function Annotate() {
       }
 
       if (!box.current.value && img.selectable === false) {
-        startX = options.pointer.x;
-        startY = options.pointer.y;
+        const point = getAdjustedPosition(options.pointer.x, options.pointer.y);
+
+        startX = point.x;
+        startY = point.y;
 
         rect = new fabric.Rect({
           left: startX,
@@ -174,12 +185,11 @@ export default function Annotate() {
 
     canvas.current.value.on("mouse:move", function (options) {
       if (rect && img.selectable === false) {
+        const point = getAdjustedPosition(options.pointer.x, options.pointer.y);
         rect.set({
-          width: options.pointer.x - startX,
-          height: options.pointer.y - startY,
+          width: point.x - startX,
+          height: point.y - startY,
         });
-
-        // canvas.current.value.selection = false;
 
         canvas.current.value.renderAll();
       }
@@ -230,7 +240,7 @@ export default function Annotate() {
 
     canvas.current.value.on("selection:created", (e) => {
       canvas.current.value.selection = false;
-      if (e.selected.length > 1) {
+      if (e.selected.length > 1 || box.current.value) {
         canvas.current?.value?.discardActiveObject();
       }
     });
@@ -242,6 +252,10 @@ export default function Annotate() {
     });
     canvas.current.value.on("selection:cleared", (e) => {
       canvas.current.value.selection = true;
+    });
+
+    canvas.current.value.on("object:scaling", (e) => {
+      e.target.setCoords();
     });
   }, [canvas.current.value]);
 
@@ -314,8 +328,7 @@ export default function Annotate() {
           imgSize?.top &&
           imgSize?.left &&
           imgSize?.height &&
-          imgSize?.width &&
-          rectss.length > 0
+          imgSize?.width
         ) {
           const group = new fabric.Group([...objects], {
             height: imgSize.height,
@@ -326,12 +339,13 @@ export default function Annotate() {
             originY: "top",
             type: "group",
             absolutePositioned: true,
+            hasRotatingPoint: false,
+            lockRotation: true,
           });
 
-          // for (let i = 0; i < objects.length; i++) {
-          //   group.addWithUpdate(objects[i]);
-          //   group.addWithUpdate(objects[i]);
-          // }
+          group.setControlsVisibility({
+            mtr: false,
+          });
 
           group.hoverCursor = "move";
           group.selectable = true;
