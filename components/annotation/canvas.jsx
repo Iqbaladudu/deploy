@@ -8,13 +8,7 @@ export default function FabricCanvas({
 }) {
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        className="mb-5"
-        style={{
-          width: "100%",
-        }}
-      />
+      <canvas ref={canvasRef} className="mb-5" />
       <Image
         src={imgSrc}
         width={imgWidth}

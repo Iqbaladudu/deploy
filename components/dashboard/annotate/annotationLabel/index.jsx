@@ -182,6 +182,11 @@ function EditLabel({
 }) {
   const [labelValue, setLabelValue] = useState();
   useEffect(() => setLabelValue(value), [value]);
+  const [refresh, setRefresh] = useState(0);
+
+  const handleBasicRerender = () => {
+    setRefresh((prev) => prev + 1);
+  };
 
   return (
     <div>
@@ -203,10 +208,12 @@ function EditLabel({
               .find((arr) => arr.id === id)
               ?.set({ label: labelValue, done: true });
 
+            console.log(edit);
+
             if (type === "SAVE") {
               const text = new fabric.TextboxWithPadding(`${edit?.label}`, {
-                top: edit?.top - 20,
-                left: edit?.left + 3,
+                top: edit.top - 20,
+                left: edit.left + 3,
                 fontSize: 15,
                 id: `${edit.id}`,
                 selectable: false,
@@ -223,6 +230,8 @@ function EditLabel({
 
               canvas.value.add(text);
               canvas.value.discardActiveObject();
+
+              handleBasicRerender();
 
               box.next();
             }

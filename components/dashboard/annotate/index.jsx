@@ -186,10 +186,16 @@ export default function Annotate() {
     canvas.current.value.on("mouse:move", function (options) {
       if (rect && img.selectable === false) {
         const point = getAdjustedPosition(options.pointer.x, options.pointer.y);
+
+        let widthRect = point.x - startX;
+        let heightRect = point.y - startY;
+
         rect.set({
-          width: point.x - startX,
-          height: point.y - startY,
+          width: widthRect,
+          height: heightRect,
         });
+
+        console.log(rect.width, rect.height);
 
         canvas.current.value.renderAll();
       }
@@ -197,9 +203,9 @@ export default function Annotate() {
 
     canvas.current.value.on("mouse:up", function () {
       if (
+        (rect?.width > 20 || rect?.width < -20) &&
+        (rect?.height > 20 || rect?.height < -20) &&
         rect &&
-        rect.width > 20 &&
-        rect.height > 20 &&
         img.selectable === false
       ) {
         rect.set({
@@ -209,6 +215,13 @@ export default function Annotate() {
           done: false,
           selectable: true,
         });
+        // if (rect.top > img.top || rect.left > img.left) {
+        //   alert(
+        //     `GAMBAR: Y ${img.top} - X ${img.left + img.width} || Y ${
+        //       rect.top + img.top - rect.height
+        //     } - X ${rect.left}`
+        //   );
+        // }
         rect.bringToFront();
         const rectId = rect.id;
         box.current.next(rectId);
@@ -315,11 +328,6 @@ export default function Annotate() {
     mode.current.subscribe((arr) => {
       if (arr === Mode.DRAG) {
         const objects = canvas.current.value._objects;
-        const rectss = objects.filter((arr) => arr.type === "rect");
-        // const label = objects.filter((arr) => arr.type === "label");
-        // const img = objects.find(function (o) {
-        //   return o.type === "image";
-        // });
 
         const getGroups = objects.filter((arr) => arr.type === "group");
 
