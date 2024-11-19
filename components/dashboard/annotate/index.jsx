@@ -171,10 +171,14 @@ export default function Annotate() {
           evented: false,
           stroke: `${generateRandomHexColor()}`,
           strokeWidth: 2,
+          strokeUniform: true,
           selectable: true,
         });
 
         rect.bringToFront();
+        rect.setControlsVisibility({
+          mtr: false,
+        });
 
         canvas.current.value.add(rect);
         canvas.current.value.renderAll();
@@ -194,8 +198,6 @@ export default function Annotate() {
           width: widthRect,
           height: heightRect,
         });
-
-        console.log(rect.width, rect.height);
 
         canvas.current.value.renderAll();
       }
@@ -267,9 +269,17 @@ export default function Annotate() {
       canvas.current.value.selection = true;
     });
 
-    canvas.current.value.on("object:scaling", (e) => {
-      e.target.setCoords();
-    });
+    // canvas.current.value.on("object:scaling", (e) => {
+    //   let o = e.target;
+    //   if (o.type === "rect") {
+    //     if (!o.strokeWidthUnscaled && o.strokeWidth) {
+    //       o.strokeWidthUnscaled = o.strokeWidth;
+    //     }
+    //     if (o.strokeWidthUnscaled) {
+    //       o.strokeWidth = o.strokeWidthUnscaled / o.scaleX;
+    //     }
+    //   }
+    // });
   }, [canvas.current.value]);
 
   canvas.current
@@ -351,15 +361,11 @@ export default function Annotate() {
             lockRotation: true,
           });
 
-          group.setControlsVisibility({
-            mtr: false,
-          });
-
+          group.hasControls = false;
           group.hoverCursor = "move";
           group.selectable = true;
 
           canvas.current.value.add(group);
-          console.log(group.getObjects(), "drag");
           canvas.current.value.renderAll();
         }
       } else if (arr === Mode.RECT) {
