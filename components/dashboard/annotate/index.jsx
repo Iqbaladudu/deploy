@@ -58,7 +58,9 @@ export default function Annotate() {
       const desiredPercentage = 40;
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight; // Get screen height
-      const maxAllowedHeight = screenHeight * 0.8; // Allow some margin
+      const maxAllowedHeight = screenHeight; // Allow some margin
+
+      console.log(originalHeight, originalWidth, "lala");
 
       // Calculate potential new width and height
       const potentialNewWidth = (screenWidth * desiredPercentage) / 100;
@@ -121,6 +123,8 @@ export default function Annotate() {
     canvas.current.value.centerObject(img);
 
     canvas.current.value.add(img);
+    console.log(img.top, img.left);
+    console.log(img.width, img.height);
 
     if (img) {
       setImgSize({
@@ -191,44 +195,49 @@ export default function Annotate() {
       if (rect && img.selectable === false) {
         const point = getAdjustedPosition(options.pointer.x, options.pointer.y);
 
+        const isInsideImage = img.containsPoint({ x: point.x, y: point.y });
+
         let widthRect = point.x - startX;
         let heightRect = point.y - startY;
 
-        rect.set({
-          width: widthRect,
-          height: heightRect,
-        });
+        if (isInsideImage) {
+          rect.set({
+            width: widthRect,
+            height: heightRect,
+          });
 
-        canvas.current.value.renderAll();
+          canvas.current.value.renderAll();
+        } else {
+          canvas.current.value.remove(rect);
+          return;
+        }
       }
     });
 
-    canvas.current.value.on("mouse:up", function () {
+    canvas.current.value.on("mouse:up", function (options) {
       if (
         (rect?.width > 20 || rect?.width < -20) &&
         (rect?.height > 20 || rect?.height < -20) &&
         rect &&
         img.selectable === false
       ) {
-        rect.set({
-          evented: true,
-          id: uuidv4(),
-          type: "rect",
-          done: false,
-          selectable: true,
-        });
-        // if (rect.top > img.top || rect.left > img.left) {
-        //   alert(
-        //     `GAMBAR: Y ${img.top} - X ${img.left + img.width} || Y ${
-        //       rect.top + img.top - rect.height
-        //     } - X ${rect.left}`
-        //   );
-        // }
-        rect.bringToFront();
-        const rectId = rect.id;
-        box.current.next(rectId);
-        rect = null;
-        canvas.current.value.renderAll();
+        const point = getAdjustedPosition(options.pointer.x, options.pointer.y);
+        const isInsideImage = img.containsPoint({ x: point.x, y: point.y });
+
+        if (isInsideImage) {
+          rect.set({
+            evented: true,
+            id: uuidv4(),
+            type: "rect",
+            done: false,
+            selectable: true,
+          });
+          rect.bringToFront();
+          const rectId = rect.id;
+          box.current.next(rectId);
+          rect = null;
+          canvas.current.value.renderAll();
+        }
       } else {
         canvas.current.value.remove(rect);
       }
